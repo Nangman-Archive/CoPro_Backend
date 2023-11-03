@@ -1,9 +1,6 @@
-server:
-  port: 8091
-
 spring:
   profiles:
-    active: prod
+    active: prod # prod
 
   datasource:
     url: ${spring.datasource.url}
