@@ -7,13 +7,7 @@ spring:
       on-profile: local
 
   datasource:
-<<<<<<< HEAD
     url: jdbc:mariadb://localhost:3307/copro
     username: root
     password: 990621
-=======
-    url: jdbc:mariadb://localhost:3306/copro
-    username: root
-    password: chlrldnd3533
->>>>>>> 8d5a03a1d77830c9c941b3ec401c5b05f0cb9c60
     driver-class-name: org.mariadb.jdbc.Driver

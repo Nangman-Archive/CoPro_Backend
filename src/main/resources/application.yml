@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod # prod
+    active: local # prod
 
   datasource:
     url: ${spring.datasource.url}
@@ -21,3 +21,5 @@ logging:
   level:
     org.hibernate.sql: debug
     org.hibernate.type: trace
+
+FIREBASE_KEY: ./serviceAccountKey.json

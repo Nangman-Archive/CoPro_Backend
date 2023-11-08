@@ -1,4 +1,4 @@
-package com.example.copro.board.global.config;
+package com.example.copro.board.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
