@@ -1,49 +1,35 @@
 package com.example.copro.member.application;
 
+import com.example.copro.member.api.dto.respnse.MemberResDto;
+import com.example.copro.member.api.dto.respnse.MembersResDto;
 import com.example.copro.member.domain.Member;
-import com.example.copro.member.domain.Role;
 import com.example.copro.member.domain.repository.MemberRepository;
-import com.example.copro.member.exception.MemberNotFoundException;
-import com.google.firebase.auth.FirebaseToken;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
-public class MemberService implements UserDetailsService {
-
+public class MemberService {
     private final MemberRepository memberRepository;
 
-    @Transactional
-    public Member create(FirebaseToken firebaseToken, Role role) {
-        Member member = Member.builder()
-                .memberName(firebaseToken.getUid())
-                .email(firebaseToken.getEmail())
-                .name(firebaseToken.getName())
-                .picture(firebaseToken.getPicture())
-                .role(role)
-                .build();
-
-        return memberRepository.save(member);
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    @Transactional
-    public Member updateByUsername(FirebaseToken firebaseToken) {
-        Member member = memberRepository.findByMemberName(firebaseToken.getUid())
-                .orElseThrow(() -> new MemberNotFoundException(String.format("해당 유저(%s)를 찾을 수 없습니다.", firebaseToken.getName())));
+    public MembersResDto membersInformation() {
+        List<Member> members = memberRepository.findAll();
 
-        member.update(firebaseToken);
+        List<MemberResDto> memberResDtos = new ArrayList<>();
+        for (Member member : members) {
+            MemberResDto memberResDto = new MemberResDto(
+                    member.getName(),
+                    member.getEmail(),
+                    member.getPicture());
 
-        return memberRepository.save(member);
+            memberResDtos.add(memberResDto);
+        }
+
+        return new MembersResDto(memberResDtos);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Member loadUserByUsername(String username) throws UsernameNotFoundException {
-        return memberRepository.findByMemberName(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("해당 유저(%s)를 찾을 수 없습니다.", username)));
-    }
 }

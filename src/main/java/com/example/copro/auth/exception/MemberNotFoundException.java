@@ -1,4 +1,4 @@
-package com.example.copro.member.exception;
+package com.example.copro.auth.exception;
 
 public class MemberNotFoundException extends IllegalArgumentException {
     public MemberNotFoundException(String message) {
