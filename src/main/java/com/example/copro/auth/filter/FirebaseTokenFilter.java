@@ -2,8 +2,8 @@ package com.example.copro.auth.filter;
 
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.Role;
-import com.example.copro.member.exception.MemberNotFoundException;
-import com.example.copro.member.application.MemberService;
+import com.example.copro.auth.exception.MemberNotFoundException;
+import com.example.copro.auth.application.MemberDetailService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -22,7 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class FirebaseTokenFilter extends OncePerRequestFilter {
 
-    private final MemberService memberService;
+    private final MemberDetailService memberDetailService;
     private final FirebaseAuth firebaseAuth;
 
     @Override
@@ -44,9 +44,9 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
             Member member;
 
             try {
-                member = memberService.updateByUsername(firebaseToken);
+                member = memberDetailService.updateByUsername(firebaseToken);
             } catch (MemberNotFoundException e) {
-                member = memberService.create(firebaseToken, Role.ROLE_USER);
+                member = memberDetailService.create(firebaseToken, Role.ROLE_USER);
             }
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
