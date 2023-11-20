@@ -16,20 +16,15 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MembersResDto membersInformation() {
+    public MembersResDto memberInfoList() {
         List<Member> members = memberRepository.findAll();
 
         List<MemberResDto> memberResDtos = new ArrayList<>();
         for (Member member : members) {
-            MemberResDto memberResDto = new MemberResDto(
-                    member.getName(),
-                    member.getEmail(),
-                    member.getPicture());
-
-            memberResDtos.add(memberResDto);
+            memberResDtos.add(MemberResDto.from(member));
         }
 
-        return new MembersResDto(memberResDtos);
+        return MembersResDto.from(memberResDtos);
     }
 
 }
