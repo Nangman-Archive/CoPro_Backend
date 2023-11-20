@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -21,6 +21,8 @@ logging:
   level:
     org.hibernate.sql: debug
     org.hibernate.type: trace
+
+FIREBASE_KEY: ./serviceAccountKey.json
 
 springdoc:
   packages-to-scan: com.example
