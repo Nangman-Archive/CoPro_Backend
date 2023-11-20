@@ -22,7 +22,10 @@ logging:
     org.hibernate.sql: debug
     org.hibernate.type: trace
 
-FIREBASE_KEY: ./serviceAccountKey.json
+FIREBASE_KEY: ${FIREBASE_KEY}
+
+myapp:
+  api-url: ${myapp.api-url}
 
 springdoc:
   packages-to-scan: com.example
