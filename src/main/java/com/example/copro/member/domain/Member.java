@@ -43,6 +43,15 @@ public class Member implements UserDetails {
     @Schema(description = "사진 url", example = "url")
     private String picture;
 
+    @Schema(description = "직군", example = "Server")
+    private String occupation;
+
+    @Schema(description = "사용 언어", example = "Java")
+    private String language;
+
+    @Schema(description = "경력", example = "1년")
+    private String career;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
@@ -94,6 +103,13 @@ public class Member implements UserDetails {
         this.picture = token.getPicture();
     }
 
+
+    public void profileUpdate(String occupation, String language, String career) {
+        this.occupation = occupation;
+        this.language = language;
+        this.career = career;
+    }
+  
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberscrapboard = new ArrayList<>();
 

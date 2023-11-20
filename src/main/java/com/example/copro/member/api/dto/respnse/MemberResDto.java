@@ -1,19 +1,26 @@
 package com.example.copro.member.api.dto.respnse;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.example.copro.member.domain.Member;
+import lombok.Builder;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberResDto {
-    private String name;
-    private String email;
-    private String picture;
+@Builder
+public record MemberResDto(
+        String name,
+        String email,
+        String picture,
+        String occupation,
+        String language,
+        String career
 
-    public MemberResDto(String name, String email, String picture) {
-        this.name = name;
-        this.email = email;
-        this.picture = picture;
+) {
+    public static MemberResDto from(Member member) {
+        return MemberResDto.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .picture(member.getPicture())
+                .occupation(member.getOccupation())
+                .language(member.getLanguage())
+                .career(member.getCareer())
+                .build();
     }
 }

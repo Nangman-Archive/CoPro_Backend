@@ -1,7 +1,7 @@
 package com.example.copro.global.config;
 
-import com.example.copro.auth.filter.FirebaseTokenFilter;
 import com.example.copro.auth.application.MemberDetailService;
+import com.example.copro.auth.filter.FirebaseTokenFilter;
 import com.google.firebase.auth.FirebaseAuth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,8 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return webSecurity -> webSecurity.ignoring().requestMatchers("/docs/**","/api-docs/**", "/swagger-ui/**","/favicon.ico");
+        return webSecurity -> webSecurity.ignoring()
+                .requestMatchers("/docs/**", "/api-docs/**", "/swagger-ui/**", "/favicon.ico");
     }
 
     public FirebaseTokenFilter firebaseTokenFilter() {

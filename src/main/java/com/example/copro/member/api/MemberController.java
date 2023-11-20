@@ -1,5 +1,6 @@
 package com.example.copro.member.api;
 
+import com.example.copro.global.template.ResTemplate;
 import com.example.copro.member.api.dto.respnse.MembersResDto;
 import com.example.copro.member.application.MemberService;
 import com.example.copro.member.domain.Member;
@@ -27,7 +28,7 @@ public class MemberController {
     @Operation(summary = "로그인 성공", description = "로그인 시에 불러올 api")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = Member.class))),
-            @ApiResponse(responseCode = "401", description = "인증 실패")
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @GetMapping("/success")
     public ResponseEntity<String> loginSuccess() {
@@ -36,12 +37,13 @@ public class MemberController {
 
     @Operation(summary = "전체 멤버 정보", description = "전체 멤버 정보를 불러옵니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = Member.class)))
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(example = "INVALID_TOKEN")))
     })
     @GetMapping("/api/info")
-    public ResponseEntity<MembersResDto> membersInfo() {
-        MembersResDto membersResDto = memberService.membersInformation();
-        return new ResponseEntity<>(membersResDto, HttpStatus.OK);
+    public ResTemplate<MembersResDto> membersInfo() {
+        MembersResDto membersResDto = memberService.memberInfoList();
+        return new ResTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", membersResDto);
     }
 
 }
