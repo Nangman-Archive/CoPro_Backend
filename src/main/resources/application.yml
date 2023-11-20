@@ -22,6 +22,8 @@ logging:
     org.hibernate.sql: debug
     org.hibernate.type: trace
 
+FIREBASE_KEY: ./serviceAccountKey.json
+
 springdoc:
   packages-to-scan: com.example
   default-consumes-media-type: application/json;charset=UTF-8

@@ -11,8 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Getter
@@ -101,9 +103,14 @@ public class Member implements UserDetails {
         this.picture = token.getPicture();
     }
 
+
     public void profileUpdate(String occupation, String language, String career) {
         this.occupation = occupation;
         this.language = language;
         this.career = career;
     }
+  
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MemberScrapBoard> memberscrapboard = new ArrayList<>();
+
 }
