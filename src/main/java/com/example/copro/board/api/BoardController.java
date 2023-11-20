@@ -1,6 +1,5 @@
 package com.example.copro.board.api;
 
-import com.example.copro.board.api.common.RspTemplate;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.ReportReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
@@ -12,12 +11,21 @@ import com.example.copro.board.application.BoardService;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.board.util.PageableUtil;
+import com.example.copro.global.template.RspTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 //서비스 클래스에서 예외처리하자 데이터, 메시지, 상태코드를 템플릿에 담아 보내라
 @RequiredArgsConstructor
@@ -38,7 +46,7 @@ public class BoardController {
         // Pageable 객체의 구현체 PageRequest 가 필요하다
         final int DEFAULT_PAGE_SIZE = 10;
 
-        if(standard.equals("create_at")){
+        if (standard.equals("create_at")) {
             pageable = PageableUtil.of(page, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createAt"));
         } else if (standard.equals("count")) {
             pageable = PageableUtil.of(page, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "count"));
@@ -68,11 +76,12 @@ public class BoardController {
     }
 
     @PutMapping //게시물 수정
-    public RspTemplate<BoardResDto> updateBoard(@RequestParam("boardId") Long boardId, @RequestBody BoardSaveReqDto boardRequestDto){
+    public RspTemplate<BoardResDto> updateBoard(@RequestParam("boardId") Long boardId,
+                                                @RequestBody BoardSaveReqDto boardRequestDto) {
         BoardResDto boardResDto = boardService.updateBoard(boardId, boardRequestDto);
         return new RspTemplate<>(HttpStatus.OK
-        ,boardId + "번 게시물 수정 완료"
-        , boardResDto);
+                , boardId + "번 게시물 수정 완료"
+                , boardResDto);
     }
 
     @DeleteMapping //게시물 삭제
@@ -82,15 +91,15 @@ public class BoardController {
     }
 
     @GetMapping("/search") //게시글 검색(제목만)
-    public RspTemplate<BoardListRspDto> searchBoard(@RequestParam("q") String query, @RequestParam(defaultValue = "1") int page,
-                                                    @RequestParam(defaultValue = "create_at") String standard)
-    {
+    public RspTemplate<BoardListRspDto> searchBoard(@RequestParam("q") String query,
+                                                    @RequestParam(defaultValue = "1") int page,
+                                                    @RequestParam(defaultValue = "create_at") String standard) {
         // 내가 반환하고 싶은 것: 게시판Id, 제목 - BoardListRspDto
         Pageable pageable = null;
         // Pageable 객체의 구현체 PageRequest 가 필요하다
         final int DEFAULT_PAGE_SIZE = 10;
 
-        if(standard.equals("create_at")){
+        if (standard.equals("create_at")) {
             pageable = PageableUtil.of(page, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createAt"));
         } else if (standard.equals("count")) {
             pageable = PageableUtil.of(page, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "count"));
@@ -122,17 +131,17 @@ public class BoardController {
     @GetMapping("/{category}") //작성 페이지 요청
     public RspTemplate<String> showWritePage(@PathVariable("category") String category) {
         Category validCategory = boardService.validateCategory(category);
-        return new RspTemplate<>(HttpStatus.OK,category + "조회 완료", category);
+        return new RspTemplate<>(HttpStatus.OK, category + "조회 완료", category);
     }
 
     @PostMapping("/report") //게시글 신고
-    public RspTemplate<ReportResDto> reportBoard(@RequestBody ReportReqDto reportReqDto){
+    public RspTemplate<ReportResDto> reportBoard(@RequestBody ReportReqDto reportReqDto) {
         ReportResDto reportResDto = boardService.reportBoard(reportReqDto);
         return new RspTemplate<>(HttpStatus.OK, reportResDto.getBoardId() + "신고 완료", reportResDto);
     }
 
     @PostMapping("/scrap/save")//스크랩 등록
-    public RspTemplate<ScrapSaveResDto> scrapBoard(@RequestBody ScrapReqDto scrapSaveReqDto){
+    public RspTemplate<ScrapSaveResDto> scrapBoard(@RequestBody ScrapReqDto scrapSaveReqDto) {
         ScrapSaveResDto scrapSaveResDto = boardService.scrapBoard(scrapSaveReqDto);
         return new RspTemplate<>(HttpStatus.OK, scrapSaveResDto.getBoardId() + "번 게시물 스크랩 완료", scrapSaveResDto);
     }

@@ -1,22 +1,27 @@
 package com.example.copro.board.domain;
 
-import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
-import com.example.copro.member.domain.Role;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Board extends BaseTimeEntity{
+public class Board extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,18 +47,13 @@ public class Board extends BaseTimeEntity{
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
 
-    @ManyToOne //단방향
-    @JoinColumn(name="member_id",nullable = false)
-    private Member member;
-
     @Builder
-    private Board(String title, Category category, String contents, String tag, int count, Member member) {
+    private Board(String title, Category category, String contents, String tag, int count) {
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
-        this.member = member;
     }
 
     public void update(String title, Category category, String contents, String tag) {
@@ -64,8 +64,8 @@ public class Board extends BaseTimeEntity{
 
     }
 
-    public Board updateViewCount(int count){
-        this.count = count+1;
+    public Board updateViewCount(int count) {
+        this.count = count + 1;
         return this;
     }
 
