@@ -1,6 +1,6 @@
 package com.example.copro.member.api;
 
-import com.example.copro.global.template.ResTemplate;
+import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.respnse.MembersResDto;
 import com.example.copro.member.application.MemberService;
 import com.example.copro.member.domain.Member;
@@ -41,9 +41,9 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(example = "INVALID_TOKEN")))
     })
     @GetMapping("/api/info")
-    public ResTemplate<MembersResDto> membersInfo() {
+    public RspTemplate<MembersResDto> membersInfo() {
         MembersResDto membersResDto = memberService.memberInfoList();
-        return new ResTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", membersResDto);
+        return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", membersResDto);
     }
 
 }

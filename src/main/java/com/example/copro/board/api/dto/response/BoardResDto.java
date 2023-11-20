@@ -2,7 +2,6 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
-import com.example.copro.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,17 +21,14 @@ public class BoardResDto {
 
     private int count;
 
-    private Long memberId;
-
     @Builder
-    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, Long memberId) {
+    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count) {
         this.boardId = boardId;
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
-        this.memberId = memberId;
     }
 
     public static BoardResDto of(Board board) {
@@ -43,7 +39,6 @@ public class BoardResDto {
                 .contents(board.getContents())
                 .tag(board.getTag())
                 .count(board.getCount())
-                .memberId(board.getMember().getMemberId())
                 .build();
     }
 

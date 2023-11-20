@@ -2,12 +2,10 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.domain.Board;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter //직렬화 => 객체 데이터를 Json 형식으로 바꿈, getter내부에 있다. / 역직렬화시엔 기본생성자(noargsconstructor)도 필요
 //객체 직접 생성해서 넘김
@@ -46,8 +44,8 @@ public class BoardListRspDto {
         //board의 리스트를 받아서 dto의 리스트로 만들어 줘야한다.
         static List<BoardDto> from(Page<Board> boards) {
             return boards.stream() //컬렉션을 순회하며 어떤 작업을 컬렉션안의 모든 원소에 대해 처리
-                    .map(board -> BoardDto.from(board)) //map => 내부에 있는걸 바꿈 ,board를 받아 boarddto로 바꾸고
-                    .collect(Collectors.toList()); //리스트로 반환환다
+                    .map(BoardDto::from) //map => 내부에 있는걸 바꿈 ,board를 받아 boarddto로 바꾸고
+                    .toList(); //리스트로 반환환다
         }
 
     }

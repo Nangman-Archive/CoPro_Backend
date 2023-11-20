@@ -28,9 +28,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-
     private final ReportRepository reportRepository;
-
     private final MemberScrapBoardRepository memberScrapBoardRepository;
 
     @Transactional
@@ -49,7 +47,6 @@ public class BoardService {
                 .contents(boardRequestDto.getContents())
                 .tag(boardRequestDto.getTag())
                 .count(boardRequestDto.getCount())
-                .member(member)
                 .build();
 
         Board saveBoard = boardRepository.save(board);
@@ -58,11 +55,12 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResDto updateBoard(Long boardId, BoardSaveReqDto boardSaveReqDto){
+    public BoardResDto updateBoard(Long boardId, BoardSaveReqDto boardSaveReqDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        board.update(boardSaveReqDto.getTitle(),boardSaveReqDto.getCategory(), boardSaveReqDto.getContents(), boardSaveReqDto.getTag());
+        board.update(boardSaveReqDto.getTitle(), boardSaveReqDto.getCategory(), boardSaveReqDto.getContents(),
+                boardSaveReqDto.getTag());
 
         return BoardResDto.of(board);
     }
@@ -81,7 +79,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResDto getBoard(Long boardId){
+    public BoardResDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
         board.updateViewCount(board.getCount());
@@ -133,7 +131,8 @@ public class BoardService {
 
     @Transactional
     public void scrapDelete(ScrapReqDto scrapDeleteReqDto) {
-        MemberScrapBoard memberScrapBoard = memberScrapBoardRepository.findByMemberMemberIdAndBoardBoardId(scrapDeleteReqDto.getMemberId(),scrapDeleteReqDto.getBoardId())
+        MemberScrapBoard memberScrapBoard = memberScrapBoardRepository.findByMemberMemberIdAndBoardBoardId(
+                        scrapDeleteReqDto.getMemberId(), scrapDeleteReqDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("스크랩 정보가 존재하지 않습니다."));
         memberScrapBoardRepository.delete(memberScrapBoard);
     }
