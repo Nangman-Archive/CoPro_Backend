@@ -1,7 +1,9 @@
 package com.example.copro.board.domain;
 
+import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,8 +26,9 @@ public class Board extends BaseTimeEntity{
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private Category category;
 
     @Column(nullable = false)
     private String contents;
@@ -39,15 +42,31 @@ public class Board extends BaseTimeEntity{
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
 
+    @ManyToOne //단방향
+    @JoinColumn(name="member_id",nullable = false)
+    private Member member;
+
     @Builder
-    private Board(String title, String category, String contents, String tag, int count) {
+    private Board(String title, Category category, String contents, String tag, int count, Member member) {
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
+        this.member = member;
     }
 
+    public void update(String title, Category category, String contents, String tag) {
+        this.title = title;
+        this.category = category;
+        this.contents = contents;
+        this.tag = tag;
 
+    }
+
+    public Board updateViewCount(int count){
+        this.count = count+1;
+        return this;
+    }
 
 }

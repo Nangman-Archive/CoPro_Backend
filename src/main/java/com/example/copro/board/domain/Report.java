@@ -3,6 +3,7 @@ package com.example.copro.board.domain;
 import com.example.copro.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,5 +27,13 @@ public class Report {
 
     @Column(nullable = false)
     private String contents;
+
+    @Builder
+    private Report(Long reportId, Board board, Member member, String contents){
+        this.reportId = reportId;
+        this.board = board;
+        this.member = member;
+        this.contents = contents;
+    }
 
 }

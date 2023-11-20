@@ -11,3 +11,6 @@ spring:
     username: root
     password: 990621
     driver-class-name: org.mariadb.jdbc.Driver
+
+myapp:
+  api-url: http://43.202.172.4:8091

@@ -3,6 +3,7 @@ package com.example.copro.member.domain;
 import com.example.copro.board.domain.Board;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,5 +23,12 @@ public class MemberScrapBoard {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @Builder
+    private MemberScrapBoard(Long id, Board board, Member member){
+        this.id = id;
+        this.board = board;
+        this.member = member;
+    }
 
 }
