@@ -1,5 +1,6 @@
 package com.example.copro.member.domain;
 
+import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
@@ -113,11 +114,11 @@ public class Member implements UserDetails {
         this.name = token.getName();
         this.picture = token.getPicture();
     }
-    
-    public void profileUpdate(String occupation, String language, String career) {
-        this.occupation = occupation;
-        this.language = language;
-        this.career = career;
+
+    public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+        this.occupation = memberProfileUpdateReqDto.occupation();
+        this.language = memberProfileUpdateReqDto.language();
+        this.career = memberProfileUpdateReqDto.career();
     }
 
 }

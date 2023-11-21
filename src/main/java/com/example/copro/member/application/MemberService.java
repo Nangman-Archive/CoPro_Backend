@@ -1,14 +1,18 @@
 package com.example.copro.member.application;
 
+import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.respnse.MemberResDto;
 import com.example.copro.member.api.dto.respnse.MembersResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberRepository;
+import com.example.copro.member.exception.NotFoundMemberException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
 
@@ -16,8 +20,8 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MembersResDto memberInfoList() {
-        List<Member> members = memberRepository.findAll();
+    public MembersResDto memberInfoList(String occupation, String language, String career) {
+        List<Member> members = memberRepository.findTagAll(occupation, language, career);
 
         List<MemberResDto> memberResDtos = new ArrayList<>();
         for (Member member : members) {
@@ -27,4 +31,11 @@ public class MemberService {
         return MembersResDto.from(memberResDtos);
     }
 
+    @Transactional
+    public MemberResDto profileUpdate(Long memberId, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        member.profileUpdate(memberProfileUpdateReqDto);
+
+        return MemberResDto.from(member);
+    }
 }
