@@ -61,6 +61,9 @@ public class Member implements UserDetails {
     @Schema(description = "경력", example = "1년")
     private String career;
 
+    @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
+    private String gitHubUrl;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
 
@@ -119,6 +122,7 @@ public class Member implements UserDetails {
         this.occupation = memberProfileUpdateReqDto.occupation();
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
+        this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl();
     }
 
 }

@@ -8,6 +8,7 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.NotFoundMemberException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,12 @@ public class MemberService {
     }
 
     public MembersResDto memberInfoList(String occupation, String language, String career) {
-        List<Member> members = memberRepository.findTagAll(occupation, language, career);
+        Specification<Member> spec = Specification
+                .where(MemberSpecs.hasOccupation(occupation))
+                .and(MemberSpecs.hasLanguage(language))
+                .and(MemberSpecs.hasCareer(career));
+
+        List<Member> members = memberRepository.findAll(spec);
 
         List<MemberResDto> memberResDtos = new ArrayList<>();
         for (Member member : members) {
