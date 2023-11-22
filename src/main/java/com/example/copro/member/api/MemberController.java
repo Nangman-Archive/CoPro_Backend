@@ -1,7 +1,9 @@
 package com.example.copro.member.api;
 
 import com.example.copro.global.template.RspTemplate;
+import com.example.copro.member.api.dto.request.LikeMemberReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
+import com.example.copro.member.api.dto.respnse.MemberLikeResDto;
 import com.example.copro.member.api.dto.respnse.MemberResDto;
 import com.example.copro.member.application.MemberService;
 import com.example.copro.member.domain.Member;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +50,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @GetMapping("/info")
+    @GetMapping("/infos")
     public RspTemplate<Page<MemberResDto>> membersInfo(
             @RequestParam(name = "occupation", required = false) String occupation,
             @RequestParam(name = "language", required = false) String language,
@@ -71,5 +74,25 @@ public class MemberController {
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(memberId, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
+    }
+
+    @GetMapping("/{memberId}/likes")
+    public RspTemplate<List<MemberLikeResDto>> memberLikeList(@PathVariable(name = "memberId") Long memberId) {
+        List<MemberLikeResDto> memberLikeResDtos = memberService.memberLikeList(memberId);
+        return new RspTemplate<>(HttpStatus.OK, "좋아요한 유저 목록", memberLikeResDtos);
+    }
+
+    @PatchMapping("/{memberId}/add-like")
+    public RspTemplate<String> addLikeMember(@PathVariable(name = "memberId") Long memberId,
+                                             @RequestBody LikeMemberReqDto likeMemberReqDto) {
+        memberService.addMemberLike(memberId, likeMemberReqDto);
+        return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
+    }
+
+    @PatchMapping("/{memberId}/cancel-like")
+    public RspTemplate<String> cancelLikeMember(@PathVariable(name = "memberId") Long memberId,
+                                                @RequestBody LikeMemberReqDto likeMemberReqDto) {
+        memberService.cancelMemberLike(memberId, likeMemberReqDto);
+        return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 취소 완료");
     }
 }
