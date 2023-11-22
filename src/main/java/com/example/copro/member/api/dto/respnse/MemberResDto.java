@@ -10,7 +10,8 @@ public record MemberResDto(
         String picture,
         String occupation,
         String language,
-        String career
+        String career,
+        String gitHubUrl
 
 ) {
     public static MemberResDto from(Member member) {
@@ -21,6 +22,7 @@ public record MemberResDto(
                 .occupation(member.getOccupation())
                 .language(member.getLanguage())
                 .career(member.getCareer())
+                .gitHubUrl(member.getGitHubUrl())
                 .build();
     }
 }
