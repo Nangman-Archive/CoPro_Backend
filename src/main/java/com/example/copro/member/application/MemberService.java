@@ -2,12 +2,11 @@ package com.example.copro.member.application;
 
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.respnse.MemberResDto;
-import com.example.copro.member.api.dto.respnse.MembersResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.NotFoundMemberException;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,15 +19,12 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public MembersResDto memberInfoList(String occupation, String language, String career) {
-        List<Member> members = memberRepository.findTagAll(occupation, language, career);
+    public Page<MemberResDto> memberInfoList(String occupation, String language, String career,
+                                             int page, int size) {
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(occupation, language, career),
+                PageRequest.of(page, size));
 
-        List<MemberResDto> memberResDtos = new ArrayList<>();
-        for (Member member : members) {
-            memberResDtos.add(MemberResDto.from(member));
-        }
-
-        return MembersResDto.from(memberResDtos);
+        return members.map(MemberResDto::from);
     }
 
     @Transactional
