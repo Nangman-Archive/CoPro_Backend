@@ -15,5 +15,12 @@ public class MemberSpecs {
     public static Specification<Member> hasCareer(String career) {
         return (member, cq, cb) -> career == null ? null : cb.equal(member.get("career"), career);
     }
+
+    public static Specification<Member> spec(String occupation, String language, String career) {
+        return Specification
+                .where(MemberSpecs.hasOccupation(occupation))
+                .and(MemberSpecs.hasLanguage(language))
+                .and(MemberSpecs.hasCareer(career));
+    }
 }
 
