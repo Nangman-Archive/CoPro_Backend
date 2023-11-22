@@ -5,11 +5,11 @@ import lombok.Builder;
 
 @Builder
 public record MemberLikeResDto(
-        Long memberLikeList
+        Long memberLikeId
 ) {
     public static MemberLikeResDto from(MemberLike memberLike) {
         return MemberLikeResDto.builder()
-                .memberLikeList(memberLike.getLikedMember().getMemberId())
+                .memberLikeId(memberLike.getLikedMember().getMemberId())
                 .build();
     }
 }
