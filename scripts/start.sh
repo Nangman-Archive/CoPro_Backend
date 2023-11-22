@@ -13,10 +13,6 @@ TIME_NOW=$(date +%c)
 echo "$TIME_NOW > $JAR_FILE 파일 복사" >> $DEPLOY_LOG
 cp $PROJECT_ROOT/build/libs/*.jar /home/ubuntu/
 
-# Swagger 문서 생성
-echo "$TIME_NOW > Swagger 문서 생성" >> $DEPLOY_LOG
-cd $PROJECT_ROOT && mvn swagger:generate
-
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
 cd /home/ubuntu && nohup java -jar $JAR_FILE > $APP_LOG 2> $ERROR_LOG &
