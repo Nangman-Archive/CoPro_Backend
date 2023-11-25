@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,12 +75,25 @@ public class MemberController {
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
     }
 
+    @Operation(summary = "좋아요 유저 목록", description = "본인이 좋아요한 유저의 목록을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "좋아요한 유저 불러오기 성공"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
     @GetMapping("/{memberId}/likes")
-    public RspTemplate<List<MemberLikeResDto>> memberLikeList(@PathVariable(name = "memberId") Long memberId) {
-        List<MemberLikeResDto> memberLikeResDtos = memberService.memberLikeList(memberId);
+    public RspTemplate<Page<MemberLikeResDto>> memberLikeList(@PathVariable(name = "memberId") Long memberId,
+                                                              @RequestParam(value = "page", defaultValue = "0") int page,
+                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<MemberLikeResDto> memberLikeResDtos = memberService.memberLikeList(memberId, page, size);
         return new RspTemplate<>(HttpStatus.OK, "좋아요한 유저 목록", memberLikeResDtos);
     }
 
+    @Operation(summary = "유저 좋아요", description = "해당 유저를 관심유저 목록에 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 좋아요 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
     @PatchMapping("/{memberId}/add-like")
     public RspTemplate<String> addLikeMember(@PathVariable(name = "memberId") Long memberId,
                                              @RequestBody LikeMemberReqDto likeMemberReqDto) {
@@ -89,6 +101,12 @@ public class MemberController {
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
     }
 
+    @Operation(summary = "유저 좋아요 취소", description = "해당 유저를 관심유저 목록에서 취소합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 좋아요 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
     @PatchMapping("/{memberId}/cancel-like")
     public RspTemplate<String> cancelLikeMember(@PathVariable(name = "memberId") Long memberId,
                                                 @RequestBody LikeMemberReqDto likeMemberReqDto) {
