@@ -34,6 +34,15 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    ## Create application-prod.yml
+    - name: make prod application-prod.yml
+      if: contains(github.ref, 'main')
+      run: |
+        cd ./src/main/resources
+        touch ./application-prod.yml
+        echo "${{ secrets.PROPERTIES_PROD }}" > ./application-prod.yml
+      shell: bash
+
     # (3) Gradle build (Test 제외)
     - name: Build with Gradle
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee

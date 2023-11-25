@@ -64,10 +64,10 @@ public class Member implements UserDetails {
     @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
     private String gitHubUrl;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberLike> memberLikes = new ArrayList<>();
 
     @Override
@@ -125,7 +125,23 @@ public class Member implements UserDetails {
         this.occupation = memberProfileUpdateReqDto.occupation();
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
-        this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl();
+        this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl().trim();
     }
 
+    public void addMemberLike(Member likeMember) {
+        MemberLike memberLike = new MemberLike(this, likeMember);
+        this.memberLikes.add(memberLike);
+    }
+
+    public void cancelMemberLike(Member likeMember) {
+        MemberLike memberLike = findMemberLike(likeMember);
+        this.memberLikes.remove(memberLike);
+    }
+
+    private MemberLike findMemberLike(Member likeMember) {
+        return memberLikes.stream()
+                .filter(memberLike -> memberLike.getLikedMember().equals(likeMember))
+                .findFirst()
+                .orElse(null);
+    }
 }
