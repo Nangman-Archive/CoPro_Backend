@@ -13,6 +13,8 @@ public record MemberResDto(
         String language,
         String career,
         String gitHubUrl,
+        String nickName,
+        int likeMembersCount,
         List<Long> likeMembersId
 
 ) {
@@ -25,10 +27,11 @@ public record MemberResDto(
                 .language(member.getLanguage())
                 .career(member.getCareer())
                 .gitHubUrl(member.getGitHubUrl())
+                .nickName(member.getNickName())
                 .build();
     }
 
-    public static MemberResDto of(Member member, List<Long> likeMembersId) {
+    public static MemberResDto of(Member member, int likeMembersCount, List<Long> likeMembersId) {
         return MemberResDto.builder()
                 .name(member.getName())
                 .email(member.getEmail())
@@ -37,6 +40,8 @@ public record MemberResDto(
                 .language(member.getLanguage())
                 .career(member.getCareer())
                 .gitHubUrl(member.getGitHubUrl())
+                .nickName(member.getNickName())
+                .likeMembersCount(likeMembersCount)
                 .likeMembersId(likeMembersId)
                 .build();
     }

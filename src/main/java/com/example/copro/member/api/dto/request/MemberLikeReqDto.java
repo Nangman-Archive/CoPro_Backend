@@ -1,6 +1,6 @@
 package com.example.copro.member.api.dto.request;
 
-public record LikeMemberReqDto(
+public record MemberLikeReqDto(
         Long likeMemberId
 ) {
 }

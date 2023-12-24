@@ -1,8 +1,9 @@
 package com.example.copro.member.api;
 
 import com.example.copro.global.template.RspTemplate;
-import com.example.copro.member.api.dto.request.LikeMemberReqDto;
+import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
+import com.example.copro.member.api.dto.respnse.MemberChattingProfileResDto;
 import com.example.copro.member.api.dto.respnse.MemberLikeResDto;
 import com.example.copro.member.api.dto.respnse.MemberResDto;
 import com.example.copro.member.application.MemberService;
@@ -44,7 +45,18 @@ public class MemberController {
         return new RspTemplate<>(HttpStatus.OK, "SUCCESS");
     }
 
-    @Operation(summary = "전체 멤버 정보", description = "전체 멤버 정보를 불러옵니다.")
+    @Operation(summary = "채팅 프로필 정보", description = "채팅뷰 멤버 프로필을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅 프로필 불러오기 성공"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @GetMapping("/chatting/profile/{nickName}")
+    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(@PathVariable(name = "nickName") String nickName) {
+        MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProProfileInfo(nickName);
+        return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
+    }
+
+    @Operation(summary = "카드뷰 전체 멤버 정보", description = "카드뷰 전체 멤버 정보를 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
@@ -96,8 +108,8 @@ public class MemberController {
     })
     @PatchMapping("/{memberId}/add-like")
     public RspTemplate<String> addLikeMember(@PathVariable(name = "memberId") Long memberId,
-                                             @RequestBody LikeMemberReqDto likeMemberReqDto) {
-        memberService.addMemberLike(memberId, likeMemberReqDto);
+                                             @RequestBody MemberLikeReqDto memberLikeReqDto) {
+        memberService.addMemberLike(memberId, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
     }
 
@@ -109,8 +121,8 @@ public class MemberController {
     })
     @PatchMapping("/{memberId}/cancel-like")
     public RspTemplate<String> cancelLikeMember(@PathVariable(name = "memberId") Long memberId,
-                                                @RequestBody LikeMemberReqDto likeMemberReqDto) {
-        memberService.cancelMemberLike(memberId, likeMemberReqDto);
+                                                @RequestBody MemberLikeReqDto memberLikeReqDto) {
+        memberService.cancelMemberLike(memberId, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 취소 완료");
     }
 }
