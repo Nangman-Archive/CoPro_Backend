@@ -52,6 +52,9 @@ public class Member implements UserDetails {
     @Schema(description = "사진 url", example = "url")
     private String picture;
 
+    @Schema(description = "닉네임", example = "웅이")
+    private String nickName;
+
     @Schema(description = "직군", example = "Server")
     private String occupation;
 
@@ -122,6 +125,7 @@ public class Member implements UserDetails {
     }
 
     public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+        this.nickName = memberProfileUpdateReqDto.nickName();
         this.occupation = memberProfileUpdateReqDto.occupation();
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
