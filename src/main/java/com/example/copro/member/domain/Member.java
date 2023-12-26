@@ -1,5 +1,6 @@
 package com.example.copro.member.domain;
 
+import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
@@ -51,6 +52,9 @@ public class Member implements UserDetails {
     @Schema(description = "사진 url", example = "url")
     private String picture;
 
+    @Schema(description = "닉네임", example = "웅이")
+    private String nickName;
+
     @Schema(description = "직군", example = "Server")
     private String occupation;
 
@@ -60,8 +64,14 @@ public class Member implements UserDetails {
     @Schema(description = "경력", example = "1년")
     private String career;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
+    private String gitHubUrl;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberLike> memberLikes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -113,11 +123,29 @@ public class Member implements UserDetails {
         this.name = token.getName();
         this.picture = token.getPicture();
     }
-    
-    public void profileUpdate(String occupation, String language, String career) {
-        this.occupation = occupation;
-        this.language = language;
-        this.career = career;
+
+    public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+        this.nickName = memberProfileUpdateReqDto.nickName();
+        this.occupation = memberProfileUpdateReqDto.occupation();
+        this.language = memberProfileUpdateReqDto.language();
+        this.career = memberProfileUpdateReqDto.career();
+        this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl().trim();
     }
 
+    public void addMemberLike(Member likeMember) {
+        MemberLike memberLike = new MemberLike(this, likeMember);
+        this.memberLikes.add(memberLike);
+    }
+
+    public void cancelMemberLike(Member likeMember) {
+        MemberLike memberLike = findMemberLike(likeMember);
+        this.memberLikes.remove(memberLike);
+    }
+
+    private MemberLike findMemberLike(Member likeMember) {
+        return memberLikes.stream()
+                .filter(memberLike -> memberLike.getLikedMember().equals(likeMember))
+                .findFirst()
+                .orElse(null);
+    }
 }
