@@ -1,6 +1,7 @@
 package com.example.copro.board.domain;
 
 import com.example.copro.member.domain.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,6 +16,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
+    @Schema(description = "신고 id", example = "1")
     private Long reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,6 +28,7 @@ public class Report {
     private Member member;
 
     @Column(nullable = false)
+    @Schema(description = "신고 내용", example = "내용")
     private String contents;
 
     @Builder

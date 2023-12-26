@@ -1,8 +1,10 @@
 package com.example.copro.board.application;
 
+import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.ReportReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
+import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.api.dto.response.ReportResDto;
 import com.example.copro.board.api.dto.response.ScrapSaveResDto;
@@ -11,15 +13,25 @@ import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.Report;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.ReportRepository;
+import com.example.copro.image.application.ImageService;
+import com.example.copro.image.domain.Image;
+import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -31,15 +43,45 @@ public class BoardService {
     private final ReportRepository reportRepository;
     private final MemberScrapBoardRepository memberScrapBoardRepository;
 
-    @Transactional
-    public Page<Board> findAll(Pageable pageable) { //페이지네이션 정보 담은 page객체 반환
-        return boardRepository.findAll(pageable);
-    }
+    private final ImageRepository imageRepository;
 
+    private final @Lazy ImageService imageService; //순환참조 방지
+
+//    @Value("${default-thumbnail-url}")
+//    private String defaultThumbnailUrl;
+
+
+    public Page<Board> findAll(Pageable pageable) { //페이지네이션 정보 담은 page객체 반환
+//        Page<Board> pages = boardRepository.findAllWithImages(pageable);
+//        for (Board board : pages) {
+//            if (!board.getImages().isEmpty()) {
+//                Image image = board.getImages().get(0);
+////                board.setImageUrl(image.getImageUrl());
+////                String imageUrl = image.getImageUrl();
+//            } else {
+////                board.setImageUrl(defaultThumbnailUrl);
+////                String imageUrl = "기본Url";
+//            }
+//        }
+//        return pages;
+        return boardRepository.findAllWithImages(pageable);
+    }
+//서비스에서 보드를 찾아 이미지가 null인지 아닌지
     @Transactional
     public BoardResDto createBoard(BoardSaveReqDto boardRequestDto) {
         Member member = memberRepository.findById(boardRequestDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+
+        // 이미지와 게시글 매핑 로직
+        List<Image> images = imageRepository.findAllByIdIn(boardRequestDto.getImageId());
+
+        // 이미지가 이미 매핑된 게시판이 있는지 체크하는 로직
+        for (Image image : images) {
+            Board existingBoard = boardRepository.findByImagesContaining(image);
+            if (existingBoard != null) {
+                throw new IllegalArgumentException(image.getId() + "번 이미지는 이미 매핑된 이미지입니다.");
+            }
+        }
 
         Board board = Board.builder()
                 .title(boardRequestDto.getTitle())
@@ -47,6 +89,7 @@ public class BoardService {
                 .contents(boardRequestDto.getContents())
                 .tag(boardRequestDto.getTag())
                 .count(boardRequestDto.getCount())
+                .images(images)
                 .build();
 
         Board saveBoard = boardRepository.save(board);
@@ -59,8 +102,18 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        board.update(boardSaveReqDto.getTitle(), boardSaveReqDto.getCategory(), boardSaveReqDto.getContents(),
-                boardSaveReqDto.getTag());
+        // 이미지와 게시글 매핑 로직
+        List<Image> images = imageRepository.findAllByIdIn(boardSaveReqDto.getImageId());
+
+        // 이미지가 이미 매핑된 게시판이 있는지 체크하는 로직
+        for (Image image : images) {
+            Board existingBoard = boardRepository.findByImagesContaining(image);
+            if (existingBoard != null) {
+                throw new IllegalArgumentException(image.getId() + "번 이미지는 이미 매핑된 이미지입니다.");
+            }
+        }
+
+        board.update(boardSaveReqDto,images);
 
         return BoardResDto.of(board);
     }
@@ -72,6 +125,12 @@ public class BoardService {
 
         boardRepository.delete(board);
     }
+
+    @Transactional(readOnly = true)
+    public Board findById(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(); // id로 이미지를 찾아서 반환
+    }
+
 
     @Transactional
     public Page<Board> findByTitleContaining(String q, Pageable pageable) {

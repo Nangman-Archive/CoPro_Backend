@@ -1,6 +1,7 @@
 package com.example.copro.member.domain;
 
 import com.example.copro.board.domain.Board;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,6 +15,7 @@ public class MemberScrapBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "스크랩 id", example = "1")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
