@@ -1,6 +1,6 @@
-package com.example.copro.member.domain;
+package com.example.copro.board.domain;
 
-import com.example.copro.board.domain.Board;
+import com.example.copro.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MemberScrapBoard {
+public class MemberHeartBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "스크랩 id", example = "1")
+    @Schema(description = "좋아요 id", example = "1")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +27,7 @@ public class MemberScrapBoard {
     private Member member;
 
     @Builder
-    private MemberScrapBoard(Long id, Board board, Member member){
+    private MemberHeartBoard(Long id, Board board, Member member){
         this.id = id;
         this.board = board;
         this.member = member;

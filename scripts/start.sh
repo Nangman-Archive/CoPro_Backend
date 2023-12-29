@@ -15,7 +15,7 @@ cp $PROJECT_ROOT/build/libs/*.jar /home/ubuntu/
 
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
-cd /home/ubuntu 
+cd /home/ubuntu
 nohup java -jar $JAR_FILE > /dev/null 2> /dev/null < /dev/null &
 
 CURRENT_PID=$(pgrep -f $JAR_FILE)
