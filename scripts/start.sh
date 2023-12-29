@@ -13,13 +13,10 @@ TIME_NOW=$(date +%c)
 echo "$TIME_NOW > $JAR_FILE 파일 복사" >> $DEPLOY_LOG
 cp $PROJECT_ROOT/build/libs/*.jar /home/ubuntu/
 
-# Swagger 문서 생성
-echo "$TIME_NOW > Swagger 문서 생성" >> $DEPLOY_LOG
-cd $PROJECT_ROOT && mvn swagger:generate
-
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
-cd /home/ubuntu && nohup java -jar $JAR_FILE > $APP_LOG 2> $ERROR_LOG &
+cd /home/ubuntu
+nohup java -jar $JAR_FILE > /dev/null 2> /dev/null < /dev/null &
 
 CURRENT_PID=$(pgrep -f $JAR_FILE)
 echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
