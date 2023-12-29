@@ -1,17 +1,16 @@
 package com.example.copro.board.application;
 
-import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
+import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ReportReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
-import com.example.copro.board.api.dto.response.BoardListRspDto;
-import com.example.copro.board.api.dto.response.BoardResDto;
-import com.example.copro.board.api.dto.response.ReportResDto;
-import com.example.copro.board.api.dto.response.ScrapSaveResDto;
+import com.example.copro.board.api.dto.response.*;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
+import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.Report;
 import com.example.copro.board.domain.repository.BoardRepository;
+import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
 import com.example.copro.board.domain.repository.ReportRepository;
 import com.example.copro.image.application.ImageService;
 import com.example.copro.image.domain.Image;
@@ -20,8 +19,8 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
+import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -42,6 +40,8 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final ReportRepository reportRepository;
     private final MemberScrapBoardRepository memberScrapBoardRepository;
+
+    private final MemberHeartBoardRepository memberHeartBoardRepository;
 
     private final ImageRepository imageRepository;
 
@@ -89,6 +89,7 @@ public class BoardService {
                 .contents(boardRequestDto.getContents())
                 .tag(boardRequestDto.getTag())
                 .count(boardRequestDto.getCount())
+                .heart(boardRequestDto.getHeart())
                 .images(images)
                 .build();
 
@@ -195,5 +196,41 @@ public class BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("스크랩 정보가 존재하지 않습니다."));
         memberScrapBoardRepository.delete(memberScrapBoard);
     }
+
+    @Transactional
+    public HeartSaveResDto likeBoard(HeartReqDto likeSaveReqDto) {
+        Board board = boardRepository.findById(likeSaveReqDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
+        Member member = memberRepository.findById(likeSaveReqDto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 없습니다."));
+
+        if(memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(likeSaveReqDto.getMemberId(),likeSaveReqDto.getBoardId()).isPresent()){
+            throw new NonUniqueResultException("이미 좋아요를 눌렀습니다.");
+        }
+
+        MemberHeartBoard memberHeartBoard = MemberHeartBoard.builder()
+                .board(board)
+                .member(member)
+                .build();
+
+        MemberHeartBoard saveLike = memberHeartBoardRepository.save(memberHeartBoard);
+        board.updateHeartCount(board.getHeart());
+
+        return HeartSaveResDto.of(saveLike);
+    }
+
+    @Transactional
+    public void likeDelete(HeartReqDto likeDeleteReqDto) {
+        MemberHeartBoard memberHeartBoard = memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(
+                        likeDeleteReqDto.getMemberId(), likeDeleteReqDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("좋아요 정보가 존재하지 않습니다."));
+        Board board = boardRepository.findById(likeDeleteReqDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
+
+        memberHeartBoardRepository.delete(memberHeartBoard);
+        board.updateCancelHeartCount(board.getHeart());
+    }
+
+
 
 }

@@ -23,12 +23,12 @@ public class ImageController {
         this.boardService = boardService;
     }
 
-    @PostMapping(value = "/images", consumes = "multipart/form-data")
-    public RspTemplate<ImageResDto> imageUpload(@RequestPart("image") MultipartFile image) {
-        ImageResDto upload = imageService.upload(image);
-
-        return new RspTemplate<>(HttpStatus.OK, "업로드 완료",upload);
-    }
+//    @PostMapping(value = "/images", consumes = "multipart/form-data")
+//    public RspTemplate<ImageResDto> imageUpload(@RequestPart("image") MultipartFile image) {
+//        ImageResDto upload = imageService.upload(image);
+//
+//        return new RspTemplate<>(HttpStatus.OK, "업로드 완료",upload);
+//    }
 
     @DeleteMapping("/boards/{boardId}/images/{imageId}")
     public RspTemplate<Void> deleteImage(@PathVariable Long boardId, @PathVariable Long imageId) {

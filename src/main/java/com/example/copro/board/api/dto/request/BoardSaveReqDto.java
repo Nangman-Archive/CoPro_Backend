@@ -21,16 +21,19 @@ public class BoardSaveReqDto {
 
     private int count;
 
+    private int heart;
+
     private Long memberId;
 
     private List<Long> imageId;
 
-    public BoardSaveReqDto(String title, Category category, String contents, String tag, int count, Long memberId, List<Long> imageId) {
+    public BoardSaveReqDto(String title, Category category, String contents, String tag, int count, int heart, Long memberId, List<Long> imageId) {
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
+        this.heart = heart;
         this.memberId = memberId;
         this.imageId = imageId;
     }

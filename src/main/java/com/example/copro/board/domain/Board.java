@@ -2,7 +2,6 @@ package com.example.copro.board.domain;
 
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.image.domain.Image;
-import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -42,9 +41,13 @@ public class Board extends BaseTimeEntity {
     @Schema(description = "태그", example = "팀빌딩")
     private String tag;
 
-    @Column
+    @Column(columnDefinition = "int default 0")
     @Schema(description = "조회수", example = "11")
     private int count;
+
+    @Column(columnDefinition = "int default 0")
+    @Schema(description = "좋아요", example = "2")
+    private int heart;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
@@ -53,14 +56,26 @@ public class Board extends BaseTimeEntity {
     @Schema(description = "이미지, 없으면 0을 요청")
     private List<Image> images = new ArrayList<>(5);
 
+    @Column(columnDefinition = "int default 0")
+    private int previousHeartCount;
+
+    public int getPreviousHeartCount() {
+        return previousHeartCount;
+    }
+
+    public void setPreviousHeartCount(int previousHeartCount) {
+        this.previousHeartCount = previousHeartCount;
+    }
+
     @Builder
-    private Board(String title, Category category, String contents, String tag, int count, List<Image> images) {
+    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images) {
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
         this.images = images;
+        this.heart = heart;
     }
 
     public void update(BoardSaveReqDto boardSaveReqDto, List<Image> images) {
@@ -78,6 +93,16 @@ public class Board extends BaseTimeEntity {
 
     public void addImage(Image image) {
         this.images.add(image);
+    }
+
+    public Board updateHeartCount(int heart) {
+        this.heart = heart + 1;
+        return this;
+    }
+
+    public Board updateCancelHeartCount(int heart) {
+        this.heart = heart - 1;
+        return this;
     }
 
 }

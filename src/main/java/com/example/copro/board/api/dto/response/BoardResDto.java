@@ -25,16 +25,19 @@ public class BoardResDto {
 
     private int count;
 
+    private int heart;
+
     private List<String> imageUrl;
 
     @Builder
-    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, List<String> imageUrl) {
+    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, int heart, List<String> imageUrl) {
         this.boardId = boardId;
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
+        this.heart = heart;
         this.imageUrl = imageUrl;
     }
 
@@ -49,6 +52,7 @@ public class BoardResDto {
                 .contents(board.getContents())
                 .tag(board.getTag())
                 .count(board.getCount())
+                .heart(board.getHeart())
                 .imageUrl(imageUrl)
                 .build();
     }
