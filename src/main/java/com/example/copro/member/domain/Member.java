@@ -1,5 +1,6 @@
 package com.example.copro.member.domain;
 
+import com.example.copro.board.domain.Board;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -66,6 +67,9 @@ public class Member implements UserDetails {
 
     @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
     private String gitHubUrl;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Board> boards = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();

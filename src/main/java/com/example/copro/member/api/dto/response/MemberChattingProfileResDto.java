@@ -1,4 +1,4 @@
-package com.example.copro.member.api.dto.respnse;
+package com.example.copro.member.api.dto.response;
 
 import com.example.copro.member.domain.Member;
 import lombok.Builder;

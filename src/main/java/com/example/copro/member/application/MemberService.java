@@ -2,17 +2,14 @@ package com.example.copro.member.application;
 
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
-import com.example.copro.member.api.dto.respnse.MemberChattingProfileResDto;
-import com.example.copro.member.api.dto.respnse.MemberLikeResDto;
-import com.example.copro.member.api.dto.respnse.MemberResDto;
+import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
+import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.domain.Member;
-import com.example.copro.member.domain.MemberLike;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.InvalidMemberException;
 import com.example.copro.member.exception.NotFoundMemberException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -44,20 +41,17 @@ public class MemberService {
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c),
-                PageRequest.of(page, size));
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c), PageRequest.of(page, size));
 
         return members.map(this::getMemberResDto);
     }
 
     private MemberResDto getMemberResDto(Member member) {
-        List<Long> likeMembersId = new ArrayList<>();
-        int likeMembersCount = 0;
+        List<Long> likeMembersId = member.getMemberLikes().stream()
+                .map(memberLike -> memberLike.getLikedMember().getMemberId())
+                .toList();
 
-        for (MemberLike memberLike : member.getMemberLikes()) {
-            likeMembersCount++;
-            likeMembersId.add(memberLike.getLikedMember().getMemberId());
-        }
+        int likeMembersCount = member.getMemberLikes().size();
 
         return MemberResDto.of(member, likeMembersCount, likeMembersId);
     }
@@ -67,30 +61,17 @@ public class MemberService {
     public MemberResDto profileUpdate(Long memberId, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
-        validateDuplicateNickName(member);
+        validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
         member.profileUpdate(memberProfileUpdateReqDto);
 
         return MemberResDto.from(member);
     }
 
     // nickName 중복검사
-    private void validateDuplicateNickName(Member member) {
-        if (memberRepository.existsByNickName(member.getNickName())) {
+    private void validateDuplicateNickName(String nickName) {
+        if (memberRepository.existsByNickName(nickName)) {
             throw new InvalidMemberException("이미 존재하는 닉네임입니다.");
         }
-    }
-
-    // 좋아요 유저 목록
-    public Page<MemberLikeResDto> memberLikeList(Long memberId, int page, int size) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-
-        Page<MemberLike> memberLikes = memberLikeRepository.findByMember(member, PageRequest.of(page, size));
-
-        return memberLikes.map(this::getMemberLikeResDto);
-    }
-
-    private MemberLikeResDto getMemberLikeResDto(MemberLike memberLike) {
-        return MemberLikeResDto.from(memberLike);
     }
 
     // 유저 좋아요
