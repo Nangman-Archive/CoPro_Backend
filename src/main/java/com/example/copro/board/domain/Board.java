@@ -2,10 +2,21 @@ package com.example.copro.board.domain;
 
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.image.domain.Image;
+import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -48,6 +59,10 @@ public class Board extends BaseTimeEntity {
     @Column(columnDefinition = "int default 0")
     @Schema(description = "좋아요", example = "2")
     private int heart;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();

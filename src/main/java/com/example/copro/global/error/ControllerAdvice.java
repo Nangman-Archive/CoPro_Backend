@@ -1,5 +1,6 @@
 package com.example.copro.global.error;
 
+import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.global.error.dto.ErrorResponse;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.InvalidMemberException;
@@ -23,7 +24,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            NotFoundMemberException.class
+            NotFoundMemberException.class,
+            BoardNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFoundDate(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
