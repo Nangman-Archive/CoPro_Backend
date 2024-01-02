@@ -3,11 +3,9 @@ package com.example.copro.member.api;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
-import com.example.copro.member.api.dto.respnse.MemberChattingProfileResDto;
-import com.example.copro.member.api.dto.respnse.MemberLikeResDto;
-import com.example.copro.member.api.dto.respnse.MemberResDto;
+import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
+import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
-import com.example.copro.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +35,7 @@ public class MemberController {
 
     @Operation(summary = "로그인 성공", description = "로그인 시에 불러올 api")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = Member.class))),
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/success")
@@ -85,19 +83,6 @@ public class MemberController {
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(memberId, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
-    }
-
-    @Operation(summary = "좋아요 유저 목록", description = "본인이 좋아요한 유저의 목록을 불러옵니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "좋아요한 유저 불러오기 성공"),
-            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
-    })
-    @GetMapping("/{memberId}/likes")
-    public RspTemplate<Page<MemberLikeResDto>> memberLikeList(@PathVariable(name = "memberId") Long memberId,
-                                                              @RequestParam(value = "page", defaultValue = "0") int page,
-                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
-        Page<MemberLikeResDto> memberLikeResDtos = memberService.memberLikeList(memberId, page, size);
-        return new RspTemplate<>(HttpStatus.OK, "좋아요한 유저 목록", memberLikeResDtos);
     }
 
     @Operation(summary = "유저 좋아요", description = "해당 유저를 관심유저 목록에 추가합니다.")
