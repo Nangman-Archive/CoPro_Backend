@@ -33,4 +33,11 @@ public class MemberScrapBoard {
         this.member = member;
     }
 
+    public static MemberScrapBoard of(Board board, Member member) {
+        return MemberScrapBoard.builder()
+                .board(board)
+                .member(member)
+                .build();
+    }
+
 }

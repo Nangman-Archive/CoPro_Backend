@@ -31,11 +31,11 @@ public class ScheduledTasks {
         }
 
         // 이전 좋아요 수 갱신
-        updatePreviousLikeCounts();
+        updatePreviousHeartCounts();
 
     }
 
-    private void updatePreviousLikeCounts() {
+    private void updatePreviousHeartCounts() {
         List<Board> allBoards = boardRepository.findAll();
         for (Board board : allBoards) {
             board.setPreviousHeartCount(board.getHeart());
@@ -43,7 +43,7 @@ public class ScheduledTasks {
         boardRepository.saveAll(allBoards);
     }
 
-    public Long getMostIncreasedLikesPostId() {
+    public Long getMostIncreasedHeartsPostId() {
         return mostIncreasedHeartBoardId;
     }
 }

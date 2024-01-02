@@ -59,10 +59,6 @@ public class Board extends BaseTimeEntity {
     @Column(columnDefinition = "int default 0")
     private int previousHeartCount;
 
-    public int getPreviousHeartCount() {
-        return previousHeartCount;
-    }
-
     public void setPreviousHeartCount(int previousHeartCount) {
         this.previousHeartCount = previousHeartCount;
     }
@@ -86,23 +82,16 @@ public class Board extends BaseTimeEntity {
         this.images.addAll(images);
     }
 
-    public Board updateViewCount(int count) {
+    public void updateViewCount(int count) {
         this.count = count + 1;
-        return this;
     }
 
-    public void addImage(Image image) {
-        this.images.add(image);
-    }
-
-    public Board updateHeartCount(int heart) {
+    public void updateHeartCount(int heart) {
         this.heart = heart + 1;
-        return this;
     }
 
-    public Board updateCancelHeartCount(int heart) {
+    public void updateCancelHeartCount(int heart) {
         this.heart = heart - 1;
-        return this;
     }
 
 }

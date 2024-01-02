@@ -143,5 +143,4 @@ public class ImageService {
         return responseList; // 업로드한 모든 이미지에 대한 결과 반환
     }
 
-
 }
