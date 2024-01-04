@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class BoardService {
 //    private String defaultThumbnailUrl;
 
 
-    public Page<Board> findAll(Pageable pageable) { //페이지네이션 정보 담은 page객체 반환
+    public BoardListRspDto findAll(Pageable pageable) { //페이지네이션 정보 담은 page객체 반환
 //        Page<Board> pages = boardRepository.findAllWithImages(pageable);
 //        for (Board board : pages) {
 //            if (!board.getImages().isEmpty()) {
@@ -60,7 +61,9 @@ public class BoardService {
 //            }
 //        }
 //        return pages;
-        return boardRepository.findAllWithImages(pageable);
+        Page<Board> boards = boardRepository.findAll(pageable);
+        return BoardListRspDto.from(boards);
+        /*return boardRepository.findAllWithMembersAndImages(pageable);*/
     }
 //서비스에서 보드를 찾아 이미지가 null인지 아닌지
     @Transactional
@@ -86,6 +89,7 @@ public class BoardService {
                 .tag(boardRequestDto.getTag())
                 .count(boardRequestDto.getCount())
                 .heart(boardRequestDto.getHeart())
+                .member(member)
                 .images(images)
                 .build();
 
@@ -139,7 +143,18 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
         board.updateViewCount(board.getCount());
-        return BoardResDto.of(board);
+
+        List<Long> heartMemberIds = memberHeartBoardRepository.findByBoardBoardId(boardId).stream()
+                .map(MemberHeartBoard::getMember)
+                .map(Member::getMemberId)
+                .collect(Collectors.toList());
+
+        List<Long> scrapMemberIds = memberScrapBoardRepository.findByBoardBoardId(boardId).stream()
+                .map(MemberScrapBoard::getMember)
+                .map(Member::getMemberId)
+                .collect(Collectors.toList());
+
+        return BoardResDto.from(board, heartMemberIds, scrapMemberIds);
     }
 
     public Category validateCategory(String category) {

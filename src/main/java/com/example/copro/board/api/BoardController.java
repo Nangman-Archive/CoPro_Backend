@@ -62,10 +62,10 @@ public class BoardController {
         }
 
         // Board List를 Service에서 가져온다.
-        Page<Board> boardPage = boardService.findAll(pageable);
+        /*Page<Board> boardPage = boardService.findAll(pageable);*/
 
         // StudentListRspDto.from(students)를 통해 Dto의 리스트로 변환해서 반환한다.
-        BoardListRspDto boardListRspDto = BoardListRspDto.from(boardPage);
+        BoardListRspDto boardListRspDto = boardService.findAll(pageable);
 
         return new RspTemplate<>(HttpStatus.OK
                 , page + "번 페이지 조회 완료"

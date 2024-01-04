@@ -79,7 +79,7 @@ public class Board extends BaseTimeEntity {
     }
 
     @Builder
-    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images) {
+    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images, Member member) {
         this.title = title;
         this.category = category;
         this.contents = contents;
@@ -87,6 +87,7 @@ public class Board extends BaseTimeEntity {
         this.count = count;
         this.images = images;
         this.heart = heart;
+        this.member = member;
     }
 
     public void update(BoardSaveReqDto boardSaveReqDto, List<Image> images) {
