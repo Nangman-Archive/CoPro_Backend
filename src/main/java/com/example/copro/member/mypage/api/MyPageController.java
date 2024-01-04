@@ -41,7 +41,7 @@ public class MyPageController {
         return new RspTemplate<>(HttpStatus.OK, "내 프로필 정보", memberResDto);
     }
 
-    @Operation(summary = "좋아요 유저 목록", description = "본인이 좋아요한 유저의 목록을 불러옵니다.")
+    @Operation(summary = "내 관심 프로필 목록 ", description = "본인이 좋아요한 유저의 목록을 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "좋아요한 유저 불러오기 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
@@ -51,7 +51,7 @@ public class MyPageController {
                                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<MemberLikeResDto> memberLikeResDtos = myPageService.memberLikeList(memberId, page, size);
-        return new RspTemplate<>(HttpStatus.OK, "좋아요한 유저 목록", memberLikeResDtos);
+        return new RspTemplate<>(HttpStatus.OK, "내 관심 프로필 목록", memberLikeResDtos);
     }
 
     @Operation(summary = "내 관심 게시물 목록", description = "내 관심 게시물 목록을 불러옵니다.")
@@ -61,10 +61,22 @@ public class MyPageController {
     })
     @GetMapping("/{memberId}/scrap")
     public RspTemplate<BoardListRspDto> myScrapBoard(@PathVariable(name = "memberId") Long memberId,
-                                                           @RequestParam(value = "page", defaultValue = "0") int page,
-                                                           @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
         BoardListRspDto boardListRspDto = myPageService.boardLikeList(memberId, page, size);
         return new RspTemplate<>(HttpStatus.OK, "내 관심 게시물 목록", boardListRspDto);
     }
 
+    @Operation(summary = "내가 작성한 게시물 목록", description = "내가 작성한 게시물 목록을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내가 작성한 게시물 불러오기 성공"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @GetMapping("/{memberId}/write")
+    public RspTemplate<BoardListRspDto> myWriteBoard(@PathVariable(name = "memberId") Long memberId,
+                                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        BoardListRspDto boardListRspDto = myPageService.boardWriteList(memberId, page, size);
+        return new RspTemplate<>(HttpStatus.OK, "내가 작성한 게시물 목록", boardListRspDto);
+    }
 }
