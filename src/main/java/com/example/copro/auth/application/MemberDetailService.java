@@ -1,9 +1,9 @@
 package com.example.copro.auth.application;
 
+import com.example.copro.auth.exception.MemberNotFoundException;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.Role;
 import com.example.copro.member.domain.repository.MemberRepository;
-import com.example.copro.auth.exception.MemberNotFoundException;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +25,7 @@ public class MemberDetailService implements UserDetailsService {
                 .name(firebaseToken.getName())
                 .picture(firebaseToken.getPicture())
                 .role(role)
+                .viewType(0)
                 .build();
 
         return memberRepository.save(member);

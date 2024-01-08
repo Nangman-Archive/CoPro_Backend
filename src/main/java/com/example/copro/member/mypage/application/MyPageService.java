@@ -3,6 +3,7 @@ package com.example.copro.member.mypage.application;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
+import com.example.copro.member.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberLike;
@@ -69,4 +70,11 @@ public class MyPageService {
 
     // 작성 댓글
 
+    // 뷰 타입 변경
+    @Transactional
+    public void updateViewType(Long memberId, UpdateViewTypeReqDto updateViewTypeReqDto) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        member.viewTypeUpdate(updateViewTypeReqDto.viewType());
+    }
 }

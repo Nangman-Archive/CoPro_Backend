@@ -3,6 +3,7 @@ package com.example.copro.member.application;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
+import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
@@ -12,14 +13,12 @@ import com.example.copro.member.exception.InvalidMemberException;
 import com.example.copro.member.exception.NotFoundMemberException;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -38,14 +37,14 @@ public class MemberService {
     }
 
     // 전체 멤버 정보리스트
-    public Page<MemberResDto> memberInfoList(String occupation, String language, String career, int page, int size) {
+    public MemberInfoResDto memberInfoList(Long memberId, String occupation, String language, String career, int page, int size) {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
         Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c), PageRequest.of(page, size));
 
-        return members.map(this::getMemberResDto);
+        return MemberInfoResDto.of(getViewType(memberId), members.map(this::getMemberResDto));
     }
 
     private MemberResDto getMemberResDto(Member member) {
@@ -56,6 +55,12 @@ public class MemberService {
         int likeMembersCount = member.getMemberLikes().size();
 
         return MemberResDto.of(member, likeMembersCount, likeMembersId);
+    }
+
+    private int getViewType(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        return member.getViewType();
     }
 
     // 프로필 수정

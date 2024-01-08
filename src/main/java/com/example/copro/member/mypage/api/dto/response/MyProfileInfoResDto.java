@@ -12,6 +12,7 @@ public record MyProfileInfoResDto(
         String career,
         String gitHubUrl,
         String nickName,
+        int viewType,
         int likeMembersCount
 ) {
     public static MyProfileInfoResDto myProfileInfoOf(Member member, int likeMembersCount) {
@@ -23,6 +24,7 @@ public record MyProfileInfoResDto(
                 .career(member.getCareer())
                 .gitHubUrl(member.getGitHubUrl())
                 .nickName(member.getNickName())
+                .viewType(member.getViewType())
                 .likeMembersCount(likeMembersCount)
                 .build();
     }
