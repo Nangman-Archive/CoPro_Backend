@@ -68,6 +68,9 @@ public class Member implements UserDetails {
     @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
     private String gitHubUrl;
 
+    @Schema(description = "뷰 타입", example = "0 or 1")
+    private int viewType;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boards = new ArrayList<>();
 
@@ -113,12 +116,13 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture) {
+    private Member(String memberName, Role role, String email, String name, String picture, int viewType) {
         this.memberName = memberName;
         this.role = role;
         this.email = email;
         this.name = name;
         this.picture = picture;
+        this.viewType = viewType;
     }
 
     public void update(FirebaseToken token) {
@@ -134,6 +138,10 @@ public class Member implements UserDetails {
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
         this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl().trim();
+    }
+
+    public void viewTypeUpdate(int viewType) {
+        this.viewType = viewType;
     }
 
     public void addMemberLike(Member likeMember) {

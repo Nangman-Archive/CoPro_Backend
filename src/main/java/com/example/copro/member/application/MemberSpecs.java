@@ -1,6 +1,7 @@
 package com.example.copro.member.application;
 
 import com.example.copro.member.domain.Member;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 public class MemberSpecs {
@@ -9,7 +10,18 @@ public class MemberSpecs {
     }
 
     public static Specification<Member> hasLanguage(String language) {
-        return (member, cq, cb) -> language == null ? null : cb.equal(member.get("language"), language);
+        return (member, cq, cb) -> {
+            if (language == null) {
+                return null;
+            }
+
+            Predicate start = cb.like(member.get("language"), language + ",%");
+            Predicate middle = cb.like(member.get("language"), "%," + language + ",%");
+            Predicate end = cb.like(member.get("language"), "%," + language);
+            Predicate only = cb.equal(member.get("language"), language);
+
+            return cb.or(start, middle, end, only);
+        };
     }
 
     public static Specification<Member> hasCareer(String career) {
