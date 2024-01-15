@@ -1,5 +1,6 @@
-package com.example.copro.board.domain;
+package com.example.copro.report.domain;
 
+import com.example.copro.board.domain.Board;
 import com.example.copro.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

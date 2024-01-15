@@ -1,6 +1,7 @@
 package com.example.copro.board.domain;
 
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.domain.MemberScrapBoard;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,6 +32,13 @@ public class MemberHeartBoard {
         this.id = id;
         this.board = board;
         this.member = member;
+    }
+
+    public static MemberHeartBoard of(Board board, Member member) {
+        return MemberHeartBoard.builder()
+                .board(board)
+                .member(member)
+                .build();
     }
 
 }

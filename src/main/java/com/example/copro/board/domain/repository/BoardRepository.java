@@ -10,8 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    @Query("select b from Board b left join fetch b.images")
-    Page<Board> findAllWithImages(Pageable pageable);
+
+    @Query("select b from Board b left join fetch b.images i left join fetch b.member")
+    Page<Board> findAllWithMembersAndImages(Pageable pageable);
 
     Page<Board> findByTitleContaining(String q, Pageable pageable);
     Board findByImagesContaining(Image image);

@@ -29,22 +29,31 @@ public class BoardResDto {
 
     private List<String> imageUrl;
 
+    private Long memberId;
+
+    private List<Long> heartMemberIds;
+    private List<Long> scrapMemberIds;
+
     @Builder
-    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, int heart, List<String> imageUrl) {
+    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, Long memberId, int heart, List<String> imageUrl, List<Long> heartMemberIds, List<Long> scrapMemberIds) {
         this.boardId = boardId;
         this.title = title;
         this.category = category;
         this.contents = contents;
         this.tag = tag;
         this.count = count;
+        this.memberId = memberId;
         this.heart = heart;
         this.imageUrl = imageUrl;
+        this.heartMemberIds = heartMemberIds;
+        this.scrapMemberIds = scrapMemberIds;
     }
 
     public static BoardResDto of(Board board) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
+
         return BoardResDto.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
@@ -52,8 +61,29 @@ public class BoardResDto {
                 .contents(board.getContents())
                 .tag(board.getTag())
                 .count(board.getCount())
+                .memberId(board.getMember().getMemberId())
                 .heart(board.getHeart())
                 .imageUrl(imageUrl)
+                .build();
+    }
+
+    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds) {
+        List<String> imageUrl = board.getImages().stream()
+                .map(Image::getImageUrl)
+                .collect(Collectors.toList());
+
+        return BoardResDto.builder()
+                .boardId(board.getBoardId())
+                .title(board.getTitle())
+                .category(board.getCategory())
+                .contents(board.getContents())
+                .tag(board.getTag())
+                .count(board.getCount())
+                .memberId(board.getMember().getMemberId())
+                .heart(board.getHeart())
+                .imageUrl(imageUrl)
+                .heartMemberIds(heartMemberIds)
+                .scrapMemberIds(scrapMemberIds)
                 .build();
     }
 

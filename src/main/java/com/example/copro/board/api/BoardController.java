@@ -2,7 +2,7 @@ package com.example.copro.board.api;
 
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
-import com.example.copro.board.api.dto.request.ReportReqDto;
+import com.example.copro.report.api.dto.request.ReportReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
 import com.example.copro.board.api.dto.response.*;
 import com.example.copro.board.application.BoardService;
@@ -62,10 +62,10 @@ public class BoardController {
         }
 
         // Board List를 Service에서 가져온다.
-        Page<Board> boardPage = boardService.findAll(pageable);
+        /*Page<Board> boardPage = boardService.findAll(pageable);*/
 
         // StudentListRspDto.from(students)를 통해 Dto의 리스트로 변환해서 반환한다.
-        BoardListRspDto boardListRspDto = BoardListRspDto.from(boardPage);
+        BoardListRspDto boardListRspDto = boardService.findAll(pageable);
 
         return new RspTemplate<>(HttpStatus.OK
                 , page + "번 페이지 조회 완료"
@@ -172,17 +172,6 @@ public class BoardController {
         return new RspTemplate<>(HttpStatus.OK, category + "조회 완료", category);
     }
 
-    @Operation(summary = "게시글 신고", description = "게시글 신고 합니다")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "신고 성공", content = @Content(schema = @Schema(implementation = ReportResDto.class))),
-            @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
-    })
-    @PostMapping("/report") //게시글 신고
-    public RspTemplate<ReportResDto> reportBoard(@RequestBody ReportReqDto reportReqDto) {
-        ReportResDto reportResDto = boardService.reportBoard(reportReqDto);
-        return new RspTemplate<>(HttpStatus.OK, reportResDto.getBoardId() + "신고 완료", reportResDto);
-    }
-
     @Operation(summary = "스크랩 등록", description = "스크랩 등록 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = ScrapSaveResDto.class))),
@@ -198,7 +187,7 @@ public class BoardController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @DeleteMapping("/scrap/delete")
+    @DeleteMapping("/scrap")
     public RspTemplate<Void> scrapDelete(@RequestBody ScrapReqDto scrapDeleteReqDto) {
         boardService.scrapDelete(scrapDeleteReqDto);
         return new RspTemplate<>(HttpStatus.OK, scrapDeleteReqDto.getBoardId() + "번 게시물 스크랩 삭제 완료");
@@ -206,12 +195,12 @@ public class BoardController {
 
     @Operation(summary = "좋아요 등록", description = "좋아요 등록 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = ScrapSaveResDto.class))),
+            @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = HeartSaveResDto.class))),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/heart/save")
-    public RspTemplate<HeartSaveResDto> likeBoard(@RequestBody HeartReqDto likeSaveReqDto) {
-        HeartSaveResDto heartSaveResDto = boardService.likeBoard(likeSaveReqDto);
+    public RspTemplate<HeartSaveResDto> heartBoard(@RequestBody HeartReqDto heartSaveReqDto) {
+        HeartSaveResDto heartSaveResDto = boardService.heartBoard(heartSaveReqDto);
         return new RspTemplate<>(HttpStatus.OK, heartSaveResDto.getBoardId() + "번 게시물 좋아요 완료", heartSaveResDto);
     }
 
@@ -220,15 +209,20 @@ public class BoardController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @DeleteMapping("/heart/delete")
-    public RspTemplate<Void> likeDelete(@RequestBody HeartReqDto likeDeleteReqDto) {
-        boardService.likeDelete(likeDeleteReqDto);
-        return new RspTemplate<>(HttpStatus.OK, likeDeleteReqDto.getBoardId() + "번 게시물 좋아요 삭제 완료");
+    @DeleteMapping("/heart")
+    public RspTemplate<Void> heartDelete(@RequestBody HeartReqDto heartDeleteReqDto) {
+        boardService.heartDelete(heartDeleteReqDto);
+        return new RspTemplate<>(HttpStatus.OK, heartDeleteReqDto.getBoardId() + "번 게시물 좋아요 삭제 완료");
     }
 
-    @GetMapping("/most-increased-likes")//인기 게시물
-    public RspTemplate<BoardResDto> getMostIncreasedLikesPost() {
-        Long boardId = scheduledTasks.getMostIncreasedLikesPostId();
+    @Operation(summary = "인기 게시물 조회", description = "인기 게시글 조회합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
+    })
+    @GetMapping("/most-increased-hearts")//인기 게시물
+    public RspTemplate<BoardResDto> getMostIncreasedHeartsPost() {
+        Long boardId = scheduledTasks.getMostIncreasedHeartsPostId();
         BoardResDto boardResDto = boardService.getBoard(boardId);
         return new RspTemplate<>(HttpStatus.OK
                 , boardId + " 번 인기 게시물 조회 완료"

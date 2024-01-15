@@ -50,7 +50,7 @@ public class ImageController {
         return new RspTemplate<>(HttpStatus.OK, "이미지 조회 완료", ImageResDto.of(image));
     }
 
-    @PostMapping("/imagess")
+    @PostMapping("/images")
     public RspTemplate<List<ImageResDto>> uploadMultiple(@RequestPart("files") MultipartFile[] files) {
         List<ImageResDto> upload = imageService.uploadMultiple(files);
         return new RspTemplate<>(HttpStatus.OK, "업로드 완료",upload);
