@@ -204,7 +204,7 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/heart/save")
-    public RspTemplate<HeartSaveResDto> heartBoard(@RequestBody HeartReqDto heartSaveReqDto, @AuthenticationPrincipal Member member) {
+    public RspTemplate<Void> heartBoard(@RequestBody HeartReqDto heartSaveReqDto, @AuthenticationPrincipal Member member) {
         boardService.heartBoard(heartSaveReqDto,member.getMemberId());
         return new RspTemplate<>(HttpStatus.OK, heartSaveReqDto.getBoardId() + "번 게시물 좋아요 완료");
     }

@@ -17,7 +17,7 @@ import java.util.List;
 class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바깥쪽에선 이 dto안써짐)
     long id;
     String title;
-    String nickname;
+    String nickName;
     LocalDateTime createAt;
     int count;
     int heart;
@@ -39,7 +39,7 @@ class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바
         return BoardDto.builder()
                 .id(board.getBoardId())
                 .title(board.getTitle())
-                .nickname(board.getMember().getNickName())
+                .nickName(board.getMember().getNickName())
                 .createAt(board.getCreateAt())
                 .count(board.getCount())
                 .heart(board.getHeart())
