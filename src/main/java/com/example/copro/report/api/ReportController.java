@@ -30,7 +30,7 @@ public class ReportController {
 
     @Operation(summary = "게시글 신고", description = "게시글 신고 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "신고 성공", content = @Content(schema = @Schema(implementation = ReportResDto.class))),
+            @ApiResponse(responseCode = "200", description = "신고 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping() //게시글 신고
