@@ -10,13 +10,10 @@ public class ReportReqDto {
 
     Long boardId;
 
-    Long memberId;
-
     String contents;
 
-    public ReportReqDto(Long boardId, Long memberId, String contents){
+    public ReportReqDto(Long boardId, String contents){
         this.boardId = boardId;
-        this.memberId = memberId;
         this.contents = contents;
     }
 
