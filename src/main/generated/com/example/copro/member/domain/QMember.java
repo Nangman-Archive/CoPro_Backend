@@ -48,6 +48,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
+    public final NumberPath<Integer> viewType = createNumber("viewType", Integer.class);
+
     public QMember(String variable) {
         super(Member.class, forVariable(variable));
     }
