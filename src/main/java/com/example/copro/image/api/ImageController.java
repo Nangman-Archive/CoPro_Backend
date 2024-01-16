@@ -47,10 +47,10 @@ public class ImageController {
     @GetMapping("/images/{imageId}")
     public RspTemplate<ImageResDto> getImage(@PathVariable Long imageId) {
         Image image = imageService.findById(imageId);
-        return new RspTemplate<>(HttpStatus.OK, "이미지 조회 완료", ImageResDto.of(image));
+        return new RspTemplate<>(HttpStatus.OK, "이미지 조회 완료", ImageResDto.from(image));
     }
 
-    @PostMapping("/imagess")
+    @PostMapping("/images")
     public RspTemplate<List<ImageResDto>> uploadMultiple(@RequestPart("files") MultipartFile[] files) {
         List<ImageResDto> upload = imageService.uploadMultiple(files);
         return new RspTemplate<>(HttpStatus.OK, "업로드 완료",upload);

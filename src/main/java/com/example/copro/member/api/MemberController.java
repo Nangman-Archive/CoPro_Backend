@@ -7,6 +7,7 @@ import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
 import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
+import com.example.copro.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,14 +64,14 @@ public class MemberController {
     })
     @GetMapping("/infos")
     public RspTemplate<MemberInfoResDto> membersInfo(
-            @RequestParam(name = "memberId") Long memberId,
+            @AuthenticationPrincipal Member member,
             @RequestParam(name = "occupation", required = false) String occupation,
             @RequestParam(name = "language", required = false) String language,
             @RequestParam(name = "career", required = false) String career,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         MemberInfoResDto memberInfoResDto =
-                memberService.memberInfoList(memberId, occupation, language, career, page, size);
+                memberService.memberInfoList(member.getMemberId(), occupation, language, career, page, size);
 
         return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
@@ -80,10 +82,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/{memberId}")
-    public RspTemplate<MemberResDto> memberProfileUpdate(@PathVariable(name = "memberId") Long memberId,
+    @PatchMapping("/")
+    public RspTemplate<MemberResDto> memberProfileUpdate(@AuthenticationPrincipal Member member,
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
-        MemberResDto memberResDto = memberService.profileUpdate(memberId, memberProfileUpdateReqDto);
+        MemberResDto memberResDto = memberService.profileUpdate(member.getMemberId(), memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
     }
 
@@ -93,10 +95,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/{memberId}/add-like")
-    public RspTemplate<String> addLikeMember(@PathVariable(name = "memberId") Long memberId,
+    @PatchMapping("/add-like")
+    public RspTemplate<String> addLikeMember(@AuthenticationPrincipal Member member,
                                              @RequestBody MemberLikeReqDto memberLikeReqDto) {
-        memberService.addMemberLike(memberId, memberLikeReqDto);
+        memberService.addMemberLike(member.getMemberId(), memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
     }
 
@@ -106,10 +108,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/{memberId}/cancel-like")
-    public RspTemplate<String> cancelLikeMember(@PathVariable(name = "memberId") Long memberId,
+    @PatchMapping("/cancel-like")
+    public RspTemplate<String> cancelLikeMember(@AuthenticationPrincipal Member member,
                                                 @RequestBody MemberLikeReqDto memberLikeReqDto) {
-        memberService.cancelMemberLike(memberId, memberLikeReqDto);
+        memberService.cancelMemberLike(member.getMemberId(), memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 취소 완료");
     }
 }

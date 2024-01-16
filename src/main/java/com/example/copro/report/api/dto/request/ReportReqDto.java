@@ -1,4 +1,4 @@
-package com.example.copro.board.api.dto.request;
+package com.example.copro.report.api.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;

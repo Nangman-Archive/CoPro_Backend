@@ -74,16 +74,12 @@ public class Board extends BaseTimeEntity {
     @Column(columnDefinition = "int default 0")
     private int previousHeartCount;
 
-    public int getPreviousHeartCount() {
-        return previousHeartCount;
-    }
-
     public void setPreviousHeartCount(int previousHeartCount) {
         this.previousHeartCount = previousHeartCount;
     }
 
     @Builder
-    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images) {
+    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images, Member member) {
         this.title = title;
         this.category = category;
         this.contents = contents;
@@ -91,6 +87,7 @@ public class Board extends BaseTimeEntity {
         this.count = count;
         this.images = images;
         this.heart = heart;
+        this.member = member;
     }
 
     public void update(BoardSaveReqDto boardSaveReqDto, List<Image> images) {
@@ -101,23 +98,16 @@ public class Board extends BaseTimeEntity {
         this.images.addAll(images);
     }
 
-    public Board updateViewCount(int count) {
+    public void updateViewCount(int count) {
         this.count = count + 1;
-        return this;
     }
 
-    public void addImage(Image image) {
-        this.images.add(image);
-    }
-
-    public Board updateHeartCount(int heart) {
+    public void updateHeartCount(int heart) {
         this.heart = heart + 1;
-        return this;
     }
 
-    public Board updateCancelHeartCount(int heart) {
+    public void updateCancelHeartCount(int heart) {
         this.heart = heart - 1;
-        return this;
     }
 
 }

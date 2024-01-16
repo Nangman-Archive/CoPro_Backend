@@ -1,6 +1,5 @@
 package com.example.copro.board.api.dto.response;
 
-import com.example.copro.board.domain.Report;
 import com.example.copro.member.domain.MemberScrapBoard;
 import lombok.AccessLevel;
 import lombok.Builder;
