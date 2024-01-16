@@ -11,8 +11,6 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("select b from Board b left join fetch b.images i left join fetch b.member")
-    Page<Board> findAllWithMembersAndImages(Pageable pageable);
 
     Page<Board> findByTitleContaining(String q, Pageable pageable);
     Board findByImagesContaining(Image image);

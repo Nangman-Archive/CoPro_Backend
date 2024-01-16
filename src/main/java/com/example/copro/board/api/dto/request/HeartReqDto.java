@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 public class HeartReqDto {
     Long boardId;
 
-    Long memberId;
 
-    public HeartReqDto(Long boardId, Long memberId){
+    public HeartReqDto(Long boardId){
         this.boardId = boardId;
-        this.memberId = memberId;
-
     }
 }

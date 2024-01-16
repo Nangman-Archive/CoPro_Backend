@@ -2,6 +2,7 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
+import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,11 +32,15 @@ public class BoardResDto {
 
     private Long memberId;
 
+    private String occupation;
+
     private List<Long> heartMemberIds;
     private List<Long> scrapMemberIds;
 
+    private List<CommentResDto> commentResDtoList;
+
     @Builder
-    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, Long memberId, int heart, List<String> imageUrl, List<Long> heartMemberIds, List<Long> scrapMemberIds) {
+    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, Long memberId, String occupation, int heart, List<String> imageUrl, List<Long> heartMemberIds, List<Long> scrapMemberIds,List<CommentResDto> commentResDtoList) {
         this.boardId = boardId;
         this.title = title;
         this.category = category;
@@ -43,10 +48,12 @@ public class BoardResDto {
         this.tag = tag;
         this.count = count;
         this.memberId = memberId;
+        this.occupation = occupation;
         this.heart = heart;
         this.imageUrl = imageUrl;
         this.heartMemberIds = heartMemberIds;
         this.scrapMemberIds = scrapMemberIds;
+        this.commentResDtoList = commentResDtoList;
     }
 
     public static BoardResDto of(Board board) {
@@ -62,12 +69,13 @@ public class BoardResDto {
                 .tag(board.getTag())
                 .count(board.getCount())
                 .memberId(board.getMember().getMemberId())
+                .occupation(board.getMember().getOccupation())
                 .heart(board.getHeart())
                 .imageUrl(imageUrl)
                 .build();
     }
 
-    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds) {
+    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds, List<CommentResDto> commentResDtoList) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -80,10 +88,12 @@ public class BoardResDto {
                 .tag(board.getTag())
                 .count(board.getCount())
                 .memberId(board.getMember().getMemberId())
+                .occupation(board.getMember().getOccupation())
                 .heart(board.getHeart())
                 .imageUrl(imageUrl)
                 .heartMemberIds(heartMemberIds)
                 .scrapMemberIds(scrapMemberIds)
+                .commentResDtoList(commentResDtoList)
                 .build();
     }
 

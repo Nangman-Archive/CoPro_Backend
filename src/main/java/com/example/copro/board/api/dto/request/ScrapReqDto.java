@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 public class ScrapReqDto {
     Long boardId;
 
-    Long memberId;
 
-    public ScrapReqDto(Long boardId, Long memberId){
+    public ScrapReqDto(Long boardId){
         this.boardId = boardId;
-        this.memberId = memberId;
-
     }
 }

@@ -62,5 +62,3 @@ cloud:
       auto: false
 
 cloudfront-domain-name: ${cloudfront-domain-name}
-
-default-thumbnail-url: ${default-thumbnail-url}

@@ -9,6 +9,9 @@ import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
+import com.example.copro.board.exception.*;
+import com.example.copro.comment.api.dto.response.CommentResDto;
+import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.image.application.ImageService;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
@@ -16,7 +19,6 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
-import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -42,6 +44,8 @@ public class BoardService {
 
     private final ImageRepository imageRepository;
 
+    private final CommentRepository commentRepository;
+
     private final @Lazy ImageService imageService; //순환참조 방지
 
 //    @Value("${default-thumbnail-url}")
@@ -65,11 +69,12 @@ public class BoardService {
         return BoardListRspDto.from(boards);
         /*return boardRepository.findAllWithMembersAndImages(pageable);*/
     }
+
 //서비스에서 보드를 찾아 이미지가 null인지 아닌지
     @Transactional
-    public BoardResDto createBoard(BoardSaveReqDto boardRequestDto) {
-        Member member = memberRepository.findById(boardRequestDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+    public BoardResDto createBoard(BoardSaveReqDto boardRequestDto,Member member) {
+//        Member member = memberRepository.findById(member.getMemberId())
+//                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         // 이미지와 게시글 매핑 로직
         List<Image> images = imageRepository.findAllByIdIn(boardRequestDto.getImageId());
@@ -78,7 +83,7 @@ public class BoardService {
         for (Image image : images) {
             Board existingBoard = boardRepository.findByImagesContaining(image);
             if (existingBoard != null) {
-                throw new IllegalArgumentException(image.getId() + "번 이미지는 이미 매핑된 이미지입니다.");
+                throw new MappedImageException(image);
             }
         }
 
@@ -99,9 +104,13 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResDto updateBoard(Long boardId, BoardSaveReqDto boardSaveReqDto) {
+    public BoardResDto updateBoard(Long boardId, BoardSaveReqDto boardSaveReqDto, Long memberId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
+
+        if (!board.getMember().getMemberId().equals(memberId)) {
+            throw new NotOwnerException();
+        }
 
         // 이미지와 게시글 매핑 로직
         List<Image> images = imageRepository.findAllByIdIn(boardSaveReqDto.getImageId());
@@ -110,7 +119,7 @@ public class BoardService {
         for (Image image : images) {
             Board existingBoard = boardRepository.findByImagesContaining(image);
             if (existingBoard != null) {
-                throw new IllegalArgumentException(image.getId() + "번 이미지는 이미 매핑된 이미지입니다.");
+                throw new MappedImageException(image);
             }
         }
 
@@ -120,28 +129,34 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long boardId,Long memberId) {
+
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
+
+        if (!board.getMember().getMemberId().equals(memberId)) {
+            throw new NotOwnerException();
+        }
 
         boardRepository.delete(board);
     }
 
     @Transactional(readOnly = true)
     public Board findById(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(); // id로 이미지를 찾아서 반환
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(boardId)); // id로 이미지를 찾아서 반환
     }
 
-
     @Transactional
-    public Page<Board> findByTitleContaining(String q, Pageable pageable) {
-        return boardRepository.findByTitleContaining(q, pageable);
+    public BoardListRspDto findByTitleContaining(String q, Pageable pageable) {
+        Page<Board> boards = boardRepository.findByTitleContaining(q, pageable);
+        return BoardListRspDto.from(boards);
     }
 
     @Transactional
     public BoardResDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
         board.updateViewCount(board.getCount());
 
         List<Long> heartMemberIds = memberHeartBoardRepository.findByBoardBoardId(boardId).stream()
@@ -154,48 +169,50 @@ public class BoardService {
                 .map(Member::getMemberId)
                 .collect(Collectors.toList());
 
-        return BoardResDto.from(board, heartMemberIds, scrapMemberIds);
+        List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
+
+        return BoardResDto.from(board, heartMemberIds, scrapMemberIds, commentResDtoList);
     }
 
     public Category validateCategory(String category) {
         try {
             return Category.valueOf(category);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 카테고리입니다.");
+            throw new CategoryNotFoundException();
         }
     }
 
     @Transactional
-    public ScrapSaveResDto scrapBoard(ScrapReqDto scrapSaveReqDto) {
+    public void scrapBoard(ScrapReqDto scrapSaveReqDto,Long memberId) {
         Board board = boardRepository.findById(scrapSaveReqDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        Member member = memberRepository.findById(scrapSaveReqDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new BoardNotFoundException(scrapSaveReqDto.getBoardId()));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         MemberScrapBoard memberScrapBoard = MemberScrapBoard.of(board, member);
 
         MemberScrapBoard saveScrap = memberScrapBoardRepository.save(memberScrapBoard);
 
-        return ScrapSaveResDto.of(saveScrap);
+        //return ScrapSaveResDto.of(saveScrap);
     }
 
     @Transactional
-    public void scrapDelete(ScrapReqDto scrapDeleteReqDto) {
+    public void scrapDelete(ScrapReqDto scrapDeleteReqDto, Long memberId) {
         MemberScrapBoard memberScrapBoard = memberScrapBoardRepository.findByMemberMemberIdAndBoardBoardId(
-                        scrapDeleteReqDto.getMemberId(), scrapDeleteReqDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("스크랩 정보가 존재하지 않습니다."));
+                        memberId, scrapDeleteReqDto.getBoardId())
+                .orElseThrow(ScrapNotFoundException::new);
         memberScrapBoardRepository.delete(memberScrapBoard);
     }
 
     @Transactional
-    public HeartSaveResDto heartBoard(HeartReqDto heartSaveReqDto) {
+    public void heartBoard(HeartReqDto heartSaveReqDto, Long memberId) {
         Board board = boardRepository.findById(heartSaveReqDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        Member member = memberRepository.findById(heartSaveReqDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new BoardNotFoundException(heartSaveReqDto.getBoardId()));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        if(memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(heartSaveReqDto.getMemberId(),heartSaveReqDto.getBoardId()).isPresent()){
-            throw new NonUniqueResultException("이미 좋아요를 눌렀습니다.");
+        if(memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(memberId,heartSaveReqDto.getBoardId()).isPresent()){
+            throw new AlreadyHeartException();
         }
 
         MemberHeartBoard memberHeartBoard = MemberHeartBoard.of(board,member);
@@ -203,16 +220,16 @@ public class BoardService {
         MemberHeartBoard saveLike = memberHeartBoardRepository.save(memberHeartBoard);
         board.updateHeartCount(board.getHeart());
 
-        return HeartSaveResDto.of(saveLike);
+        //return HeartSaveResDto.of(saveLike);
     }
 
     @Transactional
-    public void heartDelete(HeartReqDto heartDeleteReqDto) {
+    public void heartDelete(HeartReqDto heartDeleteReqDto, Long memberId) {
         MemberHeartBoard memberHeartBoard = memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(
-                        heartDeleteReqDto.getMemberId(), heartDeleteReqDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("좋아요 정보가 존재하지 않습니다."));
+                        memberId, heartDeleteReqDto.getBoardId())
+                .orElseThrow(HeartNotFoundException::new);
         Board board = boardRepository.findById(heartDeleteReqDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
+                .orElseThrow(() -> new BoardNotFoundException(heartDeleteReqDto.getBoardId()));
 
         memberHeartBoardRepository.delete(memberHeartBoard);
         board.updateCancelHeartCount(board.getHeart());

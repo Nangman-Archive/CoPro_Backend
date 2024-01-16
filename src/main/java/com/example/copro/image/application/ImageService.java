@@ -11,12 +11,13 @@ import com.example.copro.image.api.dto.response.ImageResDto;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.image.exception.ImageNotFoundException;
-import com.example.copro.image.exception.NotFoundImageException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.example.copro.image.exception.UploadFailureImageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +55,9 @@ public class ImageService {
             Image image = createImageEntity(fileName); // Image 엔티티 생성
             imageRepository.save(image); // DB에 저장
 
-            return ImageResDto.of(image); // 결과 반환
+            return ImageResDto.from(image); // 결과 반환
         } catch (IOException e) {
-            throw new NotFoundImageException(fileName); // 에러 발생 시 예외 던짐
+            throw new UploadFailureImageException(fileName); // 에러 발생 시 예외 던짐
         }
     }
 
@@ -73,14 +74,14 @@ public class ImageService {
     @Transactional(readOnly = true)
     public Image findById(Long imageId) {
         return imageRepository.findById(imageId)
-                .orElseThrow(() -> new ImageNotFoundException("해당하는 이미지가 없습니다. ID: " + imageId)); // id로 이미지를 찾아서 반환
+                .orElseThrow(() -> new ImageNotFoundException(imageId)); // id로 이미지를 찾아서 반환
     }
 
     @Transactional
     public void delete(Long boardId, Long imageId) {
 
     Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardNotFoundException("해당하는 게시판이 없습니다. ID: " + boardId));
+            .orElseThrow(() -> new BoardNotFoundException(boardId));
 
     Image findImage = findById(imageId);
 
@@ -135,9 +136,9 @@ public class ImageService {
                 Image image = createImageEntity(fileName); // Image 엔티티 생성, board 필드는 null로 설정
                 imageRepository.save(image); // DB에 저장
 
-                responseList.add(ImageResDto.of(image)); // 결과를 list에 추가
+                responseList.add(ImageResDto.from(image)); // 결과를 list에 추가
             } catch (IOException e) {
-                throw new NotFoundImageException(fileName); // 에러 발생 시 예외 던짐
+                throw new UploadFailureImageException (fileName); // 에러 발생 시 예외 던짐
             }
         }
         return responseList; // 업로드한 모든 이미지에 대한 결과 반환
