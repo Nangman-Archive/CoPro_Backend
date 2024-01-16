@@ -23,10 +23,10 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public ReportResDto reportBoard(ReportReqDto reportReqDto) {
+    public void reportBoard(ReportReqDto reportReqDto, Long memberId) {
         Board board = boardRepository.findById(reportReqDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        Member member = memberRepository.findById(reportReqDto.getMemberId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 회원이 없습니다."));
 
         Report report = Report.builder()
@@ -37,6 +37,6 @@ public class ReportService {
 
         Report saveReport = reportRepository.save(report);
 
-        return ReportResDto.of(saveReport);
+        //return ReportResDto.of(saveReport);
     }
 }
