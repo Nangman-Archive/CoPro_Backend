@@ -4,6 +4,7 @@ import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
+import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -49,7 +49,8 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/chatting/profile/{nickName}")
-    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(@PathVariable(name = "nickName") String nickName) {
+    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(
+            @PathVariable(name = "nickName") String nickName) {
         MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProProfileInfo(nickName);
         return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
     }
@@ -60,16 +61,17 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/infos")
-    public RspTemplate<Page<MemberResDto>> membersInfo(
+    public RspTemplate<MemberInfoResDto> membersInfo(
+            @RequestParam(name = "memberId") Long memberId,
             @RequestParam(name = "occupation", required = false) String occupation,
             @RequestParam(name = "language", required = false) String language,
             @RequestParam(name = "career", required = false) String career,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
+        MemberInfoResDto memberInfoResDto =
+                memberService.memberInfoList(memberId, occupation, language, career, page, size);
 
-        Page<MemberResDto> memberResDto = memberService.memberInfoList(occupation, language, career, page, size);
-
-        return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberResDto);
+        return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
 
     @Operation(summary = "프로필 수정", description = "프로필에 개발직군, 주력언어, 다룬기간, 그리고 깃허브주소를 업데이트 합니다.")
