@@ -47,7 +47,7 @@ public class ImageController {
     @GetMapping("/images/{imageId}")
     public RspTemplate<ImageResDto> getImage(@PathVariable Long imageId) {
         Image image = imageService.findById(imageId);
-        return new RspTemplate<>(HttpStatus.OK, "이미지 조회 완료", ImageResDto.of(image));
+        return new RspTemplate<>(HttpStatus.OK, "이미지 조회 완료", ImageResDto.from(image));
     }
 
     @PostMapping("/images")

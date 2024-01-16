@@ -1,6 +1,6 @@
 package com.example.copro.board.api.dto.response;
 
-import com.example.copro.board.api.common.ConstantClass;
+
 import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.image.api.dto.response.ImageBoardResDto;

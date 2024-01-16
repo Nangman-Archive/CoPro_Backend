@@ -2,15 +2,14 @@ package com.example.copro.board.api;
 
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
-import com.example.copro.report.api.dto.request.ReportReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
 import com.example.copro.board.api.dto.response.*;
 import com.example.copro.board.application.BoardService;
 import com.example.copro.board.application.ScheduledTasks;
-import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.board.util.PageableUtil;
 import com.example.copro.global.template.RspTemplate;
+import com.example.copro.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -20,10 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 //서비스 클래스에서 예외처리하자 데이터, 메시지, 상태코드를 템플릿에 담아 보내라
@@ -79,13 +78,14 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping//게시글 등록
-    public RspTemplate<BoardResDto> createBoard(@RequestBody BoardSaveReqDto boardRequestDto) {
-        BoardResDto boardResDto = boardService.createBoard(boardRequestDto);
+    public RspTemplate<BoardResDto> createBoard(@RequestBody BoardSaveReqDto boardRequestDto, @AuthenticationPrincipal Member member) {
+        BoardResDto boardResDto = boardService.createBoard(boardRequestDto,member);
         return new RspTemplate<>(HttpStatus.OK
                 , boardResDto.getBoardId() + "번 게시판 등록 완료"
                 , boardResDto
         );
     }
+
     @Operation(summary = "게시물 수정", description = "게시물 수정 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "수정 성공", content = @Content(schema = @Schema(implementation = BoardResDto.class))),
@@ -93,22 +93,24 @@ public class BoardController {
     })
     @PutMapping //게시물 수정
     public RspTemplate<BoardResDto> updateBoard(@RequestParam("boardId") Long boardId,
-                                                @RequestBody BoardSaveReqDto boardRequestDto) {
-        BoardResDto boardResDto = boardService.updateBoard(boardId, boardRequestDto);
+                                                @RequestBody BoardSaveReqDto boardRequestDto, @AuthenticationPrincipal Member member) {
+        BoardResDto boardResDto = boardService.updateBoard(boardId, boardRequestDto, member.getMemberId());
         return new RspTemplate<>(HttpStatus.OK
                 , boardId + "번 게시물 수정 완료"
                 , boardResDto);
     }
+
     @Operation(summary = "게시물 삭제", description = "게시물 삭제 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping //게시물 삭제
-    public RspTemplate<Void> deleteBoard(@RequestParam("boardId") Long boardId) {
-        boardService.deleteBoard(boardId);
+    public RspTemplate<Void> deleteBoard(@RequestParam("boardId") Long boardId, @AuthenticationPrincipal Member member) {
+        boardService.deleteBoard(boardId,member.getMemberId());
         return new RspTemplate<>(HttpStatus.OK, boardId + "번 게시물 삭제 완료");
     }
+
     @Operation(summary = "게시물 검색", description = "게시물 검색 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색 성공", content = @Content(schema = @Schema(implementation = BoardListRspDto.class))),
@@ -136,10 +138,12 @@ public class BoardController {
         }
 
         //검색어에 맞는 Board List를 Service에서 가져온다.
-        Page<Board> findBoardPage = boardService.findByTitleContaining(query, pageable);
+        //Page<Board> findBoardPage = boardService.findByTitleContaining(query, pageable);
 
         // StudentListRspDto.from(students)를 통해 Dto의 리스트로 변환해서 반환한다.
-        BoardListRspDto boardListRspDto = BoardListRspDto.from(findBoardPage);
+        //BoardListRspDto boardListRspDto = BoardListRspDto.from(findBoardPage);
+
+        BoardListRspDto boardListRspDto = boardService.findByTitleContaining(query, pageable);
 
         return new RspTemplate<>(HttpStatus.OK
                 , query + "조회 완료"
@@ -174,34 +178,35 @@ public class BoardController {
 
     @Operation(summary = "스크랩 등록", description = "스크랩 등록 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = ScrapSaveResDto.class))),
+            @ApiResponse(responseCode = "200", description = "등록 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/scrap/save")//스크랩 등록
-    public RspTemplate<ScrapSaveResDto> scrapBoard(@RequestBody ScrapReqDto scrapSaveReqDto) {
-        ScrapSaveResDto scrapSaveResDto = boardService.scrapBoard(scrapSaveReqDto);
-        return new RspTemplate<>(HttpStatus.OK, scrapSaveResDto.getBoardId() + "번 게시물 스크랩 완료", scrapSaveResDto);
+    public RspTemplate<Void> scrapBoard(@RequestBody ScrapReqDto scrapSaveReqDto, @AuthenticationPrincipal Member member) {
+        boardService.scrapBoard(scrapSaveReqDto,member.getMemberId());
+        return new RspTemplate<>(HttpStatus.OK, scrapSaveReqDto.getBoardId() + "번 게시물 스크랩 완료");
     }
+
     @Operation(summary = "스크랩 삭제", description = "스크랩 삭제 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping("/scrap")
-    public RspTemplate<Void> scrapDelete(@RequestBody ScrapReqDto scrapDeleteReqDto) {
-        boardService.scrapDelete(scrapDeleteReqDto);
+    public RspTemplate<Void> scrapDelete(@RequestBody ScrapReqDto scrapDeleteReqDto, @AuthenticationPrincipal Member member) {
+        boardService.scrapDelete(scrapDeleteReqDto, member.getMemberId());
         return new RspTemplate<>(HttpStatus.OK, scrapDeleteReqDto.getBoardId() + "번 게시물 스크랩 삭제 완료");
     }
 
     @Operation(summary = "좋아요 등록", description = "좋아요 등록 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = HeartSaveResDto.class))),
+            @ApiResponse(responseCode = "200", description = "등록 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/heart/save")
-    public RspTemplate<HeartSaveResDto> heartBoard(@RequestBody HeartReqDto heartSaveReqDto) {
-        HeartSaveResDto heartSaveResDto = boardService.heartBoard(heartSaveReqDto);
-        return new RspTemplate<>(HttpStatus.OK, heartSaveResDto.getBoardId() + "번 게시물 좋아요 완료", heartSaveResDto);
+    public RspTemplate<HeartSaveResDto> heartBoard(@RequestBody HeartReqDto heartSaveReqDto, @AuthenticationPrincipal Member member) {
+        boardService.heartBoard(heartSaveReqDto,member.getMemberId());
+        return new RspTemplate<>(HttpStatus.OK, heartSaveReqDto.getBoardId() + "번 게시물 좋아요 완료");
     }
 
     @Operation(summary = "좋아요 삭제", description = "좋아요 삭제 합니다")
@@ -210,8 +215,8 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping("/heart")
-    public RspTemplate<Void> heartDelete(@RequestBody HeartReqDto heartDeleteReqDto) {
-        boardService.heartDelete(heartDeleteReqDto);
+    public RspTemplate<Void> heartDelete(@RequestBody HeartReqDto heartDeleteReqDto, @AuthenticationPrincipal Member member) {
+        boardService.heartDelete(heartDeleteReqDto,member.getMemberId());
         return new RspTemplate<>(HttpStatus.OK, heartDeleteReqDto.getBoardId() + "번 게시물 좋아요 삭제 완료");
     }
 

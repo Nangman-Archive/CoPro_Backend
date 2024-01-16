@@ -34,7 +34,7 @@ class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바
             } else {
                 imageUrl = ConstantClass.getInstance().getDefaultImageUrl();
             }*/
-        ImageBoardResDto image = ImageBoardResDto.of(board);
+        ImageBoardResDto image = ImageBoardResDto.from(board);
 
         return BoardDto.builder()
                 .id(board.getBoardId())
