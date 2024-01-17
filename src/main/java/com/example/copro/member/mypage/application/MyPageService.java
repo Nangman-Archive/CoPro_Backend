@@ -3,6 +3,9 @@ package com.example.copro.member.mypage.application;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
+import com.example.copro.comment.api.dto.response.CommentResDto;
+import com.example.copro.comment.domain.Comment;
+import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.member.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
@@ -27,6 +30,7 @@ public class MyPageService {
     private final BoardRepository boardRepository;
     private final MemberScrapBoardRepository memberScrapBoardRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final CommentRepository commentRepository;
 
     // 본인 프로필 정보
     public MyProfileInfoResDto myProfileInfo(Long memberId) {
@@ -34,7 +38,7 @@ public class MyPageService {
 
         int likeMembersCount = member.getMemberLikes().size();
 
-        return MyProfileInfoResDto.myProfileInfoOf(member,likeMembersCount);
+        return MyProfileInfoResDto.myProfileInfoOf(member, likeMembersCount);
     }
 
     // 내 관심 프로필 목록
@@ -63,12 +67,23 @@ public class MyPageService {
     public BoardListRspDto boardWriteList(Long memberId, int page, int size) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
 
-        Page<Board> boards = boardRepository.findByMember(member, PageRequest.of(page,size));
+        Page<Board> boards = boardRepository.findByMember(member, PageRequest.of(page, size));
 
         return BoardListRspDto.from(boards);
     }
 
     // 작성 댓글
+    public Page<CommentResDto> commentWriteList(Long memberId, int page, int size) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        Page<Comment> myComments = commentRepository.findByWriter(member, PageRequest.of(page, size));
+
+        return myComments.map(this::mapToMyComments);
+    }
+
+    private CommentResDto mapToMyComments(Comment comment) {
+        return CommentResDto.from(comment);
+    }
 
     // 뷰 타입 변경
     @Transactional

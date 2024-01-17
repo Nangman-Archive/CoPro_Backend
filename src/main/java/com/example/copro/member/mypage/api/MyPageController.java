@@ -1,6 +1,7 @@
 package com.example.copro.member.mypage.api;
 
 import com.example.copro.board.api.dto.response.BoardListRspDto;
+import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
@@ -76,12 +77,25 @@ public class MyPageController {
             @ApiResponse(responseCode = "200", description = "내가 작성한 게시물 불러오기 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @GetMapping("/write")
+    @GetMapping("/board/write")
     public RspTemplate<BoardListRspDto> myWriteBoard(@AuthenticationPrincipal Member member,
                                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
         BoardListRspDto boardListRspDto = myPageService.boardWriteList(member.getMemberId(), page, size);
         return new RspTemplate<>(HttpStatus.OK, "내가 작성한 게시물 목록", boardListRspDto);
+    }
+
+    @Operation(summary = "내가 작성한 댓글 목록", description = "내가 작성한 댓글 목록을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내가 작성한 댓글 불러오기 성공"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @GetMapping("/comment/write")
+    public RspTemplate<Page<CommentResDto>> myWriteComment(@AuthenticationPrincipal Member member,
+                                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<CommentResDto> commentResDtos = myPageService.commentWriteList(member.getMemberId(), page, size);
+        return new RspTemplate<>(HttpStatus.OK, "내가 작성한 댓글 목록", commentResDtos);
     }
 
     @Operation(summary = "나의 뷰 타입 변경", description = "나의 뷰 타입을 변경합니다.")
