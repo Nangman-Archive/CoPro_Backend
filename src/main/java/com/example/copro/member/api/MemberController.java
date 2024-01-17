@@ -71,7 +71,7 @@ public class MemberController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         MemberInfoResDto memberInfoResDto =
-                memberService.memberInfoList(member.getMemberId(), occupation, language, career, page, size);
+                memberService.memberInfoList(member, occupation, language, career, page, size);
 
         return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
@@ -85,7 +85,7 @@ public class MemberController {
     @PatchMapping("/")
     public RspTemplate<MemberResDto> memberProfileUpdate(@AuthenticationPrincipal Member member,
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
-        MemberResDto memberResDto = memberService.profileUpdate(member.getMemberId(), memberProfileUpdateReqDto);
+        MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
     }
 
@@ -98,7 +98,7 @@ public class MemberController {
     @PatchMapping("/add-like")
     public RspTemplate<String> addLikeMember(@AuthenticationPrincipal Member member,
                                              @RequestBody MemberLikeReqDto memberLikeReqDto) {
-        memberService.addMemberLike(member.getMemberId(), memberLikeReqDto);
+        memberService.addMemberLike(member, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
     }
 
@@ -111,7 +111,7 @@ public class MemberController {
     @PatchMapping("/cancel-like")
     public RspTemplate<String> cancelLikeMember(@AuthenticationPrincipal Member member,
                                                 @RequestBody MemberLikeReqDto memberLikeReqDto) {
-        memberService.cancelMemberLike(member.getMemberId(), memberLikeReqDto);
+        memberService.cancelMemberLike(member, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 취소 완료");
     }
 }

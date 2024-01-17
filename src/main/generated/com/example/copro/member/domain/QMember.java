@@ -20,8 +20,6 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
-    public final ListPath<com.example.copro.board.domain.Board, com.example.copro.board.domain.QBoard> boards = this.<com.example.copro.board.domain.Board, com.example.copro.board.domain.QBoard>createList("boards", com.example.copro.board.domain.Board.class, com.example.copro.board.domain.QBoard.class, PathInits.DIRECT2);
-
     public final StringPath career = createString("career");
 
     public final StringPath email = createString("email");

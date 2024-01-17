@@ -37,14 +37,14 @@ public class MemberService {
     }
 
     // 전체 멤버 정보리스트
-    public MemberInfoResDto memberInfoList(Long memberId, String occupation, String language, String career, int page, int size) {
+    public MemberInfoResDto memberInfoList(Member member, String occupation, String language, String career, int page, int size) {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
         Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c), PageRequest.of(page, size));
 
-        return MemberInfoResDto.of(getViewType(memberId), members.map(this::getMemberResDto));
+        return MemberInfoResDto.of(getViewType(member), members.map(this::getMemberResDto));
     }
 
     private MemberResDto getMemberResDto(Member member) {
@@ -57,17 +57,13 @@ public class MemberService {
         return MemberResDto.of(member, likeMembersCount, likeMembersId);
     }
 
-    private int getViewType(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-
+    private int getViewType(Member member) {
         return member.getViewType();
     }
 
     // 프로필 수정
     @Transactional
-    public MemberResDto profileUpdate(Long memberId, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
-
+    public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
         member.profileUpdate(memberProfileUpdateReqDto);
 
@@ -83,8 +79,7 @@ public class MemberService {
 
     // 유저 좋아요
     @Transactional
-    public void addMemberLike(Long memberId, MemberLikeReqDto memberLikeReqDto) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+    public void addMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
                 .orElseThrow(NotFoundMemberException::new);
 
@@ -103,8 +98,7 @@ public class MemberService {
 
     // 유저 좋아요 취소
     @Transactional
-    public void cancelMemberLike(Long memberId, MemberLikeReqDto memberLikeReqDto) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+    public void cancelMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
                 .orElseThrow(NotFoundMemberException::new);
 
