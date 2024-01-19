@@ -4,6 +4,7 @@ import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.image.domain.Image;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
+import com.example.copro.report.domain.Report;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,9 +25,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
 public class Board extends BaseTimeEntity {
 
     @Id
@@ -67,8 +68,14 @@ public class Board extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "board")
-    private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Report> reports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<MemberHeartBoard> memberHeartBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @Schema(description = "이미지, 없으면 0을 요청")

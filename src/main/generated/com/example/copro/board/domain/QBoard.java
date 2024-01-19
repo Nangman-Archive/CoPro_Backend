@@ -41,9 +41,13 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final com.example.copro.member.domain.QMember member;
 
-    public final ListPath<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard> memberScrapBoard = this.<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard>createList("memberScrapBoard", com.example.copro.member.domain.MemberScrapBoard.class, com.example.copro.member.domain.QMemberScrapBoard.class, PathInits.DIRECT2);
+    public final ListPath<MemberHeartBoard, QMemberHeartBoard> memberHeartBoards = this.<MemberHeartBoard, QMemberHeartBoard>createList("memberHeartBoards", MemberHeartBoard.class, QMemberHeartBoard.class, PathInits.DIRECT2);
+
+    public final ListPath<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard> memberScrapBoards = this.<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard>createList("memberScrapBoards", com.example.copro.member.domain.MemberScrapBoard.class, com.example.copro.member.domain.QMemberScrapBoard.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> previousHeartCount = createNumber("previousHeartCount", Integer.class);
+
+    public final ListPath<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport> reports = this.<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport>createList("reports", com.example.copro.report.domain.Report.class, com.example.copro.report.domain.QReport.class, PathInits.DIRECT2);
 
     public final StringPath tag = createString("tag");
 
