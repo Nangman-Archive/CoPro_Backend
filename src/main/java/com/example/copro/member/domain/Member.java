@@ -1,5 +1,6 @@
 package com.example.copro.member.domain;
 
+import com.example.copro.board.domain.Board;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -71,7 +72,7 @@ public class Member implements UserDetails {
     private int viewType;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
+    private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberLike> memberLikes = new ArrayList<>();
@@ -153,6 +154,23 @@ public class Member implements UserDetails {
     private MemberLike findMemberLike(Member likeMember) {
         return memberLikes.stream()
                 .filter(memberLike -> memberLike.getLikedMember().equals(likeMember))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void addScrapBoard(Board board) {
+        MemberScrapBoard memberScrapBoard = MemberScrapBoard.of(board, this);
+        memberScrapBoards.add(memberScrapBoard);
+    }
+
+    public void cancelScrapBoard(Board board) {
+        MemberScrapBoard memberScrapBoard = findScrapBoard(board);
+        memberScrapBoards.remove(memberScrapBoard);
+    }
+
+    private MemberScrapBoard findScrapBoard(Board board) {
+        return memberScrapBoards.stream()
+                .filter(memberScrapBoard -> memberScrapBoard.getBoard().equals(board))
                 .findFirst()
                 .orElse(null);
     }
