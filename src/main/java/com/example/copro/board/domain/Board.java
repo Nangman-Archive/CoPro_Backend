@@ -41,7 +41,7 @@ public class Board extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Schema(description = "게시판 종류", example = "공지사항")
+    @Schema(description = "게시판 종류", example = "공지사항, 자유, 프로젝트")
     private Category category;
 
     @Column(nullable = false)
@@ -60,26 +60,27 @@ public class Board extends BaseTimeEntity {
     @Schema(description = "좋아요", example = "2")
     private int heart;
 
+    @Column(columnDefinition = "int default 0")
+    private int previousHeartCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board")
     private List<MemberScrapBoard> memberScrapBoard = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true ,cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @Schema(description = "이미지, 없으면 0을 요청")
     private List<Image> images = new ArrayList<>(5);
-
-    @Column(columnDefinition = "int default 0")
-    private int previousHeartCount;
 
     public void setPreviousHeartCount(int previousHeartCount) {
         this.previousHeartCount = previousHeartCount;
     }
 
     @Builder
-    private Board(String title, Category category, String contents, String tag, int count, int heart, List<Image> images, Member member) {
+    private Board(String title, Category category, String contents, String tag, int count, int heart,
+                  List<Image> images, Member member) {
         this.title = title;
         this.category = category;
         this.contents = contents;
@@ -91,23 +92,27 @@ public class Board extends BaseTimeEntity {
     }
 
     public void update(BoardSaveReqDto boardSaveReqDto, List<Image> images) {
-        this.title = boardSaveReqDto.getTitle();
-        this.category = boardSaveReqDto.getCategory();
-        this.contents = boardSaveReqDto.getContents();
-        this.tag = boardSaveReqDto.getTag();
+        this.title = boardSaveReqDto.title();
+        this.category = boardSaveReqDto.category();
+        this.contents = boardSaveReqDto.contents();
+        this.tag = boardSaveReqDto.tag();
         this.images.addAll(images);
     }
 
-    public void updateViewCount(int count) {
-        this.count = count + 1;
+    public void updateViewCount() {
+        this.count++;
     }
 
-    public void updateHeartCount(int heart) {
-        this.heart = heart + 1;
+    public void updateHeartCount() {
+        this.heart++;
     }
 
-    public void updateCancelHeartCount(int heart) {
-        this.heart = heart - 1;
+    public void updateCancelHeartCount() {
+        if (this.heart <= 0) {
+            this.heart = 0;
+        } else {
+            this.heart--;
+        }
     }
 
 }
