@@ -1,5 +1,6 @@
 package com.example.copro.member.application;
 
+import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
@@ -66,6 +67,13 @@ public class MemberService {
     public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
         member.profileUpdate(memberProfileUpdateReqDto);
+
+        return MemberResDto.from(member);
+    }
+
+    // gitHubUrl 수정
+    public MemberResDto gitHubUrlUpdate(Member member, MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
+        member.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
 
         return MemberResDto.from(member);
     }

@@ -1,6 +1,7 @@
 package com.example.copro.member.api;
 
 import com.example.copro.global.template.RspTemplate;
+import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
@@ -76,17 +77,30 @@ public class MemberController {
         return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
 
-    @Operation(summary = "프로필 수정", description = "프로필에 개발직군, 주력언어, 다룬기간, 그리고 깃허브주소를 업데이트 합니다.")
+    @Operation(summary = "프로필 수정", description = "프로필에 개발직군, 주력언어, 다룬기간을 업데이트 합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "수정 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/")
+    @PatchMapping("/profile")
     public RspTemplate<MemberResDto> memberProfileUpdate(@AuthenticationPrincipal Member member,
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
+    }
+
+    @Operation(summary = "깃 허브 주소 수정", description = "프로필에 깃허브주소를 업데이트 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @PatchMapping("/github-url")
+    public RspTemplate<MemberResDto> memberGitHubUrlUpdate(@AuthenticationPrincipal Member member,
+                                                           @RequestBody MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
+        MemberResDto memberResDto = memberService.gitHubUrlUpdate(member, memberGitHubUrlUpdateReqDto);
+        return new RspTemplate<>(HttpStatus.OK, "깃 허브 주소 수정 완료", memberResDto);
     }
 
     @Operation(summary = "유저 좋아요", description = "해당 유저를 관심유저 목록에 추가합니다.")

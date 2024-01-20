@@ -1,7 +1,9 @@
 package com.example.copro.member.domain;
 
 import com.example.copro.board.domain.Board;
+import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
+import com.example.copro.member.exception.InvalidGitHubUrlException;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
@@ -30,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -134,7 +135,20 @@ public class Member implements UserDetails {
         this.occupation = memberProfileUpdateReqDto.occupation();
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
-        this.gitHubUrl = memberProfileUpdateReqDto.gitHubUrl().trim();
+    }
+
+    public void gitHubUrlUpdate(MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
+        String gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl();
+        validateGitHubUrl(gitHubUrl);
+
+        this.gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl().trim();
+    }
+
+    private void validateGitHubUrl(String gitHubUrl) {
+        boolean isValid = gitHubUrl.matches("https://github\\.com/[A-Za-z0-9\\-_]+");
+        if (!isValid) {
+            throw new InvalidGitHubUrlException();
+        }
     }
 
     public void viewTypeUpdate(int viewType) {
