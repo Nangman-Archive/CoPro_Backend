@@ -12,6 +12,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberLike;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
+import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MyPageService {
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
     private final MemberScrapBoardRepository memberScrapBoardRepository;
     private final MemberLikeRepository memberLikeRepository;
     private final CommentRepository commentRepository;
 
     // 본인 프로필 정보
     public MyProfileInfoResDto myProfileInfo(Member member) {
-        int likeMembersCount = member.getMemberLikes().size();
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        int likeMembersCount = getMember.getMemberLikes().size();
 
         return MyProfileInfoResDto.myProfileInfoOf(member, likeMembersCount);
     }
@@ -75,6 +78,7 @@ public class MyPageService {
     // 뷰 타입 변경
     @Transactional
     public void updateViewType(Member member, UpdateViewTypeReqDto updateViewTypeReqDto) {
-        member.viewTypeUpdate(updateViewTypeReqDto.viewType());
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        getMember.viewTypeUpdate(updateViewTypeReqDto.viewType());
     }
 }

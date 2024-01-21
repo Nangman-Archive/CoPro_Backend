@@ -10,7 +10,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
-import com.example.copro.member.exception.InvalidMemberException;
+import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.NotFoundMemberException;
 import java.util.List;
 import java.util.Optional;
@@ -66,14 +66,18 @@ public class MemberService {
     @Transactional
     public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
-        member.profileUpdate(memberProfileUpdateReqDto);
+
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        getMember.profileUpdate(memberProfileUpdateReqDto);
 
         return MemberResDto.from(member);
     }
 
     // gitHubUrl 수정
+    @Transactional
     public MemberResDto gitHubUrlUpdate(Member member, MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
-        member.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        getMember.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
 
         return MemberResDto.from(member);
     }
@@ -81,20 +85,21 @@ public class MemberService {
     // nickName 중복검사
     private void validateDuplicateNickName(String nickName) {
         if (memberRepository.existsByNickName(nickName)) {
-            throw new InvalidMemberException("이미 존재하는 닉네임입니다.");
+            throw new ExistsNickNameException();
         }
     }
 
     // 유저 좋아요
     @Transactional
     public void addMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
                 .orElseThrow(NotFoundMemberException::new);
 
-        validateExistsLikeMember(member, likeMember);
+        validateExistsLikeMember(getMember, likeMember);
 
-        member.addMemberLike(likeMember);
-        memberRepository.save(member);
+        getMember.addMemberLike(likeMember);
+        memberRepository.save(getMember);
     }
 
     // member 관심 목록 중복검사
@@ -107,10 +112,11 @@ public class MemberService {
     // 유저 좋아요 취소
     @Transactional
     public void cancelMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
                 .orElseThrow(NotFoundMemberException::new);
 
-        member.cancelMemberLike(likeMember);
-        memberRepository.save(member);
+        getMember.cancelMemberLike(likeMember);
+        memberRepository.save(getMember);
     }
 }
