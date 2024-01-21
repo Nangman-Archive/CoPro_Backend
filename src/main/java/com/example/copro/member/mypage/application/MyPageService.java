@@ -78,6 +78,7 @@ public class MyPageService {
     // 뷰 타입 변경
     @Transactional
     public void updateViewType(Member member, UpdateViewTypeReqDto updateViewTypeReqDto) {
-        member.viewTypeUpdate(updateViewTypeReqDto.viewType());
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        getMember.viewTypeUpdate(updateViewTypeReqDto.viewType());
     }
 }

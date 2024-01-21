@@ -3,6 +3,7 @@ package com.example.copro.global.error;
 import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.global.error.dto.ErrorResponse;
 import com.example.copro.member.exception.ExistsLikeMemberException;
+import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.InvalidGitHubUrlException;
 import com.example.copro.member.exception.InvalidMemberException;
 import com.example.copro.member.exception.NotFoundMemberException;
@@ -16,6 +17,7 @@ public class ControllerAdvice {
 
     @ExceptionHandler({
             ExistsLikeMemberException.class,
+            ExistsNickNameException.class,
             InvalidMemberException.class,
             InvalidGitHubUrlException.class
     })
