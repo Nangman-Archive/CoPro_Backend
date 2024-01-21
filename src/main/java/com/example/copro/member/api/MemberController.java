@@ -18,8 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -83,7 +83,7 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/profile")
+    @PostMapping("/profile")
     public RspTemplate<MemberResDto> memberProfileUpdate(@AuthenticationPrincipal Member member,
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
@@ -96,7 +96,7 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/github-url")
+    @PostMapping("/github-url")
     public RspTemplate<MemberResDto> memberGitHubUrlUpdate(@AuthenticationPrincipal Member member,
                                                            @RequestBody MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
         MemberResDto memberResDto = memberService.gitHubUrlUpdate(member, memberGitHubUrlUpdateReqDto);
@@ -109,7 +109,7 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/add-like")
+    @PostMapping("/add-like")
     public RspTemplate<String> addLikeMember(@AuthenticationPrincipal Member member,
                                              @RequestBody MemberLikeReqDto memberLikeReqDto) {
         memberService.addMemberLike(member, memberLikeReqDto);
@@ -122,7 +122,7 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PatchMapping("/cancel-like")
+    @PostMapping("/cancel-like")
     public RspTemplate<String> cancelLikeMember(@AuthenticationPrincipal Member member,
                                                 @RequestBody MemberLikeReqDto memberLikeReqDto) {
         memberService.cancelMemberLike(member, memberLikeReqDto);
