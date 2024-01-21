@@ -3,6 +3,7 @@ package com.example.copro.global.error;
 import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.global.error.dto.ErrorResponse;
 import com.example.copro.member.exception.ExistsLikeMemberException;
+import com.example.copro.member.exception.InvalidGitHubUrlException;
 import com.example.copro.member.exception.InvalidMemberException;
 import com.example.copro.member.exception.NotFoundMemberException;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,8 @@ public class ControllerAdvice {
 
     @ExceptionHandler({
             ExistsLikeMemberException.class,
-            InvalidMemberException.class
+            InvalidMemberException.class,
+            InvalidGitHubUrlException.class
     })
     public ResponseEntity<ErrorResponse> handleInvalidData(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());

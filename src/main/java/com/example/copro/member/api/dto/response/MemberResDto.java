@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record MemberResDto(
+        Long memberId,
         String name,
         String email,
         String picture,
@@ -20,6 +21,7 @@ public record MemberResDto(
 ) {
     public static MemberResDto from(Member member) {
         return MemberResDto.builder()
+                .memberId(member.getMemberId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .picture(member.getPicture())
@@ -33,6 +35,7 @@ public record MemberResDto(
 
     public static MemberResDto of(Member member, int likeMembersCount, List<Long> likeMembersId) {
         return MemberResDto.builder()
+                .memberId(member.getMemberId())
                 .name(member.getName())
                 .email(member.getEmail())
                 .picture(member.getPicture())

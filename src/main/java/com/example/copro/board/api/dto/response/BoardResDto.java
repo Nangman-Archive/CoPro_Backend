@@ -4,58 +4,26 @@ import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Builder;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BoardResDto {
-
-    private Long boardId;
-    private String title;
-
-    private Category category;
-    private String contents;
-
-    private String tag;
-
-    private int count;
-
-    private int heart;
-
-    private List<String> imageUrl;
-
-    private String nickName;
-
-    private String occupation;
-
-    private List<Long> heartMemberIds;
-    private List<Long> scrapMemberIds;
-
-    private List<CommentResDto> commentResDtoList;
-
-    @Builder
-    public BoardResDto(Long boardId, String title, Category category, String contents, String tag, int count, String nickName, String occupation, int heart, List<String> imageUrl, List<Long> heartMemberIds, List<Long> scrapMemberIds,List<CommentResDto> commentResDtoList) {
-        this.boardId = boardId;
-        this.title = title;
-        this.category = category;
-        this.contents = contents;
-        this.tag = tag;
-        this.count = count;
-        this.nickName = nickName;
-        this.occupation = occupation;
-        this.heart = heart;
-        this.imageUrl = imageUrl;
-        this.heartMemberIds = heartMemberIds;
-        this.scrapMemberIds = scrapMemberIds;
-        this.commentResDtoList = commentResDtoList;
-    }
-
+@Builder
+public record BoardResDto(
+        Long boardId,
+        String title,
+        Category category,
+        String contents,
+        String tag,
+        int count,
+        int heart,
+        List<String> imageUrl,
+        String nickName,
+        String occupation,
+        List<Long> heartMemberIds,
+        List<Long> scrapMemberIds,
+        List<CommentResDto> commentResDtoList
+) {
     public static BoardResDto of(Board board) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
@@ -75,7 +43,8 @@ public class BoardResDto {
                 .build();
     }
 
-    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds, List<CommentResDto> commentResDtoList) {
+    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds,
+                                   List<CommentResDto> commentResDtoList) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
