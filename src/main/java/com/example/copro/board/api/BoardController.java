@@ -152,17 +152,6 @@ public class BoardController {
         );
     }
 
-    @Operation(summary = "작성 페이지 요청", description = "작성 페이지 요청 합니다")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "요청 성공"),
-            @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
-    })
-    @GetMapping("/{category}") //작성 페이지 요청
-    public RspTemplate<String> showWritePage(@PathVariable("category") String category) {
-        Category validCategory = boardService.validateCategory(category);
-        return new RspTemplate<>(HttpStatus.OK, category + "조회 완료", category);
-    }
-
     @Operation(summary = "스크랩 등록", description = "스크랩 등록 합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "등록 성공"),

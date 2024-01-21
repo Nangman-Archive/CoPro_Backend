@@ -158,14 +158,6 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    public Category validateCategory(String category) {
-        try {
-            return Category.valueOf(category);
-        } catch (IllegalArgumentException e) {
-            throw new CategoryNotFoundException();
-        }
-    }
-
     @Transactional
     public void scrapBoard(ScrapReqDto scrapSaveReqDto, Member member) {
         Board board = boardRepository.findById(scrapSaveReqDto.boardId()).orElseThrow(() -> new BoardNotFoundException(scrapSaveReqDto.boardId()));
