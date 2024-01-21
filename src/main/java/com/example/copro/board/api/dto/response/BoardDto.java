@@ -1,6 +1,7 @@
 package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
+import com.example.copro.comment.api.dto.response.CommentBoardResDto;
 import com.example.copro.image.api.dto.response.DefaultImage;
 import com.example.copro.image.api.dto.response.ImageBoardResDto;
 import com.example.copro.image.domain.Image;
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Builder // 이 객체 만드는 생성자도 있어야함
-class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바깥쪽에선 이 dto안써짐)
+@Builder
+public class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바깥쪽에선 이 dto안써짐)
     long id;
     String title;
     String nickName;
@@ -22,10 +23,10 @@ class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바
     int count;
     int heart;
     String imageUrl;
-
+    int commentCount;
 
     //빌더를 통해 밑에 생성자를 간접적으로 부를 수 있게 해줌, from을 사용하여 좀 더 명확한 메서드이름
-     public static BoardDto from(Board board) {
+     public static BoardDto from(Board board, int commentCount) {
 
             /*String imageUrl = null;
             if (!board.getImages().isEmpty()) { // 이미지가 존재하면
@@ -34,6 +35,22 @@ class BoardDto { //안쪽에 dto쓰는 이유: 보수적인 작업을 위해(바
             } else {
                 imageUrl = ConstantClass.getInstance().getDefaultImageUrl();
             }*/
+        ImageBoardResDto image = ImageBoardResDto.from(board);
+
+        return BoardDto.builder()
+                .id(board.getBoardId())
+                .title(board.getTitle())
+                .nickName(board.getMember().getNickName())
+                .createAt(board.getCreateAt())
+                .count(board.getCount())
+                .heart(board.getHeart())
+                .imageUrl(image.imageUrl())
+                .commentCount(commentCount)
+                .build();
+    }
+
+    public static BoardDto from(Board board) {
+
         ImageBoardResDto image = ImageBoardResDto.from(board);
 
         return BoardDto.builder()

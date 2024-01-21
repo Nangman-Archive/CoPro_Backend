@@ -11,4 +11,6 @@ public interface CommentCustomRepository {
     List<CommentResDto> findByBoardBoardId(Long boardId);
 
     Optional<Comment> findCommentByCommentIdWithParent(Long id);
+
+    int countByBoardBoardId(Long boardId);
 }

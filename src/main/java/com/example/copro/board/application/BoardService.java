@@ -1,5 +1,6 @@
 package com.example.copro.board.application;
 
+import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
@@ -65,8 +66,12 @@ public class BoardService {
 //            }
 //        }
 //        return pages;
+
+        //Page<Board> boards = boardRepository.findAll(pageable);
+
+        //return BoardListRspDto.from(boards);
         Page<Board> boards = boardRepository.findAll(pageable);
-        return BoardListRspDto.from(boards);
+        return getBoardListRspDto(boards);
         /*return boardRepository.findAllWithMembersAndImages(pageable);*/
     }
 
@@ -150,7 +155,21 @@ public class BoardService {
     @Transactional
     public BoardListRspDto findByTitleContaining(String q, Pageable pageable) {
         Page<Board> boards = boardRepository.findByTitleContaining(q, pageable);
-        return BoardListRspDto.from(boards);
+        return getBoardListRspDto(boards);
+
+        //return BoardListRspDto.from(boards);
+    }
+
+    private BoardListRspDto getBoardListRspDto(Page<Board> boards) {
+        List<BoardDto> boardDtoList = boards.getContent().stream()
+                .map(board -> {
+                    int commentCount = commentRepository.countByBoardBoardId(board.getBoardId());
+                    return BoardDto.from(board, commentCount);
+                })
+                .collect(Collectors.toList());
+        PageInfoDto pageInfoDto = PageInfoDto.from(boards);
+
+        return new BoardListRspDto(boardDtoList, pageInfoDto);
     }
 
     @Transactional
