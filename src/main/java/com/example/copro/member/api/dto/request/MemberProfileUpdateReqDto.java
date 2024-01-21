@@ -4,7 +4,6 @@ public record MemberProfileUpdateReqDto(
         String nickName,
         String occupation,
         String language,
-        String career,
-        String gitHubUrl
+        String career
 ) {
 }

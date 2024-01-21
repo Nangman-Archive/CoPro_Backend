@@ -9,7 +9,6 @@ import com.example.copro.comment.domain.Comment;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.member.api.dto.response.MemberCommentResDto;
 import com.example.copro.member.domain.Member;
-import com.example.copro.member.domain.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,20 +27,21 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("Could not found board id : " + boardId));
 
         Comment parentComment = null;
-        if (commentReqDto.getParentId() != null) {
-            parentComment = commentRepository.findById(commentReqDto.getParentId())
-                    .orElseThrow(() -> new NotFoundException("Could not found comment id : " + commentReqDto.getParentId()));
+        if (commentReqDto.parentId() != null) {
+            parentComment = commentRepository.findById(commentReqDto.parentId())
+                    .orElseThrow(() -> new NotFoundException("Could not found comment id : " + commentReqDto.parentId()));
         }
 
         Comment comment = Comment.builder()
-                .content(commentReqDto.getContent())
+                .content(commentReqDto.content())
                 .writer(member)
                 .board(board)
                 .parent(parentComment)
                 .build();
 
         Comment savedComment = commentRepository.save(comment);
-        return new CommentResDto(savedComment.getCommentId(), savedComment.getContent(), new MemberCommentResDto(savedComment.getWriter()));
+        return new CommentResDto(savedComment.getCommentId(), savedComment.getContent(), new MemberCommentResDto(savedComment.getWriter().getNickName(),
+                savedComment.getWriter().getOccupation()));
     }
 
     @Transactional
@@ -53,8 +53,8 @@ public class CommentService {
         if (!comment.getWriter().getMemberId().equals(member.getMemberId())) {
             throw new NotFoundException("You do not have permission to edit this comment." + member.getMemberId());
         }
-        comment.updateContent(commentReqDto.getContent());
-        return new CommentResDto(comment.getCommentId(), comment.getContent(), new MemberCommentResDto(comment.getWriter()));
+        comment.updateContent(commentReqDto.content());
+        return new CommentResDto(comment.getCommentId(), comment.getContent(), new MemberCommentResDto(comment.getWriter().getNickName(), comment.getWriter().getOccupation()));
     }
 
     @Transactional

@@ -33,8 +33,7 @@ public class MemberScrapBoard {
     private Member member;
 
     @Builder
-    private MemberScrapBoard(Long id, Board board, Member member){
-        this.id = id;
+    private MemberScrapBoard(Board board, Member member){
         this.board = board;
         this.member = member;
     }
