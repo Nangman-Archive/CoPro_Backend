@@ -22,13 +22,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-#logging:
-#  discord:
-#    webhook-uri: ${logging.discord.webhook-uri}
-#  config: ${logging.config}
-#  level:
-#    org.hibernate.sql: debug
-#    org.hibernate.type: trace
+logging:
+  discord:
+    webhook-uri: ${logging.discord.webhook-uri}
+  config: ${logging.config}
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
 
 FIREBASE_KEY: ${FIREBASE_KEY}
 
