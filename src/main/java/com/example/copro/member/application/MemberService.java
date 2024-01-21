@@ -66,14 +66,17 @@ public class MemberService {
     @Transactional
     public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
-        member.profileUpdate(memberProfileUpdateReqDto);
+
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        getMember.profileUpdate(memberProfileUpdateReqDto);
 
         return MemberResDto.from(member);
     }
 
     // gitHubUrl 수정
     public MemberResDto gitHubUrlUpdate(Member member, MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
-        member.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        getMember.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
 
         return MemberResDto.from(member);
     }
