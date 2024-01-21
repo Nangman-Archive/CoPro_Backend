@@ -12,10 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,12 +35,13 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/{boardId}")
-    public RspTemplate<CommentResDto> insert(@PathVariable Long boardId,
-                                             @RequestBody CommentReqDto commentReqDto, @AuthenticationPrincipal Member member) {
+    public RspTemplate<CommentResDto> insert(@PathVariable(name = "boardId") Long boardId,
+                                             @RequestBody CommentReqDto commentReqDto,
+                                             @AuthenticationPrincipal Member member) {
 
         CommentResDto commentResDto = commentService.insert(boardId, commentReqDto, member);
         return new RspTemplate<>(HttpStatus.OK
-                ,  "댓글 작성 완료"
+                , "댓글 작성 완료"
                 , commentResDto
         );
     }
@@ -46,13 +52,14 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PutMapping("/{commentId}")
-    public RspTemplate<CommentResDto> update(@PathVariable Long commentId, @RequestBody CommentReqDto commentReqDto, @AuthenticationPrincipal Member member) {
+    public RspTemplate<CommentResDto> update(@PathVariable Long commentId, @RequestBody CommentReqDto commentReqDto,
+                                             @AuthenticationPrincipal Member member) {
 
         CommentResDto commentResDto = commentService.update(commentId, commentReqDto, member);
 
         return new RspTemplate<>(HttpStatus.OK
-                ,   "댓글 수정 완료"
-                ,   commentResDto);
+                , "댓글 수정 완료"
+                , commentResDto);
     }
 
     @Operation(summary = "댓글 삭제", description = "댓글 삭제 합니다")
@@ -65,7 +72,7 @@ public class CommentController {
         commentService.delete(commentId);
 
         return new RspTemplate<>(HttpStatus.OK
-        ,   "댓글 삭제 완료");
+                , "댓글 삭제 완료");
     }
 
 }
