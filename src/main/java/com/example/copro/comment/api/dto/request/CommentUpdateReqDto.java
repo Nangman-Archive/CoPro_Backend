@@ -1,7 +1,6 @@
 package com.example.copro.comment.api.dto.request;
 
-public record CommentReqDto(
-        Long parentId,
+public record CommentUpdateReqDto(
         String content
 ) {
 }
