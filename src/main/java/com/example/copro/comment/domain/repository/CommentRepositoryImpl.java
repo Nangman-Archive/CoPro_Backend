@@ -68,4 +68,13 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
         // 선택된 댓글을 Optional로 감싸 반환. 만약 선택된 댓글이 없으면 Optional.empty()가 반환.
         return Optional.ofNullable(selectedComment);
     }
+
+    @Override
+    public int countByBoardBoardId(Long boardId) {
+
+        return (int)queryFactory.selectFrom(comment)
+                .where(comment.board.boardId.eq(boardId))
+                .fetchCount();
+    }
+
 }
