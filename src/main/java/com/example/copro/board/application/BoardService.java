@@ -130,8 +130,8 @@ public class BoardService {
 
 
     public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
-        Page<Board> boards = boardRepository.findByTitleContaining(query, pageable);
-        return BoardListRspDto.from(boards);
+        Page<BoardDto> boards = boardRepository.findByTitleContaining(query, pageable);
+        return BoardListRspDto.of(boards);
     }
 
     public BoardResDto getBoard(Long boardId) {

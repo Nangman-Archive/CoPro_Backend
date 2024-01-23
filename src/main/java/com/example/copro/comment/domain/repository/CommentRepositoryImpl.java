@@ -45,10 +45,10 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
             CommentResDto commentResDto = from(c);
 
             // 변환된 CommentResDto 객체를 맵에 추가
-            commentDtoHashMap.put(commentResDto.commentId(), commentResDto);
+            commentDtoHashMap.put(commentResDto.getCommentId(), commentResDto);
 
             // 댓글이 부모 댓글을 가지면 부모 댓글의 CommentResDto 객체의 자식 리스트에 추가
-            if (c.getParent() != null) commentDtoHashMap.get(c.getParent().getCommentId()).children().add(commentResDto);
+            if (c.getParent() != null) commentDtoHashMap.get(c.getParent().getCommentId()).getChildren().add(commentResDto);
                 // 댓글이 부모 댓글을 가지지 않으면 commentResDtoList에 직접 추가
             else commentResDtoList.add(commentResDto);
         });

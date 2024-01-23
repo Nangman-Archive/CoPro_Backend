@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardCustomRepository {
     Page<BoardDto> findAllWithCommentCount(String category, Pageable pageable);
+
+    Page<BoardDto> findByTitleContaining(String query, Pageable pageable);
 }

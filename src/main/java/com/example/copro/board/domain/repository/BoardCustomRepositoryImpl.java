@@ -49,4 +49,30 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         return new PageImpl<>(results, pageable, total);
     }
 
+    @Override
+    public Page<BoardDto> findByTitleContaining(String query, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QComment comment = QComment.comment;
+
+        List<BoardDto> results = queryFactory
+                .select(board, comment.count())
+                .from(board)
+                .leftJoin(comment).on(comment.board.boardId.eq(board.boardId))
+                .where(board.title.contains(query))
+                .groupBy(board.boardId)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch()
+                .stream()
+                .map(tuple -> BoardDto.from(tuple.get(board), Optional.ofNullable(tuple.get(comment.count())).orElse(0L).intValue()))
+                .collect(Collectors.toList());
+
+        long total = queryFactory
+                .selectFrom(board)
+                .where(board.title.contains(query))
+                .fetchCount();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
 }
