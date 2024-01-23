@@ -44,7 +44,6 @@ public class BoardService {
     private final ImageRepository imageRepository;
     private final CommentRepository commentRepository;
 
-
     public BoardListRspDto findAll(String category, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
         return BoardListRspDto.from(boards);
@@ -122,7 +121,6 @@ public class BoardService {
             throw new NotOwnerException();
         }
     }
-
 
     public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
         Page<Board> boards = boardRepository.findByTitleContaining(query, pageable);
