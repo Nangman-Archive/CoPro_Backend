@@ -34,7 +34,7 @@ public class CommentService {
     }
 
     private Comment getParentComment(CommentSaveReqDto commentSaveReqDto) {
-        if (commentSaveReqDto.parentId() != null) {
+        if (commentSaveReqDto.parentId() != null && commentSaveReqDto.parentId() != -1L) {
             return commentRepository.findById(commentSaveReqDto.parentId())
                     .orElseThrow(() -> new CommentNotFoundException(
                             commentSaveReqDto.parentId()));

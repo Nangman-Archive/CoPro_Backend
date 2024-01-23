@@ -3,6 +3,7 @@ package com.example.copro.board.application;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
+import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.domain.Board;
@@ -45,8 +46,10 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
-        return BoardListRspDto.from(boards);
+        //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
+        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(category, pageable);
+
+        return BoardListRspDto.of(boards);
     }
 
     //서비스에서 보드를 찾아 이미지가 null인지 아닌지
@@ -123,8 +126,8 @@ public class BoardService {
     }
 
     public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
-        Page<Board> boards = boardRepository.findByTitleContaining(query, pageable);
-        return BoardListRspDto.from(boards);
+        Page<BoardDto> boards = boardRepository.findByTitleContaining(query, pageable);
+        return BoardListRspDto.of(boards);
     }
 
     // 상세 게시판
@@ -138,7 +141,9 @@ public class BoardService {
 
         List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
 
+
         return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
+
     }
 
     @Transactional
