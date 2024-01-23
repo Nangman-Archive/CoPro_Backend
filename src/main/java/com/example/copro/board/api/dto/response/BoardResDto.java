@@ -4,6 +4,7 @@ import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.Builder;
 public record BoardResDto(
         Long boardId,
         String title,
+        LocalDateTime createAt,
         Category category,
         String contents,
         String tag,
@@ -20,8 +22,8 @@ public record BoardResDto(
         List<String> imageUrl,
         String nickName,
         String occupation,
-        List<Long> heartMemberIds,
-        List<Long> scrapMemberIds,
+        boolean isHeart,
+        boolean isScrap,
         List<CommentResDto> commentResDtoList
 ) {
     public static BoardResDto of(Board board) {
@@ -32,6 +34,7 @@ public record BoardResDto(
         return BoardResDto.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
+                .createAt(board.getCreateAt())
                 .category(board.getCategory())
                 .contents(board.getContents())
                 .tag(board.getTag())
@@ -43,8 +46,7 @@ public record BoardResDto(
                 .build();
     }
 
-    public static BoardResDto from(Board board, List<Long> heartMemberIds, List<Long> scrapMemberIds,
-                                   List<CommentResDto> commentResDtoList) {
+    public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, List<CommentResDto> commentResDtoList) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -52,6 +54,7 @@ public record BoardResDto(
         return BoardResDto.builder()
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
+                .createAt(board.getCreateAt())
                 .category(board.getCategory())
                 .contents(board.getContents())
                 .tag(board.getTag())
@@ -60,8 +63,8 @@ public record BoardResDto(
                 .occupation(board.getMember().getOccupation())
                 .heart(board.getHeart())
                 .imageUrl(imageUrl)
-                .heartMemberIds(heartMemberIds)
-                .scrapMemberIds(scrapMemberIds)
+                .isHeart(isHeart)
+                .isScrap(isScrap)
                 .commentResDtoList(commentResDtoList)
                 .build();
     }

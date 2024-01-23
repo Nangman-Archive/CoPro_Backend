@@ -7,7 +7,6 @@ import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.application.BoardService;
 import com.example.copro.board.application.ScheduledTasks;
-import com.example.copro.board.domain.Category;
 import com.example.copro.board.util.PageableUtil;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.domain.Member;
@@ -59,7 +58,8 @@ public class BoardController {
             @Parameter(name = "standard", description = "정렬 기준 ex)create_at, count", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "create_at") String standard
     ) {
-        String sortProperty = "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
+        String sortProperty =
+                "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
         Pageable pageable = PageableUtil.of(page, size, Sort.by(Sort.Direction.DESC, sortProperty));
 
         BoardListRspDto boardListRspDto = boardService.findAll(category, pageable);
@@ -127,7 +127,8 @@ public class BoardController {
             @RequestParam(defaultValue = "7") int size,
             @Parameter(name = "standard", description = "정렬 기준 ex)create_at, count", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "create_at") String standard) {
-        String sortProperty = "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
+        String sortProperty =
+                "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
         Pageable pageable = PageableUtil.of(page, size, Sort.by(Sort.Direction.DESC, sortProperty));
 
         BoardListRspDto boardListRspDto = boardService.findByTitleContaining(query, pageable);
@@ -144,23 +145,13 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @GetMapping //상세 페이지
-    public RspTemplate<BoardResDto> getBoard(@RequestParam("boardId") Long boardId) {
-        BoardResDto boardResDto = boardService.getBoard(boardId);
+    public RspTemplate<BoardResDto> getBoard(@AuthenticationPrincipal Member member,
+                                             @RequestParam("boardId") Long boardId) {
+        BoardResDto boardResDto = boardService.getBoard(member, boardId);
         return new RspTemplate<>(HttpStatus.OK
                 , boardId + "상세뷰 확인 완료"
                 , boardResDto
         );
-    }
-
-    @Operation(summary = "작성 페이지 요청", description = "작성 페이지 요청 합니다")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "요청 성공"),
-            @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
-    })
-    @GetMapping("/{category}") //작성 페이지 요청
-    public RspTemplate<String> showWritePage(@PathVariable("category") String category) {
-        Category validCategory = boardService.validateCategory(category);
-        return new RspTemplate<>(HttpStatus.OK, category + "조회 완료", category);
     }
 
     @Operation(summary = "스크랩 등록", description = "스크랩 등록 합니다")
@@ -217,9 +208,9 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @GetMapping("/most-increased-hearts")//인기 게시물
-    public RspTemplate<BoardResDto> getMostIncreasedHeartsPost() {
+    public RspTemplate<BoardResDto> getMostIncreasedHeartsPost(@AuthenticationPrincipal Member member) {
         Long boardId = scheduledTasks.getMostIncreasedHeartsPostId();
-        BoardResDto boardResDto = boardService.getBoard(boardId);
+        BoardResDto boardResDto = boardService.getBoard(member, boardId);
         return new RspTemplate<>(HttpStatus.OK
                 , boardId + " 번 인기 게시물 조회 완료"
                 , boardResDto
