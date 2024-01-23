@@ -11,13 +11,12 @@ import com.example.copro.image.api.dto.response.ImageResDto;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.image.exception.ImageNotFoundException;
+import com.example.copro.image.exception.UploadFailureImageException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import com.example.copro.image.exception.UploadFailureImageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

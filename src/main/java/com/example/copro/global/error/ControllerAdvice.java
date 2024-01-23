@@ -6,7 +6,7 @@ import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.InvalidGitHubUrlException;
 import com.example.copro.member.exception.InvalidMemberException;
-import com.example.copro.member.exception.NotFoundMemberException;
+import com.example.copro.member.exception.MemberNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +28,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler({
-            NotFoundMemberException.class,
+            MemberNotFoundException.class,
             BoardNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFoundDate(RuntimeException e) {

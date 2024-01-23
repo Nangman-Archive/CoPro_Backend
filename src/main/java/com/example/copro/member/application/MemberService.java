@@ -11,7 +11,7 @@ import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
-import com.example.copro.member.exception.NotFoundMemberException;
+import com.example.copro.member.exception.MemberNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -32,7 +32,7 @@ public class MemberService {
 
     // nickname으로 member채팅프로필 불러오기
     public MemberChattingProfileResDto memberChattingProProfileInfo(String nickName) {
-        Member member = memberRepository.findByNickName(nickName).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByNickName(nickName).orElseThrow(MemberNotFoundException::new);
 
         return MemberChattingProfileResDto.from(member);
     }
@@ -67,7 +67,7 @@ public class MemberService {
     public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
 
-        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         getMember.profileUpdate(memberProfileUpdateReqDto);
 
         return MemberResDto.from(member);
@@ -76,7 +76,7 @@ public class MemberService {
     // gitHubUrl 수정
     @Transactional
     public MemberResDto gitHubUrlUpdate(Member member, MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
-        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         getMember.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
 
         return MemberResDto.from(member);
@@ -92,9 +92,9 @@ public class MemberService {
     // 유저 좋아요
     @Transactional
     public void addMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
-        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
-                .orElseThrow(NotFoundMemberException::new);
+                .orElseThrow(MemberNotFoundException::new);
 
         validateExistsLikeMember(getMember, likeMember);
 
@@ -112,9 +112,9 @@ public class MemberService {
     // 유저 좋아요 취소
     @Transactional
     public void cancelMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
-        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
-                .orElseThrow(NotFoundMemberException::new);
+                .orElseThrow(MemberNotFoundException::new);
 
         getMember.cancelMemberLike(likeMember);
         memberRepository.save(getMember);
