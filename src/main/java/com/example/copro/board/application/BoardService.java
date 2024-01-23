@@ -23,12 +23,10 @@ import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.member.domain.Member;
-import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +44,6 @@ public class BoardService {
     private final MemberHeartBoardRepository memberHeartBoardRepository;
     private final ImageRepository imageRepository;
     private final CommentRepository commentRepository;
-
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
@@ -128,20 +125,23 @@ public class BoardService {
         }
     }
 
-
     public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
         Page<BoardDto> boards = boardRepository.findByTitleContaining(query, pageable);
         return BoardListRspDto.of(boards);
     }
 
-    public BoardResDto getBoard(Long boardId) {
+    // 상세 게시판
+    public BoardResDto getBoard(Member member, Long boardId) {
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
         board.updateViewCount();
 
-        List<Long> heartMemberIds = getHeartMemberIds(board);
-        List<Long> scrapMemberIds = getScrapMemberIds(board);
+        boolean isHeart = memberHeartBoardRepository.existsByMemberAndBoard(getMember, board);
+        boolean isScrap = memberScrapBoardRepository.existsByMemberAndBoard(getMember, board);
+
         List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
 
+<<<<<<< HEAD
         return BoardResDto.from(board, heartMemberIds, scrapMemberIds, commentResDtoList);
     }
 
@@ -157,6 +157,9 @@ public class BoardService {
                 .map(MemberScrapBoard::getMember)
                 .map(Member::getMemberId)
                 .collect(Collectors.toList());
+=======
+        return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
+>>>>>>> d8d8be79813cc51b220527ef69b8dcb12809a1de
     }
 
     @Transactional
@@ -188,7 +191,7 @@ public class BoardService {
     }
 
     private void validateScrapNotFound(Member deleteScrapMember, Board board) {
-        if (memberScrapBoardRepository.findByMemberMemberIdAndBoardBoardId(deleteScrapMember.getMemberId(), board.getBoardId()).isPresent()) {
+        if (memberScrapBoardRepository.findByMemberMemberIdAndBoardBoardId(deleteScrapMember.getMemberId(), board.getBoardId()).isEmpty()) {
             throw new ScrapNotFoundException();
         }
     }

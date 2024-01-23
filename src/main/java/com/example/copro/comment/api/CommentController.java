@@ -1,6 +1,7 @@
 package com.example.copro.comment.api;
 
-import com.example.copro.comment.api.dto.request.CommentReqDto;
+import com.example.copro.comment.api.dto.request.CommentSaveReqDto;
+import com.example.copro.comment.api.dto.request.CommentUpdateReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.application.CommentService;
 import com.example.copro.comment.domain.Comment;
@@ -36,10 +37,10 @@ public class CommentController {
     })
     @PostMapping("/{boardId}")
     public RspTemplate<CommentResDto> insert(@PathVariable(name = "boardId") Long boardId,
-                                             @RequestBody CommentReqDto commentReqDto,
+                                             @RequestBody CommentSaveReqDto commentSaveReqDto,
                                              @AuthenticationPrincipal Member member) {
 
-        CommentResDto commentResDto = commentService.insert(boardId, commentReqDto, member);
+        CommentResDto commentResDto = commentService.insert(boardId, commentSaveReqDto, member);
         return new RspTemplate<>(HttpStatus.OK
                 , "댓글 작성 완료"
                 , commentResDto
@@ -52,10 +53,11 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PutMapping("/{commentId}")
-    public RspTemplate<CommentResDto> update(@PathVariable Long commentId, @RequestBody CommentReqDto commentReqDto,
+    public RspTemplate<CommentResDto> update(@PathVariable(name = "commentId") Long commentId,
+                                             @RequestBody CommentUpdateReqDto commentUpdateReqDto,
                                              @AuthenticationPrincipal Member member) {
 
-        CommentResDto commentResDto = commentService.update(commentId, commentReqDto, member);
+        CommentResDto commentResDto = commentService.update(commentId, commentUpdateReqDto, member);
 
         return new RspTemplate<>(HttpStatus.OK
                 , "댓글 수정 완료"
@@ -68,8 +70,9 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping("/{commentId}")
-    public RspTemplate<Comment> delete(@PathVariable Long commentId) {
-        commentService.delete(commentId);
+    public RspTemplate<Comment> delete(@PathVariable(name = "commentId") Long commentId,
+                                       @AuthenticationPrincipal Member member) {
+        commentService.delete(member, commentId);
 
         return new RspTemplate<>(HttpStatus.OK
                 , "댓글 삭제 완료");

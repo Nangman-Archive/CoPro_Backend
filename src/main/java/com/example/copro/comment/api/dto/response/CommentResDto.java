@@ -25,7 +25,9 @@ public class CommentResDto {
     public static CommentResDto from(Comment comment) {
         return comment.getIsDeleted() ?
                 new CommentResDto(comment.getCommentId(), "삭제된 댓글입니다.", null) :
-                new CommentResDto(comment.getCommentId(), comment.getContent(), new MemberCommentResDto(comment.getWriter().getNickName(), comment.getWriter().getOccupation()));
+                new CommentResDto(comment.getCommentId(), comment.getContent(),
+                        new MemberCommentResDto(comment.getWriter().getNickName(),
+                                comment.getWriter().getOccupation()));
     }
 
 }
