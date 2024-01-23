@@ -141,25 +141,9 @@ public class BoardService {
 
         List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
 
-<<<<<<< HEAD
-        return BoardResDto.from(board, heartMemberIds, scrapMemberIds, commentResDtoList);
-    }
 
-    private List<Long> getHeartMemberIds(Board board) {
-        return memberHeartBoardRepository.findByBoardBoardId(board.getBoardId()).stream()
-                .map(MemberHeartBoard::getMember)
-                .map(Member::getMemberId)
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> getScrapMemberIds(Board board) {
-        return memberScrapBoardRepository.findByBoardBoardId(board.getBoardId()).stream()
-                .map(MemberScrapBoard::getMember)
-                .map(Member::getMemberId)
-                .collect(Collectors.toList());
-=======
         return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
->>>>>>> d8d8be79813cc51b220527ef69b8dcb12809a1de
+
     }
 
     @Transactional
