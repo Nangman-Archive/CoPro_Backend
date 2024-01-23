@@ -26,7 +26,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
-import com.example.copro.member.exception.NotFoundMemberException;
+import com.example.copro.member.exception.MemberNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -162,7 +162,7 @@ public class BoardService {
     @Transactional
     public void scrapBoard(ScrapReqDto scrapSaveReqDto, Member member) {
         Board board = boardRepository.findById(scrapSaveReqDto.boardId()).orElseThrow(() -> new BoardNotFoundException(scrapSaveReqDto.boardId()));
-        Member addScrapMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member addScrapMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
 
         validateScrapNotExists(addScrapMember, board);
 
@@ -179,7 +179,7 @@ public class BoardService {
     @Transactional
     public void scrapDelete(ScrapReqDto scrapDeleteReqDto, Member member) {
         Board board = boardRepository.findById(scrapDeleteReqDto.boardId()).orElseThrow(() -> new BoardNotFoundException(scrapDeleteReqDto.boardId()));
-        Member deleteScrapMember = memberRepository.findById(member.getMemberId()).orElseThrow(NotFoundMemberException::new);
+        Member deleteScrapMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
 
         validateScrapNotFound(deleteScrapMember, board);
 

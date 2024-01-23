@@ -3,11 +3,12 @@ package com.example.copro.comment.application;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
+import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.comment.api.dto.request.CommentReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
 import com.example.copro.comment.domain.repository.CommentRepository;
-import com.example.copro.member.api.dto.response.MemberCommentResDto;
+import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.member.domain.Member;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,26 +23,30 @@ public class CommentService {
 
     @Transactional
     public CommentResDto insert(Long boardId, CommentReqDto commentReqDto, Member member) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundException("Could not found board id : " + boardId));
+        Comment parentComment = getParentComment(commentReqDto);
+        Comment comment = builderComment(commentReqDto, member, board, parentComment);
 
-        Comment parentComment = null;
+        Comment savedComment = commentRepository.save(comment);
+        return CommentResDto.from(savedComment);
+    }
+
+    private Comment getParentComment(CommentReqDto commentReqDto) {
         if (commentReqDto.parentId() != null) {
-            parentComment = commentRepository.findById(commentReqDto.parentId())
-                    .orElseThrow(() -> new NotFoundException("Could not found comment id : " + commentReqDto.parentId()));
+            return commentRepository.findById(commentReqDto.parentId()).orElseThrow(() -> new CommentNotFoundException(commentReqDto.parentId()));
         }
+        return null;
+    }
 
-        Comment comment = Comment.builder()
+    private Comment builderComment(CommentReqDto commentReqDto, Member member, Board board, Comment parentComment) {
+        return Comment.builder()
                 .content(commentReqDto.content())
                 .writer(member)
+                .isDeleted(false)
                 .board(board)
                 .parent(parentComment)
                 .build();
-
-        Comment savedComment = commentRepository.save(comment);
-        return new CommentResDto(savedComment.getCommentId(), savedComment.getContent(), new MemberCommentResDto(savedComment.getWriter().getNickName(),
-                savedComment.getWriter().getOccupation()));
     }
 
     @Transactional
@@ -54,14 +59,14 @@ public class CommentService {
             throw new NotFoundException("You do not have permission to edit this comment." + member.getMemberId());
         }
         comment.updateContent(commentReqDto.content());
-        return new CommentResDto(comment.getCommentId(), comment.getContent(), new MemberCommentResDto(comment.getWriter().getNickName(), comment.getWriter().getOccupation()));
+        return CommentResDto.from(comment);
     }
 
     @Transactional
     public void delete(Long commentId) {
         Comment comment = commentRepository.findCommentByCommentIdWithParent(commentId)
                 .orElseThrow(() -> new NotFoundException("Could not found comment id : " + commentId));
-        if(comment.getChildren().size() != 0) { // 자식이 있으면 상태만 변경
+        if(!comment.getChildren().isEmpty()) { // 자식이 있으면 상태만 변경
             comment.changeIsDeleted(true);
         } else { // 삭제 가능한 조상 댓글을 구해서 삭제
             commentRepository.delete(getDeletableAncestorComment(comment));
