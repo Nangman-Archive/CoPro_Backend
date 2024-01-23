@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
+
 @Builder // 이 객체 만드는 생성자도 있어야함
 public record BoardDto (
         long id,

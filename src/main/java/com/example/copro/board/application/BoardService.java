@@ -1,5 +1,6 @@
 package com.example.copro.board.application;
 
+import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
@@ -46,6 +47,7 @@ public class BoardService {
     private final MemberHeartBoardRepository memberHeartBoardRepository;
     private final ImageRepository imageRepository;
     private final CommentRepository commentRepository;
+
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
@@ -124,6 +126,7 @@ public class BoardService {
             throw new NotOwnerException();
         }
     }
+
 
     public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
         Page<Board> boards = boardRepository.findByTitleContaining(query, pageable);

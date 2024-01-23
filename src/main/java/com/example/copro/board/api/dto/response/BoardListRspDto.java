@@ -23,7 +23,6 @@ public record BoardListRspDto(
         return new BoardListRspDto(boardDtoList, pageInfoDto);
     }
 
-
     public static BoardListRspDto memberScrapBoardFrom(Page<MemberScrapBoard> memberScrapBoards) {
         List<BoardDto> boardDtoList = BoardDto.memberScrapBoardFrom(memberScrapBoards);
         PageInfoDto pageInfoDto = PageInfoDto.from(memberScrapBoards);
