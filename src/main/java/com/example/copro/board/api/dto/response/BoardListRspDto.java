@@ -23,6 +23,13 @@ public record BoardListRspDto(
         return new BoardListRspDto(boardDtoList, pageInfoDto);
     }
 
+    public static BoardListRspDto of(Page<BoardDto> boards) {
+        List<BoardDto> boardDtoList = boards.getContent();
+        PageInfoDto pageInfoDto = PageInfoDto.from(boards);
+
+        return new BoardListRspDto(boardDtoList, pageInfoDto);
+    }
+
     public static BoardListRspDto memberScrapBoardFrom(Page<MemberScrapBoard> memberScrapBoards) {
         List<BoardDto> boardDtoList = BoardDto.memberScrapBoardFrom(memberScrapBoards);
         PageInfoDto pageInfoDto = PageInfoDto.from(memberScrapBoards);

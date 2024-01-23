@@ -10,9 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
-    Page<Board> findAllByCategory(Category category, Pageable pageable);
-    Page<Board> findByTitleContaining(String query, Pageable pageable);
+public interface BoardRepository extends JpaRepository<Board, Long>,BoardCustomRepository {
+
     Board findByImagesContaining(Image image);
     @Query("SELECT b FROM Board b WHERE b.heart - b.previousHeartCount = (SELECT MAX(b2.heart - b2.previousHeartCount) FROM Board b2)")
     List<Board> findWithMaxIncreaseInHeart();
