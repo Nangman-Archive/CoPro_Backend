@@ -1,9 +1,9 @@
 package com.example.copro.board.application;
 
-import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
+import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.domain.Board;
@@ -14,7 +14,6 @@ import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
 import com.example.copro.board.exception.AlreadyHeartException;
 import com.example.copro.board.exception.AlreadyScrapException;
 import com.example.copro.board.exception.BoardNotFoundException;
-import com.example.copro.board.exception.CategoryNotFoundException;
 import com.example.copro.board.exception.HeartNotFoundException;
 import com.example.copro.board.exception.MappedImageException;
 import com.example.copro.board.exception.NotOwnerException;
@@ -50,8 +49,10 @@ public class BoardService {
 
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
-        return BoardListRspDto.from(boards);
+        //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
+        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(category, pageable);
+
+        return BoardListRspDto.of(boards);
     }
 
     //서비스에서 보드를 찾아 이미지가 null인지 아닌지

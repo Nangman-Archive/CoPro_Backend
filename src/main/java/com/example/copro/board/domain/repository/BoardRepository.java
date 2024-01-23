@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>,BoardCustomRepository {
     Page<Board> findAllByCategory(Category category, Pageable pageable);
     Page<Board> findByTitleContaining(String query, Pageable pageable);
     Board findByImagesContaining(Image image);
