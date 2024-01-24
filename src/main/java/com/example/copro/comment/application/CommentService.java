@@ -1,9 +1,9 @@
 package com.example.copro.comment.application;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.exception.BoardNotFoundException;
+import com.example.copro.board.exception.NotCommentOwnerException;
 import com.example.copro.comment.api.dto.request.CommentSaveReqDto;
 import com.example.copro.comment.api.dto.request.CommentUpdateReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
@@ -88,7 +88,7 @@ public class CommentService {
 
     private void validateCommentOwner(Comment comment, Member member) {
         if (!comment.getWriter().getMemberId().equals(member.getMemberId())) {
-            throw new NotFoundException("본인이 아니면 댓글을 조작할 수 없습니다.");
+            throw new NotCommentOwnerException();
         }
     }
 
