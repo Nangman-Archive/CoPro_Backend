@@ -1,7 +1,6 @@
 package com.example.copro.member.api.dto.response;
 
 import com.example.copro.member.domain.Member;
-import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -16,7 +15,7 @@ public record MemberResDto(
         String gitHubUrl,
         String nickName,
         int likeMembersCount,
-        List<Long> likeMembersId
+        boolean isLikeMembers
 
 ) {
     public static MemberResDto from(Member member) {
@@ -33,7 +32,7 @@ public record MemberResDto(
                 .build();
     }
 
-    public static MemberResDto of(Member member, int likeMembersCount, List<Long> likeMembersId) {
+    public static MemberResDto of(Member member, int likeMembersCount, boolean isLikeMembers) {
         return MemberResDto.builder()
                 .memberId(member.getMemberId())
                 .name(member.getName())
@@ -45,7 +44,7 @@ public record MemberResDto(
                 .gitHubUrl(member.getGitHubUrl())
                 .nickName(member.getNickName())
                 .likeMembersCount(likeMembersCount)
-                .likeMembersId(likeMembersId)
+                .isLikeMembers(isLikeMembers)
                 .build();
     }
 }
