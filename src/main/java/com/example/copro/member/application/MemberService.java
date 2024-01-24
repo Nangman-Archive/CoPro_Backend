@@ -53,7 +53,7 @@ public class MemberService {
         boolean isLike = memberLikeRepository.existsByMemberAndLikedMember(member, currentMember);
         int likeMembersCount = memberLikeRepository.countByLikedMember(currentMember);
 
-        return MemberResDto.of(member, likeMembersCount, isLike);
+        return MemberResDto.of(currentMember, likeMembersCount, isLike);
     }
 
     private int getViewType(Member member) {
