@@ -4,6 +4,7 @@ import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,6 +19,7 @@ public class ScheduledTasks {
 
     private Long mostIncreasedHeartBoardId;
 
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
     //@Scheduled(cron = "*/5 * * * * *") // 매 1초마다 실행
     public void findMostIncreasedHeartBoard() {

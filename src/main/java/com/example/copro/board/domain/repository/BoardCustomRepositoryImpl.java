@@ -5,6 +5,9 @@ import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.QBoard;
 import com.example.copro.comment.domain.QComment;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +32,16 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         QBoard board = QBoard.board;
         QComment comment = QComment.comment;
 
+        List<OrderSpecifier<?>> orders = new ArrayList<>();
+
+        pageable.getSort();
+        if (pageable.getSort().getOrderFor("count") != null) {
+            orders.add(new OrderSpecifier<>(Order.DESC, board.count));
+            orders.add(new OrderSpecifier<>(Order.DESC, board.createAt));
+        } else if (pageable.getSort().getOrderFor("createAt") != null) {
+            orders.add(new OrderSpecifier<>(Order.DESC, board.createAt));
+        }
+
         List<BoardDto> results = queryFactory
                 .select(board, comment.count())
                 .from(board)
@@ -36,6 +50,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .groupBy(board.boardId)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(orders.toArray(new OrderSpecifier[0]))
                 .fetch()
                 .stream()
                 .map(tuple -> BoardDto.from(tuple.get(board), Optional.ofNullable(tuple.get(comment.count())).orElse(0L).intValue()))
