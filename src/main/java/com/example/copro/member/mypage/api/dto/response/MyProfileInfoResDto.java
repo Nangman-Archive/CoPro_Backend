@@ -9,7 +9,7 @@ public record MyProfileInfoResDto(
         String picture,
         String occupation,
         String language,
-        String career,
+        int career,
         String gitHubUrl,
         String nickName,
         int viewType,
