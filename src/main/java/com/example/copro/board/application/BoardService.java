@@ -7,7 +7,6 @@ import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.domain.Board;
-import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
@@ -32,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -141,9 +139,7 @@ public class BoardService {
 
         List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
 
-
         return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
-
     }
 
     @Transactional
