@@ -34,7 +34,7 @@ public class MyPageService {
     // 본인 프로필 정보
     public MyProfileInfoResDto myProfileInfo(Member member) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
-        int likeMembersCount = getMember.getMemberLikes().size();
+        int likeMembersCount = memberLikeRepository.countByLikedMember(getMember);
 
         return MyProfileInfoResDto.myProfileInfoOf(member, likeMembersCount);
     }

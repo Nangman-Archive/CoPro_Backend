@@ -11,7 +11,7 @@ public record MemberResDto(
         String picture,
         String occupation,
         String language,
-        String career,
+        int career,
         String gitHubUrl,
         String nickName,
         int likeMembersCount,
