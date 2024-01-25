@@ -199,10 +199,10 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping("/heart")
-    public RspTemplate<Void> heartDelete(@RequestBody HeartReqDto heartDeleteReqDto,
+    public RspTemplate<HeartSaveResDto> heartDelete(@RequestBody HeartReqDto heartDeleteReqDto,
                                          @AuthenticationPrincipal Member member) {
-        boardService.heartDelete(heartDeleteReqDto, member);
-        return new RspTemplate<>(HttpStatus.OK, heartDeleteReqDto.boardId() + "번 게시물 좋아요 삭제 완료");
+        HeartSaveResDto heartSaveResDto = boardService.heartDelete(heartDeleteReqDto, member);
+        return new RspTemplate<>(HttpStatus.OK, heartDeleteReqDto.boardId() + "번 게시물 좋아요 삭제 완료",heartSaveResDto);
     }
 
     @Operation(summary = "인기 게시물 조회", description = "인기 게시글 조회합니다")
