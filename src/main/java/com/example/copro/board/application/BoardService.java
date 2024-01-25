@@ -6,6 +6,7 @@ import com.example.copro.board.api.dto.request.ScrapReqDto;
 import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
+import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
@@ -31,7 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -141,9 +141,7 @@ public class BoardService {
 
         List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
 
-
         return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
-
     }
 
     @Transactional
@@ -181,7 +179,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void heartBoard(HeartReqDto heartSaveReqDto, Member member) {
+    public HeartSaveResDto heartBoard(HeartReqDto heartSaveReqDto, Member member) {
         Board board = boardRepository.findById(heartSaveReqDto.boardId())
                 .orElseThrow(() -> new BoardNotFoundException(heartSaveReqDto.boardId()));
 
@@ -191,6 +189,7 @@ public class BoardService {
 
         board.updateHeartCount();
         memberHeartBoardRepository.save(memberHeartBoard);
+        return HeartSaveResDto.of(board);
     }
 
     private void validateHeartNotExists(Member member, HeartReqDto heartSaveReqDto) {

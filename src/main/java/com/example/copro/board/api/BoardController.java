@@ -5,6 +5,7 @@ import com.example.copro.board.api.dto.request.HeartReqDto;
 import com.example.copro.board.api.dto.request.ScrapReqDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
+import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.application.BoardService;
 import com.example.copro.board.application.ScheduledTasks;
 import com.example.copro.board.util.PageableUtil;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
 
 //서비스 클래스에서 예외처리하자 데이터, 메시지, 상태코드를 템플릿에 담아 보내라
 @RequiredArgsConstructor
@@ -184,10 +187,10 @@ public class BoardController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/heart/save")
-    public RspTemplate<Void> heartBoard(@RequestBody HeartReqDto heartSaveReqDto,
-                                        @AuthenticationPrincipal Member member) {
-        boardService.heartBoard(heartSaveReqDto, member);
-        return new RspTemplate<>(HttpStatus.OK, heartSaveReqDto.boardId() + "번 게시물 좋아요 완료");
+    public RspTemplate<HeartSaveResDto> heartBoard(@RequestBody HeartReqDto heartSaveReqDto,
+                                                   @AuthenticationPrincipal Member member) {
+        HeartSaveResDto heartSaveResDto = boardService.heartBoard(heartSaveReqDto, member);
+        return new RspTemplate<>(HttpStatus.OK, heartSaveReqDto.boardId() + "번 게시물 좋아요 완료", heartSaveResDto);
     }
 
     @Operation(summary = "좋아요 삭제", description = "좋아요 삭제 합니다")
