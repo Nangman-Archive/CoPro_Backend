@@ -12,14 +12,15 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
-import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -38,24 +39,20 @@ public class MemberService {
     }
 
     // 전체 멤버 정보리스트
-    public MemberInfoResDto memberInfoList(Member member, String occupation, String language, String career, int page, int size) {
+    public MemberInfoResDto memberInfoList(Member member, String occupation, String language, int career, int page, int size) {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
-        String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c), PageRequest.of(page, size));
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, career, member), PageRequest.of(page, size));
 
-        return MemberInfoResDto.of(getViewType(member), members.map(this::getMemberResDto));
+        return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
     }
 
-    private MemberResDto getMemberResDto(Member member) {
-        List<Long> likeMembersId = member.getMemberLikes().stream()
-                .map(memberLike -> memberLike.getLikedMember().getMemberId())
-                .toList();
+    private MemberResDto getMemberResDto(Member member, Member currentMember) {
+        boolean isLike = memberLikeRepository.existsByMemberAndLikedMember(member, currentMember);
+        int likeMembersCount = memberLikeRepository.countByLikedMember(currentMember);
 
-        int likeMembersCount = member.getMemberLikes().size();
-
-        return MemberResDto.of(member, likeMembersCount, likeMembersId);
+        return MemberResDto.of(currentMember, likeMembersCount, isLike);
     }
 
     private int getViewType(Member member) {
@@ -83,7 +80,7 @@ public class MemberService {
     }
 
     // nickName 중복검사
-    private void validateDuplicateNickName(String nickName) {
+    public void validateDuplicateNickName(String nickName) {
         if (memberRepository.existsByNickName(nickName)) {
             throw new ExistsNickNameException();
         }

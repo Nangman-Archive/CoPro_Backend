@@ -6,7 +6,8 @@ import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.board.exception.CategoryNotFoundException;
 import com.example.copro.board.exception.HeartNotFoundException;
 import com.example.copro.board.exception.MappedImageException;
-import com.example.copro.board.exception.NotOwnerException;
+import com.example.copro.board.exception.NotBoardOwnerException;
+import com.example.copro.board.exception.NotCommentOwnerException;
 import com.example.copro.board.exception.ScrapNotFoundException;
 import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.global.error.dto.ErrorResponse;
@@ -36,7 +37,8 @@ public class ControllerAdvice {
             AlreadyHeartException.class,
             AlreadyScrapException.class,
             MappedImageException.class,
-            NotOwnerException.class
+            NotBoardOwnerException.class,
+            NotCommentOwnerException.class
     })
     public ResponseEntity<ErrorResponse> handleInvalidData(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());

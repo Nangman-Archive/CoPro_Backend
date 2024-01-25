@@ -4,6 +4,8 @@ import com.example.copro.board.domain.Board;
 import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.exception.InvalidGitHubUrlException;
+import com.example.copro.member.exception.InvalidMemberException;
+import com.example.copro.member.exception.InvalidNickNameAddressException;
 import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +36,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member implements UserDetails {
+
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣]*$");
+    private static final int MAX_NICKNAME_LENGTH = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -63,8 +71,8 @@ public class Member implements UserDetails {
     @Schema(description = "사용 언어", example = "Java")
     private String language;
 
-    @Schema(description = "경력", example = "1년")
-    private String career;
+    @Schema(description = "경력", example = "1")
+    private int career;
 
     @Schema(description = "깃허브 주소", example = "https://github.com/giwoong01")
     private String gitHubUrl;
@@ -114,12 +122,13 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture, int viewType) {
+    private Member(String memberName, Role role, String email, String name, String picture, int career, int viewType) {
         this.memberName = memberName;
         this.role = role;
         this.email = email;
         this.name = name;
         this.picture = picture;
+        this.career = career;
         this.viewType = viewType;
     }
 
@@ -131,15 +140,28 @@ public class Member implements UserDetails {
     }
 
     public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+        validateNickname(memberProfileUpdateReqDto.nickName());
+
         this.nickName = memberProfileUpdateReqDto.nickName();
         this.occupation = memberProfileUpdateReqDto.occupation();
         this.language = memberProfileUpdateReqDto.language();
         this.career = memberProfileUpdateReqDto.career();
     }
 
+    private void validateNickname(String nickname) {
+        Matcher matcher = NICKNAME_PATTERN.matcher(nickname);
+
+        if (!matcher.matches()) {
+            throw new InvalidNickNameAddressException();
+        }
+
+        if (nickname.isEmpty() || nickname.length() >= MAX_NICKNAME_LENGTH) {
+            throw new InvalidMemberException(String.format("닉네임은 1자 이상 %d자 이하여야 합니다.", MAX_NICKNAME_LENGTH));
+        }
+    }
+
     public void gitHubUrlUpdate(MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
-        String gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl();
-        validateGitHubUrl(gitHubUrl);
+        validateGitHubUrl(memberGitHubUrlUpdateReqDto.gitHubUrl());
 
         this.gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl().trim();
     }

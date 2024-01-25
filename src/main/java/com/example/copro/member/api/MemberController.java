@@ -9,6 +9,7 @@ import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.exception.ExistsNickNameException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -68,11 +69,10 @@ public class MemberController {
             @AuthenticationPrincipal Member member,
             @RequestParam(name = "occupation", required = false) String occupation,
             @RequestParam(name = "language", required = false) String language,
-            @RequestParam(name = "career", required = false) String career,
+            @RequestParam(name = "career", defaultValue = "0", required = false) int career,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        MemberInfoResDto memberInfoResDto =
-                memberService.memberInfoList(member, occupation, language, career, page, size);
+        MemberInfoResDto memberInfoResDto = memberService.memberInfoList(member, occupation, language, career, page, size);
 
         return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
@@ -88,6 +88,22 @@ public class MemberController {
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
+    }
+
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임이 중복인지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용 가능 닉네임"),
+            @ApiResponse(responseCode = "400", description = "중복 닉네임 입니다."),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @GetMapping("/nickname")
+    public RspTemplate<Void> duplicateNickName(@RequestParam(name = "nickName") String nickName) {
+        try {
+            memberService.validateDuplicateNickName(nickName);
+            return new RspTemplate<>(HttpStatus.OK, "사용 가능한 닉네임입니다.");
+        } catch (ExistsNickNameException e) {
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "깃 허브 주소 수정", description = "프로필에 깃허브주소를 업데이트 합니다.")

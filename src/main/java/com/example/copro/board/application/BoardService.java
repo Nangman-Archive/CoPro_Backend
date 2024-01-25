@@ -15,7 +15,7 @@ import com.example.copro.board.exception.AlreadyScrapException;
 import com.example.copro.board.exception.BoardNotFoundException;
 import com.example.copro.board.exception.HeartNotFoundException;
 import com.example.copro.board.exception.MappedImageException;
-import com.example.copro.board.exception.NotOwnerException;
+import com.example.copro.board.exception.NotBoardOwnerException;
 import com.example.copro.board.exception.ScrapNotFoundException;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.repository.CommentRepository;
@@ -119,7 +119,7 @@ public class BoardService {
     // member가 board의 소유자가 아닐 경우 예외처리
     private void checkBoardOwnership(Board board, Member member) {
         if (!board.getMember().getMemberId().equals(member.getMemberId())) {
-            throw new NotOwnerException();
+            throw new NotBoardOwnerException();
         }
     }
 
@@ -129,6 +129,7 @@ public class BoardService {
     }
 
     // 상세 게시판
+    @Transactional
     public BoardResDto getBoard(Member member, Long boardId) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
