@@ -6,6 +6,7 @@ import com.example.copro.board.api.dto.request.ScrapReqDto;
 import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
+import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
@@ -178,7 +179,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void heartBoard(HeartReqDto heartSaveReqDto, Member member) {
+    public HeartSaveResDto heartBoard(HeartReqDto heartSaveReqDto, Member member) {
         Board board = boardRepository.findById(heartSaveReqDto.boardId())
                 .orElseThrow(() -> new BoardNotFoundException(heartSaveReqDto.boardId()));
 
@@ -188,6 +189,7 @@ public class BoardService {
 
         board.updateHeartCount();
         memberHeartBoardRepository.save(memberHeartBoard);
+        return HeartSaveResDto.of(board);
     }
 
     private void validateHeartNotExists(Member member, HeartReqDto heartSaveReqDto) {
