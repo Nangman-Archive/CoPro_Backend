@@ -24,15 +24,15 @@ public class MemberSpecs {
         };
     }
 
-    public static Specification<Member> hasCareer(String career) {
-        return (member, cq, cb) -> career == null ? null : cb.equal(member.get("career"), career);
+    public static Specification<Member> hasCareer(int career) {
+        return (member, cq, cb) -> career < 1 ? null : cb.equal(member.get("career"), career);
     }
 
     public static Specification<Member> notCurrentMember(Member member) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("id"), member.getMemberId());
     }
 
-    public static Specification<Member> spec(String occupation, String language, String career, Member member) {
+    public static Specification<Member> spec(String occupation, String language, int career, Member member) {
         return Specification
                 .where(MemberSpecs.hasOccupation(occupation))
                 .and(MemberSpecs.hasLanguage(language))
