@@ -199,7 +199,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void heartDelete(HeartReqDto heartDeleteReqDto, Member member) {
+    public HeartSaveResDto heartDelete(HeartReqDto heartDeleteReqDto, Member member) {
         MemberHeartBoard memberHeartBoard = memberHeartBoardRepository.findByMemberMemberIdAndBoardBoardId(member.getMemberId(), heartDeleteReqDto.boardId())
                 .orElseThrow(HeartNotFoundException::new);
         Board board = boardRepository.findById(heartDeleteReqDto.boardId())
@@ -207,5 +207,6 @@ public class BoardService {
 
         board.updateCancelHeartCount();
         memberHeartBoardRepository.delete(memberHeartBoard);
+        return HeartSaveResDto.of(board);
     }
 }
