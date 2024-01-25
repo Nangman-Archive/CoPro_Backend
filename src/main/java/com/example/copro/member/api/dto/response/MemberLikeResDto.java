@@ -11,7 +11,7 @@ public record MemberLikeResDto(
         String picture,
         String occupation,
         String language,
-        String career,
+        int career,
         String gitHubUrl
 ) {
     public static MemberLikeResDto from(MemberLike memberLike) {

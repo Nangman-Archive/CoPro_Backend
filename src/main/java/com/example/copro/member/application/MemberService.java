@@ -44,7 +44,7 @@ public class MemberService {
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c), PageRequest.of(page, size));
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c, member), PageRequest.of(page, size));
 
         return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
     }
@@ -81,7 +81,7 @@ public class MemberService {
     }
 
     // nickName 중복검사
-    private void validateDuplicateNickName(String nickName) {
+    public void validateDuplicateNickName(String nickName) {
         if (memberRepository.existsByNickName(nickName)) {
             throw new ExistsNickNameException();
         }

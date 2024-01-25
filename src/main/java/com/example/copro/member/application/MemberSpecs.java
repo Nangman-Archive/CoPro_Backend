@@ -28,11 +28,16 @@ public class MemberSpecs {
         return (member, cq, cb) -> career == null ? null : cb.equal(member.get("career"), career);
     }
 
-    public static Specification<Member> spec(String occupation, String language, String career) {
+    public static Specification<Member> notCurrentMember(Member member) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("id"), member.getMemberId());
+    }
+
+    public static Specification<Member> spec(String occupation, String language, String career, Member member) {
         return Specification
                 .where(MemberSpecs.hasOccupation(occupation))
                 .and(MemberSpecs.hasLanguage(language))
-                .and(MemberSpecs.hasCareer(career));
+                .and(MemberSpecs.hasCareer(career))
+                .and(MemberSpecs.notCurrentMember(member));
     }
 }
 

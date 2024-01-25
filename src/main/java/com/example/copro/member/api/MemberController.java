@@ -9,6 +9,7 @@ import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.exception.ExistsNickNameException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -88,6 +89,16 @@ public class MemberController {
                                                          @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
+    }
+
+    @GetMapping("/nickname")
+    public RspTemplate<Void> duplicateNickName(@RequestParam(name = "nickName") String nickName) {
+        try {
+            memberService.validateDuplicateNickName(nickName);
+            return new RspTemplate<>(HttpStatus.OK, "사용 가능한 닉네임입니다.");
+        } catch (ExistsNickNameException e) {
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Operation(summary = "깃 허브 주소 수정", description = "프로필에 깃허브주소를 업데이트 합니다.")
