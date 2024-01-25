@@ -122,12 +122,13 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture, int viewType) {
+    private Member(String memberName, Role role, String email, String name, String picture, int career, int viewType) {
         this.memberName = memberName;
         this.role = role;
         this.email = email;
         this.name = name;
         this.picture = picture;
+        this.career = career;
         this.viewType = viewType;
     }
 

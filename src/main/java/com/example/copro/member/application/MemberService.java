@@ -39,12 +39,11 @@ public class MemberService {
     }
 
     // 전체 멤버 정보리스트
-    public MemberInfoResDto memberInfoList(Member member, String occupation, String language, String career, int page, int size) {
+    public MemberInfoResDto memberInfoList(Member member, String occupation, String language, int career, int page, int size) {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
-        String c = Optional.ofNullable(career).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, c, member), PageRequest.of(page, size));
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, career, member), PageRequest.of(page, size));
 
         return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
     }
