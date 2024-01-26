@@ -183,7 +183,7 @@ public class BoardController {
 
     @Operation(summary = "좋아요 등록", description = "좋아요 등록 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "등록 성공"),
+            @ApiResponse(responseCode = "200", description = "등록 성공", content = @Content(schema = @Schema(implementation = HeartSaveResDto.class))),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/heart/save")
@@ -195,7 +195,7 @@ public class BoardController {
 
     @Operation(summary = "좋아요 삭제", description = "좋아요 삭제 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = HeartSaveResDto.class))),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @DeleteMapping("/heart")
