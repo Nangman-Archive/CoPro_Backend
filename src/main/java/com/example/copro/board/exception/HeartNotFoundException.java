@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class HeartNotFoundException extends RuntimeException{
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class HeartNotFoundException extends NotFoundGroupException {
     public HeartNotFoundException(String message){
         super(message);
     }

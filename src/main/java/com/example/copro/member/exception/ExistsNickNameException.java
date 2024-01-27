@@ -1,6 +1,8 @@
 package com.example.copro.member.exception;
 
-public class ExistsNickNameException extends RuntimeException{
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class ExistsNickNameException extends InvalidGroupException {
     public ExistsNickNameException(String message) {
         super(message);
     }

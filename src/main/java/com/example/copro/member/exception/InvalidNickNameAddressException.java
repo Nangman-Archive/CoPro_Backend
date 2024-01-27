@@ -1,6 +1,8 @@
 package com.example.copro.member.exception;
 
-public class InvalidNickNameAddressException extends RuntimeException{
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class InvalidNickNameAddressException extends InvalidGroupException {
     public InvalidNickNameAddressException(String message) {
         super(message);
     }
