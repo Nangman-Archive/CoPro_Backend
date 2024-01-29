@@ -18,7 +18,6 @@ import com.example.copro.board.exception.HeartNotFoundException;
 import com.example.copro.board.exception.MappedImageException;
 import com.example.copro.board.exception.NotBoardOwnerException;
 import com.example.copro.board.exception.ScrapNotFoundException;
-import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
@@ -139,9 +138,9 @@ public class BoardService {
         boolean isHeart = memberHeartBoardRepository.existsByMemberAndBoard(getMember, board);
         boolean isScrap = memberScrapBoardRepository.existsByMemberAndBoard(getMember, board);
 
-        List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
+        int commentCount = commentRepository.countByBoardBoardId(boardId);
 
-        return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
+        return BoardResDto.from(board, isHeart, isScrap, commentCount);
     }
 
     @Transactional

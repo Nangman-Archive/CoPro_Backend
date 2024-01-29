@@ -2,7 +2,6 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
-import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +23,7 @@ public record BoardResDto(
         String occupation,
         boolean isHeart,
         boolean isScrap,
-        List<CommentResDto> commentResDtoList
+        int commentCount
 ) {
     public static BoardResDto of(Board board) {
         List<String> imageUrl = board.getImages().stream()
@@ -46,7 +45,7 @@ public record BoardResDto(
                 .build();
     }
 
-    public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, List<CommentResDto> commentResDtoList) {
+    public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, int commentCount) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -65,7 +64,7 @@ public record BoardResDto(
                 .imageUrl(imageUrl)
                 .isHeart(isHeart)
                 .isScrap(isScrap)
-                .commentResDtoList(commentResDtoList)
+                .commentCount(commentCount)
                 .build();
     }
 

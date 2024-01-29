@@ -13,14 +13,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -76,6 +79,21 @@ public class CommentController {
 
         return new RspTemplate<>(HttpStatus.OK
                 , "댓글 삭제 완료");
+    }
+
+
+    @Operation(summary = "상세 페이지 댓글 조회", description = "상세 페이지의 댓글을 조회 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
+    })
+    @GetMapping("/{boardId}/comments")
+    public RspTemplate<Page<CommentResDto>> getCommentsByBoard(@PathVariable(name = "boardId") Long boardId,
+                                                               @RequestParam(value = "page", defaultValue = "0") int page,
+                                                               @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, page, size);
+        return new RspTemplate<>(HttpStatus.OK, "상세 페이지 댓글 조회 성공", commentsByBoard);
     }
 
 }
