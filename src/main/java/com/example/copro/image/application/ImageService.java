@@ -78,15 +78,17 @@ public class ImageService {
 
     @Transactional
     public void delete(Long boardId, Long imageId) {
+        Image findImage = findById(imageId);
 
-    Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardNotFoundException(boardId));
+        if (boardId != null) {
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> new BoardNotFoundException(boardId));
+            // 게시물과 이미지 사이의 연관 관계 제거
+            board.getImages().removeIf(image -> image.getId().equals(imageId));
+        }
 
-    Image findImage = findById(imageId);
-
-    amazonS3.deleteObject(bucket, findImage.getConvertImageName()); // S3에서 이미지 삭제
-        // 게시물과 이미지 사이의 연관 관계 제거
-        board.getImages().removeIf(image -> image.getId().equals(imageId));
+        amazonS3.deleteObject(bucket, findImage.getConvertImageName()); // S3에서 이미지 삭제
+        imageRepository.delete(findImage);
     }
 
     public void uploadToBucket(String fileName, InputStream inputStream, long size, String contentType) {
@@ -102,7 +104,7 @@ public class ImageService {
     }
 
     public Image createImageEntity(String fileName) {
-        String path = "/" + bucket + "/" + fileName; // S3에서의 경로
+        String path = "/" + fileName; // S3에서의 경로
         return Image.builder()
                 .imageUrl(CLOUD_FRONT_DOMAIN_NAME + path) // 이미지 URL 설정
                 .convertImageName(fileName.substring(fileName.lastIndexOf("/") + 1)) // 파일명 설정

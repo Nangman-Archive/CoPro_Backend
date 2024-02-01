@@ -41,13 +41,8 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @DeleteMapping("/boards/{boardId}/images/{imageId}")
-    public RspTemplate<Void> deleteImage(@PathVariable Long boardId, @PathVariable Long imageId) {
-        // 게시글 찾기
-        //Board board = boardService.findById(boardId);
-
-        // 이미지 찾기
-        //Image image = imageService.findById(imageId);
+    @DeleteMapping("/images/{imageId}")///boards/{boardId}
+    public RspTemplate<Void> deleteImage(@RequestParam(required = false) Long boardId, @PathVariable Long imageId) {
 
         // 게시글과 이미지의 연관 관계 제거 및 이미지 삭제
         imageService.delete(boardId, imageId);
