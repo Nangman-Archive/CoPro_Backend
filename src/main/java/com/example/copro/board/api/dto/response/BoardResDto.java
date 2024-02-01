@@ -2,6 +2,7 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
+import com.example.copro.board.domain.Part;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
 import java.time.LocalDateTime;
@@ -16,6 +17,8 @@ public record BoardResDto(
         LocalDateTime createAt,
         Category category,
         String contents,
+        String summary,
+        Part part,
         String tag,
         int count,
         int heart,
@@ -37,6 +40,8 @@ public record BoardResDto(
                 .createAt(board.getCreateAt())
                 .category(board.getCategory())
                 .contents(board.getContents())
+                .summary(board.getSummary())
+                .part(board.getPart())
                 .tag(board.getTag())
                 .count(board.getCount())
                 .nickName(board.getMember().getNickName())
@@ -57,6 +62,8 @@ public record BoardResDto(
                 .createAt(board.getCreateAt())
                 .category(board.getCategory())
                 .contents(board.getContents())
+                .summary(board.getSummary())
+                .part(board.getPart())
                 .tag(board.getTag())
                 .count(board.getCount())
                 .nickName(board.getMember().getNickName())
