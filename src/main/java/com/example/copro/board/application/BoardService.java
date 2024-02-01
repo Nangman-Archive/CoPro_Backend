@@ -8,16 +8,11 @@ import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.api.dto.response.BoardResDto;
 import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.domain.Board;
+import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
-import com.example.copro.board.exception.AlreadyHeartException;
-import com.example.copro.board.exception.AlreadyScrapException;
-import com.example.copro.board.exception.BoardNotFoundException;
-import com.example.copro.board.exception.HeartNotFoundException;
-import com.example.copro.board.exception.MappedImageException;
-import com.example.copro.board.exception.NotBoardOwnerException;
-import com.example.copro.board.exception.ScrapNotFoundException;
+import com.example.copro.board.exception.*;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.image.domain.Image;
@@ -46,7 +41,7 @@ public class BoardService {
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
-        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(category, pageable);
+        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(Category.valueOf(category), pageable);
 
         return BoardListRspDto.of(boards);
     }
@@ -61,6 +56,10 @@ public class BoardService {
         checkForAlreadyMappedImages(images);
 
         Board board = builderBoard(boardSaveReqDto, member, images);
+
+        // 이미지의 총 개수를 체크하는 로직
+        checkTotalImageCount(board, images);
+
         Board saveBoard = boardRepository.save(board);
 
         return BoardResDto.of(saveBoard);
@@ -71,9 +70,9 @@ public class BoardService {
                 .title(boardSaveReqDto.title())
                 .category(boardSaveReqDto.category())
                 .contents(boardSaveReqDto.contents())
+                .summary(boardSaveReqDto.summary())
+                .part(boardSaveReqDto.part())
                 .tag(boardSaveReqDto.tag())
-                .count(boardSaveReqDto.count())
-                .heart(boardSaveReqDto.heart())
                 .member(member)
                 .images(images)
                 .build();
@@ -91,6 +90,9 @@ public class BoardService {
         // 이미지가 이미 매핑된 게시판이 있는지 체크하는 로직
         checkForAlreadyMappedImages(images);
 
+        // 이미지의 총 개수를 체크하는 로직
+        checkTotalImageCount(board, images);
+
         board.update(boardSaveReqDto, images);
 
         return BoardResDto.of(board);
@@ -105,6 +107,17 @@ public class BoardService {
                 throw new MappedImageException(image);
             }
         }
+    }
+
+    private void checkTotalImageCount(Board board, List<Image> newImages) {
+        int totalImageCount = countMappedImages(board) + newImages.size();
+        if (totalImageCount > 5) {
+            throw new ImageCountExceededException();
+        }
+    }
+
+    private int countMappedImages(Board board) {
+        return board.getImages().size();
     }
 
     @Transactional
