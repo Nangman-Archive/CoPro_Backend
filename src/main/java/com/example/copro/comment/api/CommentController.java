@@ -58,7 +58,7 @@ public class CommentController {
     })
     @PutMapping("/{commentId}")
     public RspTemplate<CommentResDto> update(@PathVariable(name = "commentId") Long commentId,
-                                             @RequestBody CommentUpdateReqDto commentUpdateReqDto,
+                                             @Valid @RequestBody CommentUpdateReqDto commentUpdateReqDto,
                                              @AuthenticationPrincipal Member member) {
 
         CommentResDto commentResDto = commentService.update(commentId, commentUpdateReqDto, member);
