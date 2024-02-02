@@ -1,4 +1,4 @@
-package com.example.copro.member.api.dto.request;
+package com.example.copro.member.mypage.api.dto.request;
 
 public record UpdateViewTypeReqDto (
         int viewType
