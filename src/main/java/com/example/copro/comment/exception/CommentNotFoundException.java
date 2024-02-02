@@ -1,6 +1,8 @@
 package com.example.copro.comment.exception;
 
-public class CommentNotFoundException extends RuntimeException{
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class CommentNotFoundException extends NotFoundGroupException {
     public CommentNotFoundException(String message) {
         super(message);
     }

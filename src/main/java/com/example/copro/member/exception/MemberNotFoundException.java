@@ -1,17 +1,13 @@
 package com.example.copro.member.exception;
 
-import org.springframework.http.HttpStatus;
+import com.example.copro.global.error.exception.NotFoundGroupException;
 
-public class MemberNotFoundException extends RuntimeException{
-    private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
-    private static final String MESSAGE = "존재하지 않는 사용자 입니다.";
-
-    public HttpStatus getHttpStatus() {
-        return HTTP_STATUS;
+public class MemberNotFoundException extends NotFoundGroupException {
+    public MemberNotFoundException(String message) {
+        super(message);
     }
 
-    @Override
-    public String getMessage() {
-        return MESSAGE;
+    public MemberNotFoundException() {
+        this("존재하지 않는 사용자 입니다.");
     }
 }

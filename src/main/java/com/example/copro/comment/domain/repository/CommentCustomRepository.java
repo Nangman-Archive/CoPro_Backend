@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentCustomRepository {
-
     List<CommentResDto> findByBoardBoardId(Long boardId);
 
     Optional<Comment> findCommentByCommentIdWithParent(Long id);

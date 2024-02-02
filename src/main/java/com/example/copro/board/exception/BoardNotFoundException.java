@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class BoardNotFoundException extends RuntimeException {
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class BoardNotFoundException extends NotFoundGroupException {
     public BoardNotFoundException(String message) {
         super(message);
     }

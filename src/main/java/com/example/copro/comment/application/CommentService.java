@@ -11,11 +11,14 @@ import com.example.copro.comment.domain.Comment;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.member.domain.Member;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -90,6 +93,16 @@ public class CommentService {
         if (!comment.getWriter().getMemberId().equals(member.getMemberId())) {
             throw new NotCommentOwnerException();
         }
+    }
+
+    public Page<CommentResDto> getCommentsByBoard(Long boardId, int page, int size) {
+        Page<Comment> byBoardBoardId = commentRepository.findByBoardBoardId(boardId, PageRequest.of(page, size));
+
+        return byBoardBoardId.map(this::mapToComment);
+    }
+
+    private CommentResDto mapToComment(Comment comment) {
+        return CommentResDto.from(comment);
     }
 
 }

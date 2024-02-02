@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class AlreadyHeartException extends RuntimeException{
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class AlreadyHeartException extends InvalidGroupException {
     public AlreadyHeartException(String message){
         super(message);
     }

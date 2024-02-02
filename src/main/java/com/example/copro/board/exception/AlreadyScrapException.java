@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class AlreadyScrapException extends RuntimeException{
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class AlreadyScrapException extends InvalidGroupException {
     public AlreadyScrapException(String message){
         super(message);
     }
