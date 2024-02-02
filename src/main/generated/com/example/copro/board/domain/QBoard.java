@@ -45,9 +45,13 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final ListPath<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard> memberScrapBoards = this.<com.example.copro.member.domain.MemberScrapBoard, com.example.copro.member.domain.QMemberScrapBoard>createList("memberScrapBoards", com.example.copro.member.domain.MemberScrapBoard.class, com.example.copro.member.domain.QMemberScrapBoard.class, PathInits.DIRECT2);
 
+    public final EnumPath<Part> part = createEnum("part", Part.class);
+
     public final NumberPath<Integer> previousHeartCount = createNumber("previousHeartCount", Integer.class);
 
     public final ListPath<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport> reports = this.<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport>createList("reports", com.example.copro.report.domain.Report.class, com.example.copro.report.domain.QReport.class, PathInits.DIRECT2);
+
+    public final StringPath summary = createString("summary");
 
     public final StringPath tag = createString("tag");
 

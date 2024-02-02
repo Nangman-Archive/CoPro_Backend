@@ -28,7 +28,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BoardDto> findAllWithCommentCount(String category, Pageable pageable) {
+    public Page<BoardDto> findAllWithCommentCount(Category category, Pageable pageable) {
         QBoard board = QBoard.board;
         QComment comment = QComment.comment;
 
@@ -46,7 +46,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .select(board, comment.count())
                 .from(board)
                 .leftJoin(comment).on(comment.board.boardId.eq(board.boardId))
-                .where(board.category.eq(Category.valueOf(category)))
+                .where(board.category.eq(Category.valueOf(String.valueOf(category))))
                 .groupBy(board.boardId)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -58,7 +58,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
 
         long total = queryFactory
                 .selectFrom(board)
-                .where(board.category.eq(Category.valueOf(category)))
+                .where(board.category.eq(Category.valueOf(String.valueOf(category))))
                 .fetchCount();
 
         return new PageImpl<>(results, pageable, total);
