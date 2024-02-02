@@ -1,8 +1,9 @@
 package com.example.copro.board.exception;
 
+import com.example.copro.global.error.exception.InvalidGroupException;
 import com.example.copro.image.domain.Image;
 
-public class MappedImageException extends RuntimeException{
+public class MappedImageException extends InvalidGroupException {
     public MappedImageException(String message) {
         super(message);
     }

@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class ScrapNotFoundException extends RuntimeException{
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class ScrapNotFoundException extends NotFoundGroupException {
     public ScrapNotFoundException(String message){
         super(message);
     }

@@ -1,6 +1,8 @@
 package com.example.copro.member.exception;
 
-public class InvalidMemberException extends RuntimeException {
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class InvalidMemberException extends InvalidGroupException {
     public InvalidMemberException(final String message) {
         super(message);
     }

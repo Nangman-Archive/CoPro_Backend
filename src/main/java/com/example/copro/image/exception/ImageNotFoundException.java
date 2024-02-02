@@ -1,6 +1,8 @@
 package com.example.copro.image.exception;
 
-public class ImageNotFoundException extends RuntimeException {
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class ImageNotFoundException extends NotFoundGroupException {
     public ImageNotFoundException(String message) {
         super(message);
     }

@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class CategoryNotFoundException extends RuntimeException{
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class CategoryNotFoundException extends NotFoundGroupException {
     public CategoryNotFoundException(String message){
         super(message);
     }

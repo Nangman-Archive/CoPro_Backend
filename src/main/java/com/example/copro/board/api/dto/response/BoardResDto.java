@@ -27,7 +27,7 @@ public record BoardResDto(
         String occupation,
         boolean isHeart,
         boolean isScrap,
-        List<CommentResDto> commentResDtoList
+        int commentCount
 ) {
     public static BoardResDto of(Board board) {
         List<String> imageUrl = board.getImages().stream()
@@ -51,7 +51,7 @@ public record BoardResDto(
                 .build();
     }
 
-    public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, List<CommentResDto> commentResDtoList) {
+    public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, int commentCount) {
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -72,7 +72,7 @@ public record BoardResDto(
                 .imageUrl(imageUrl)
                 .isHeart(isHeart)
                 .isScrap(isScrap)
-                .commentResDtoList(commentResDtoList)
+                .commentCount(commentCount)
                 .build();
     }
 

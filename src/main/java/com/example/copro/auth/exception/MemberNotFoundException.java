@@ -1,6 +1,8 @@
 package com.example.copro.auth.exception;
 
-public class MemberNotFoundException extends IllegalArgumentException {
+import com.example.copro.global.error.exception.NotFoundGroupException;
+
+public class MemberNotFoundException extends NotFoundGroupException {
     public MemberNotFoundException(String message) {
         super(message);
     }

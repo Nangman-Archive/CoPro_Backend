@@ -152,9 +152,9 @@ public class BoardService {
         boolean isHeart = memberHeartBoardRepository.existsByMemberAndBoard(getMember, board);
         boolean isScrap = memberScrapBoardRepository.existsByMemberAndBoard(getMember, board);
 
-        List<CommentResDto> commentResDtoList = commentRepository.findByBoardBoardId(boardId);
+        int commentCount = commentRepository.countByBoardBoardId(boardId);
 
-        return BoardResDto.from(board, isHeart, isScrap,commentResDtoList);
+        return BoardResDto.from(board, isHeart, isScrap, commentCount);
     }
 
     @Transactional

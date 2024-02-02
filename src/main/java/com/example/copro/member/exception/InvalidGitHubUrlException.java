@@ -1,6 +1,8 @@
 package com.example.copro.member.exception;
 
-public class InvalidGitHubUrlException extends RuntimeException{
+import com.example.copro.global.error.exception.InvalidGroupException;
+
+public class InvalidGitHubUrlException extends InvalidGroupException {
     public InvalidGitHubUrlException(final String message) {
         super(message);
     }

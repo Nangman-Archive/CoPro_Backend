@@ -1,6 +1,8 @@
 package com.example.copro.board.exception;
 
-public class NotBoardOwnerException extends RuntimeException{
+import com.example.copro.global.error.exception.AccessDeniedGroupException;
+
+public class NotBoardOwnerException extends AccessDeniedGroupException {
     public NotBoardOwnerException(String message){
         super(message);
     }
