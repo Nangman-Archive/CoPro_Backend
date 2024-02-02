@@ -24,6 +24,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath email = createString("email");
 
+    public final BooleanPath firstLogin = createBoolean("firstLogin");
+
     public final StringPath gitHubUrl = createString("gitHubUrl");
 
     public final StringPath language = createString("language");
