@@ -5,7 +5,6 @@ import com.example.copro.member.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -13,5 +12,5 @@ public interface CommentRepository extends JpaRepository<Comment,Long>, CommentC
     Page<Comment> findByWriter(Member member, Pageable pageable);
     int countByBoardBoardId(Long boardId);
 
-    Page<Comment> findByBoardBoardId(@Param("boardid") Long boardId, Pageable pageable);
+    Page<Comment> findByBoardBoardId(Long boardId, Pageable pageable);
 }
