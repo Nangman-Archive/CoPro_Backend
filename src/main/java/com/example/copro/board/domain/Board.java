@@ -49,18 +49,15 @@ public class Board extends BaseTimeEntity {
     @Schema(description = "게시글 내용", example = "내용")
     private String contents;
 
-    @Column
-    @Schema(description = "게시글 요약(양식)", example = "요약")
-    private String summary;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    @Schema(description = "모집 역할(양식)", example = "프론트엔드, 백엔드, 모바일, AI")
+    private Part part ;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    @Schema(description = "모집 역할(양식)", example = "FRONTEND, BACKEND, MOBILE, DESIGN, AI, PM")
-    private Part part ;
-
-    @Column
-    @Schema(description = "목적(양식)", example = "팀빌딩")
-    private String tag;
+    @Schema(description = "목적(양식)", example = "수익창출, 포트폴리오, 기타")
+    private Tag tag;
 
     @Column(columnDefinition = "int default 0")
     @Schema(description = "조회수", example = "11")
@@ -95,12 +92,11 @@ public class Board extends BaseTimeEntity {
     }
 
     @Builder
-    private Board(String title, Category category, String contents, String summary, Part part, String tag, int count, int heart,
+    private Board(String title, Category category, String contents, Part part, Tag tag, int count, int heart,
                   List<Image> images, Member member) {
         this.title = title;
         this.category = category;
         this.contents = contents;
-        this.summary = summary;
         this.part = part;
         this.tag = tag;
         this.count = count;
@@ -112,7 +108,6 @@ public class Board extends BaseTimeEntity {
     public void update(BoardSaveReqDto boardSaveReqDto, List<Image> images) {
         this.title = boardSaveReqDto.title();
         this.category = boardSaveReqDto.category();
-        this.summary = boardSaveReqDto.summary();
         this.part = boardSaveReqDto.part();
         this.contents = boardSaveReqDto.contents();
         this.tag = boardSaveReqDto.tag();

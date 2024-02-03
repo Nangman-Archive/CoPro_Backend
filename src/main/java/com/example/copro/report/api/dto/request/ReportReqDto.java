@@ -1,20 +1,14 @@
 package com.example.copro.report.api.dto.request;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReportReqDto {
+public record ReportReqDto (
+        @NotNull
+        Long boardId,
+        @NotBlank
+        String contents
 
-    Long boardId;
-
-    String contents;
-
-    public ReportReqDto(Long boardId, String contents){
-        this.boardId = boardId;
-        this.contents = contents;
-    }
+){
 
 }

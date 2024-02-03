@@ -1,12 +1,12 @@
 package com.example.copro.member.mypage.application;
 
+import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
 import com.example.copro.comment.domain.repository.CommentRepository;
-import com.example.copro.member.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberLike;
@@ -14,6 +14,7 @@ import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
+import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

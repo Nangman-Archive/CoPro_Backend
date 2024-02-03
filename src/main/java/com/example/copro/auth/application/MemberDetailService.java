@@ -25,6 +25,7 @@ public class MemberDetailService implements UserDetailsService {
                 .name(firebaseToken.getName())
                 .picture(firebaseToken.getPicture())
                 .role(role)
+                .firstLogin(true)
                 .career(0)
                 .viewType(0)
                 .build();
