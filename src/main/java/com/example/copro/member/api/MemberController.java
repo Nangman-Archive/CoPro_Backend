@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,14 +38,18 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @Operation(summary = "로그인 성공", description = "로그인 시에 불러올 api")
+    @Operation(summary = "로그인 성공(최초 로그인 구별)", description = "로그인 시에 불러올 api")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/success")
-    public RspTemplate<String> loginSuccess() {
-        return new RspTemplate<>(HttpStatus.OK, "SUCCESS");
+    public RspTemplate<Boolean> isFirstLogin(@AuthenticationPrincipal Member member) {
+        if (member.isFirstLogin()) {
+            return new RspTemplate<>(HttpStatus.OK, "최초 로그인입니다.", true);
+        } else {
+            return new RspTemplate<>(HttpStatus.OK, "최초 로그인이 아닙니다.", false);
+        }
     }
 
     @Operation(summary = "채팅 프로필 정보", description = "채팅뷰 멤버 프로필을 불러옵니다.")
@@ -53,8 +58,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/chatting/profile/{nickName}")
-    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(
-            @PathVariable(name = "nickName") String nickName) {
+    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(@PathVariable(name = "nickName") String nickName) {
         MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProProfileInfo(nickName);
         return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
     }
@@ -65,14 +69,14 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/infos")
-    public RspTemplate<MemberInfoResDto> membersInfo(
-            @AuthenticationPrincipal Member member,
-            @RequestParam(name = "occupation", required = false) String occupation,
-            @RequestParam(name = "language", required = false) String language,
-            @RequestParam(name = "career", defaultValue = "0", required = false) int career,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        MemberInfoResDto memberInfoResDto = memberService.memberInfoList(member, occupation, language, career, page, size);
+    public RspTemplate<MemberInfoResDto> membersInfo(@AuthenticationPrincipal Member member,
+                                                     @RequestParam(name = "occupation", required = false) String occupation,
+                                                     @RequestParam(name = "language", required = false) String language,
+                                                     @RequestParam(name = "career", defaultValue = "0", required = false) int career,
+                                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+        MemberInfoResDto memberInfoResDto = memberService.memberInfoList(member, occupation, language, career, page,
+                size);
 
         return new RspTemplate<>(HttpStatus.OK, "전체 멤버 조회 완료", memberInfoResDto);
     }
@@ -85,7 +89,7 @@ public class MemberController {
     })
     @PostMapping("/profile")
     public RspTemplate<MemberResDto> memberProfileUpdate(@AuthenticationPrincipal Member member,
-                                                         @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
+                                                         @Valid @RequestBody MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
         MemberResDto memberResDto = memberService.profileUpdate(member, memberProfileUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "프로필 수정 완료", memberResDto);
     }
@@ -97,7 +101,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/nickname")
-    public RspTemplate<Void> duplicateNickName(@RequestParam(name = "nickName") String nickName) {
+    public RspTemplate<Void> duplicateNickName(@RequestParam(name = "nickname") String nickName) {
         try {
             memberService.validateDuplicateNickName(nickName);
             return new RspTemplate<>(HttpStatus.OK, "사용 가능한 닉네임입니다.");
@@ -114,7 +118,7 @@ public class MemberController {
     })
     @PostMapping("/github-url")
     public RspTemplate<MemberResDto> memberGitHubUrlUpdate(@AuthenticationPrincipal Member member,
-                                                           @RequestBody MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
+                                                           @Valid @RequestBody MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
         MemberResDto memberResDto = memberService.gitHubUrlUpdate(member, memberGitHubUrlUpdateReqDto);
         return new RspTemplate<>(HttpStatus.OK, "깃 허브 주소 수정 완료", memberResDto);
     }
@@ -127,7 +131,7 @@ public class MemberController {
     })
     @PostMapping("/add-like")
     public RspTemplate<String> addLikeMember(@AuthenticationPrincipal Member member,
-                                             @RequestBody MemberLikeReqDto memberLikeReqDto) {
+                                             @Valid @RequestBody MemberLikeReqDto memberLikeReqDto) {
         memberService.addMemberLike(member, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 추가 완료");
     }
@@ -140,7 +144,7 @@ public class MemberController {
     })
     @PostMapping("/cancel-like")
     public RspTemplate<String> cancelLikeMember(@AuthenticationPrincipal Member member,
-                                                @RequestBody MemberLikeReqDto memberLikeReqDto) {
+                                                @Valid @RequestBody MemberLikeReqDto memberLikeReqDto) {
         memberService.cancelMemberLike(member, memberLikeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "유저 좋아요 취소 완료");
     }

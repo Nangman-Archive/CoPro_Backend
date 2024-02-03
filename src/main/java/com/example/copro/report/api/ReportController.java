@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,9 +33,9 @@ public class ReportController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping() //게시글 신고
-    public RspTemplate<Void> reportBoard(@RequestBody ReportReqDto reportReqDto,
+    public RspTemplate<Void> reportBoard(@Valid @RequestBody ReportReqDto reportReqDto,
                                          @AuthenticationPrincipal Member member) {
         reportService.reportBoard(reportReqDto, member.getMemberId());
-        return new RspTemplate<>(HttpStatus.OK, reportReqDto.getBoardId() + "번 게시물 신고 완료");
+        return new RspTemplate<>(HttpStatus.OK, reportReqDto.boardId() + "번 게시물 신고 완료");
     }
 }
