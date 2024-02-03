@@ -44,7 +44,7 @@ dependencies {
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
     // logback
-    implementation 'com.github.napstr:logback-discord-appender:1.0.0'
+    implementation 'com.github.maricn:logback-slack-appender:1.4.0'
 
     annotationProcessor 'org.projectlombok:lombok'
 

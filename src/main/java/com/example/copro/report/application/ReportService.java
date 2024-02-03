@@ -23,13 +23,13 @@ public class ReportService {
 
     @Transactional
     public void reportBoard(ReportReqDto reportReqDto, Long memberId) {
-        Board board = boardRepository.findById(reportReqDto.getBoardId()).orElseThrow(() -> new BoardNotFoundException(reportReqDto.getBoardId()));
+        Board board = boardRepository.findById(reportReqDto.boardId()).orElseThrow(() -> new BoardNotFoundException(reportReqDto.boardId()));
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
 
         Report report = Report.builder()
                 .board(board)
                 .member(member)
-                .contents(reportReqDto.getContents())
+                .contents(reportReqDto.contents())
                 .build();
 
         reportRepository.save(report);

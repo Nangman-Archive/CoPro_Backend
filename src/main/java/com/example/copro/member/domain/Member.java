@@ -46,6 +46,9 @@ public class Member implements UserDetails {
     @Schema(description = "멤버 id", example = "1")
     private Long memberId;
 
+    @Schema(description = "최초 로그인 구분", example = "true, false")
+    private boolean firstLogin;
+
     @Schema(description = "UID 번호", example = "firebase UID 번호")
     private String memberName;
 
@@ -122,7 +125,7 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture, int career, int viewType) {
+    private Member(String memberName, Role role, String email, String name, String picture, boolean firstLogin, int career, int viewType) {
         this.memberName = memberName;
         this.role = role;
         this.email = email;
@@ -130,6 +133,7 @@ public class Member implements UserDetails {
         this.picture = picture;
         this.career = career;
         this.viewType = viewType;
+        this.firstLogin = firstLogin;
     }
 
     public void update(FirebaseToken token) {
@@ -137,6 +141,7 @@ public class Member implements UserDetails {
         this.email = token.getEmail();
         this.name = token.getName();
         this.picture = token.getPicture();
+        this.firstLogin = false;
     }
 
     public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {

@@ -3,9 +3,9 @@ package com.example.copro.member.mypage.api;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.global.template.RspTemplate;
-import com.example.copro.member.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.application.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -105,7 +106,7 @@ public class MyPageController {
     })
     @PostMapping("/view-type")
     public RspTemplate<Integer> UpdateViewType(@AuthenticationPrincipal Member member,
-                                               @RequestBody UpdateViewTypeReqDto updateViewTypeReqDto) {
+                                               @Valid @RequestBody UpdateViewTypeReqDto updateViewTypeReqDto) {
         myPageService.updateViewType(member, updateViewTypeReqDto);
         return new RspTemplate<>(HttpStatus.OK, "뷰 타입 변경", updateViewTypeReqDto.viewType());
     }

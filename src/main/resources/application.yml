@@ -23,8 +23,8 @@ spring:
       max-request-size: 10MB
 
 logging:
-  discord:
-    webhook-uri: ${logging.discord.webhook-uri}
+  slack:
+    webhook-uri: ${logging.slack.webhook-uri}
   config: ${logging.config}
   level:
     org.hibernate.sql: debug
