@@ -3,6 +3,7 @@ package com.example.copro.board.api.dto.request;
 
 import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.Part;
+import com.example.copro.board.domain.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,8 +20,8 @@ public record BoardSaveReqDto(
         String summary,
         @NotNull
         Part part,
-        @NotBlank
-        String tag,
+        @NotNull
+        Tag tag,
         @NotEmpty
         List<Long> imageId
 ) {

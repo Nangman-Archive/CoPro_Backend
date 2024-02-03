@@ -51,9 +51,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final ListPath<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport> reports = this.<com.example.copro.report.domain.Report, com.example.copro.report.domain.QReport>createList("reports", com.example.copro.report.domain.Report.class, com.example.copro.report.domain.QReport.class, PathInits.DIRECT2);
 
-    public final StringPath summary = createString("summary");
-
-    public final StringPath tag = createString("tag");
+    public final EnumPath<Tag> tag = createEnum("tag", Tag.class);
 
     public final StringPath title = createString("title");
 

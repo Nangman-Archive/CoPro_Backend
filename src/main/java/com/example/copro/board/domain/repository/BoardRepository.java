@@ -1,5 +1,6 @@
 package com.example.copro.board.domain.repository;
 
+import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
 import com.example.copro.image.domain.Image;

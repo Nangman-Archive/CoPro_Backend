@@ -70,7 +70,6 @@ public class BoardService {
                 .title(boardSaveReqDto.title())
                 .category(boardSaveReqDto.category())
                 .contents(boardSaveReqDto.contents())
-                .summary(boardSaveReqDto.summary())
                 .part(boardSaveReqDto.part())
                 .tag(boardSaveReqDto.tag())
                 .member(member)
