@@ -2,11 +2,13 @@ package com.example.copro.comment.domain.repository;
 
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface CommentCustomRepository {
-    List<CommentResDto> findByBoardBoardId(Long boardId);
+    Page<CommentResDto> findByBoardBoardId(Long boardId, Pageable pageable);
 
     Optional<Comment> findCommentByCommentIdWithParent(Long id);
 }
