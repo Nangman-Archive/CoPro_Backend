@@ -1,6 +1,5 @@
 package com.example.copro.member.mypage.application;
 
-import com.example.copro.board.api.dto.response.BoardDto;
 import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
@@ -16,6 +15,7 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
+import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,10 +52,16 @@ public class MyPageService {
     }
 
     // 내 관심 게시물 목록
-    public BoardListRspDto boardLikeList(Member member, int page, int size) {
+    public Page<MyScrapBoardsResDto> boardLikeList(Member member, int page, int size) {
         Page<MemberScrapBoard> boards = memberScrapBoardRepository.findByMember(member, PageRequest.of(page, size));
 
-        return BoardListRspDto.memberScrapBoardFrom(boards);
+        return boards.map(this::mapToMyScrapBoard);
+    }
+
+    private MyScrapBoardsResDto mapToMyScrapBoard(MemberScrapBoard memberScrapBoard) {
+        int commentCount = commentRepository.countByBoardBoardId(memberScrapBoard.getBoard().getBoardId());
+
+        return MyScrapBoardsResDto.of(memberScrapBoard, commentCount);
     }
 
     // 작성한 게시물 목록
