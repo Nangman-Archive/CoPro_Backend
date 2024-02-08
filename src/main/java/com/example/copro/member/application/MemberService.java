@@ -13,14 +13,12 @@ import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;

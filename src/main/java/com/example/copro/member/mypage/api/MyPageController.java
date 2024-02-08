@@ -7,6 +7,7 @@ import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
+import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
 import com.example.copro.member.mypage.application.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -66,10 +67,10 @@ public class MyPageController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/scrap")
-    public RspTemplate<BoardListRspDto> myScrapBoard(@AuthenticationPrincipal Member member,
-                                                     @RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
-        BoardListRspDto boardListRspDto = myPageService.boardLikeList(member, page, size);
+    public RspTemplate<Page<MyScrapBoardsResDto>> myScrapBoard(@AuthenticationPrincipal Member member,
+                                                               @RequestParam(value = "page", defaultValue = "0") int page,
+                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<MyScrapBoardsResDto> boardListRspDto = myPageService.boardLikeList(member, page, size);
         return new RspTemplate<>(HttpStatus.OK, "내 관심 게시물 목록", boardListRspDto);
     }
 

@@ -2,7 +2,6 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.api.common.PageInfoDto;
 import com.example.copro.board.domain.Board;
-import com.example.copro.member.domain.MemberScrapBoard;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -26,13 +25,6 @@ public record BoardListRspDto(
     public static BoardListRspDto of(Page<BoardDto> boards) {
         List<BoardDto> boardDtoList = boards.getContent();
         PageInfoDto pageInfoDto = PageInfoDto.from(boards);
-
-        return new BoardListRspDto(boardDtoList, pageInfoDto);
-    }
-
-    public static BoardListRspDto memberScrapBoardFrom(Page<MemberScrapBoard> memberScrapBoards) {
-        List<BoardDto> boardDtoList = BoardDto.memberScrapBoardFrom(memberScrapBoards);
-        PageInfoDto pageInfoDto = PageInfoDto.from(memberScrapBoards);
 
         return new BoardListRspDto(boardDtoList, pageInfoDto);
     }
