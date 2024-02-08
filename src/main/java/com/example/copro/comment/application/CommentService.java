@@ -8,12 +8,14 @@ import com.example.copro.comment.api.dto.request.CommentSaveReqDto;
 import com.example.copro.comment.api.dto.request.CommentUpdateReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
+import com.example.copro.comment.domain.repository.CommentCustomRepository;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+
 
     @Transactional
     public CommentResDto insert(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member) {
@@ -95,14 +98,8 @@ public class CommentService {
         }
     }
 
-    public Page<CommentResDto> getCommentsByBoard(Long boardId, int page, int size) {
-        Page<Comment> byBoardBoardId = commentRepository.findByBoardBoardId(boardId, PageRequest.of(page, size));
-
-        return byBoardBoardId.map(this::mapToComment);
-    }
-
-    private CommentResDto mapToComment(Comment comment) {
-        return CommentResDto.from(comment);
+    public Page<CommentResDto> getCommentsByBoard(Long boardId, Pageable pageable) {
+        return commentRepository.findByBoardBoardId(boardId, pageable); //PageRequest.of(page, size)
     }
 
 }

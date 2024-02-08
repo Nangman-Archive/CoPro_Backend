@@ -6,12 +6,16 @@ import static com.example.copro.comment.domain.QComment.comment;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
@@ -21,40 +25,39 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<CommentResDto> findByBoardBoardId(Long boardId) {
+    public Page<CommentResDto> findByBoardBoardId(Long boardId, Pageable pageable) {
+        long total = queryFactory.selectFrom(comment)
+                .where(comment.board.boardId.eq(boardId), comment.parent.isNull())
+                .fetchCount();
+
         // QueryDSL을 사용해서 comment 테이블에서 데이터를 조회
         // 특정 게시판(boardId)의 댓글만 가져오며, 부모 댓글과 함께 가져옴
         // 댓글의 부모 ID를 오름차순으로 정렬하고, 같은 부모 ID를 가진 댓글 중에서는 생성 시간 기준으로 오름차순 정렬
-        List<Comment> comments = queryFactory.selectFrom(comment) // comment 테이블에서 데이터를 선택
-                .leftJoin(comment.parent).fetchJoin() // 부모 댓글 데이터를 함께 가져오도록 조인
-                .where(comment.board.boardId.eq(boardId)) // 게시판 ID가 boardId와 같은 댓글만 선택
-                .orderBy(comment.parent.commentId.asc().nullsFirst(), // 부모 댓글 ID를 오름차순으로 정렬, 부모 댓글 ID가 없는 댓글은 먼저 표시
-                        comment.createAt.asc()) // 그 다음은 생성 시간을 기준으로 오름차순 정렬
-                .fetch(); // 쿼리 실행 및 결과 가져오기
+        List<Comment> parentComments = queryFactory.selectFrom(comment)
+                .where(comment.board.boardId.eq(boardId), comment.parent.isNull())
+                .orderBy(comment.createAt.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        // 변환된 CommentResDto 객체를 저장할 리스트 초기화
         List<CommentResDto> commentResDtoList = new ArrayList<>();
 
-        // 댓글의 ID를 키로, CommentResDto 객체를 값으로 가지는 맵 초기화
-        // 빠른 댓글 -> CommentResDto 매칭을 위해 사용됨
-        Map<Long, CommentResDto> commentDtoHashMap = new HashMap<>();
+        for (Comment parentComment : parentComments) {
+            CommentResDto parentCommentResDto = from(parentComment);
+            commentResDtoList.add(parentCommentResDto);
 
-        // 조회된 댓글들을 순회하며 CommentResDto 객체로 변환하고, 이를 적절한 위치에 추가
-        comments.forEach(c -> {
-            // 댓글을 CommentResDto 객체로 변환
-            CommentResDto commentResDto = from(c);
+            List<Comment> childComments = queryFactory.selectFrom(comment)
+                    .where(comment.parent.eq(parentComment))
+                    .orderBy(comment.createAt.asc())
+                    .fetch();
 
-            // 변환된 CommentResDto 객체를 맵에 추가
-            commentDtoHashMap.put(commentResDto.getCommentId(), commentResDto);
+            for (Comment childComment : childComments) {
+                CommentResDto childCommentResDto = from(childComment);
+                parentCommentResDto.getChildren().add(childCommentResDto);
+            }
+        }
 
-            // 댓글이 부모 댓글을 가지면 부모 댓글의 CommentResDto 객체의 자식 리스트에 추가
-            if (c.getParent() != null) commentDtoHashMap.get(c.getParent().getCommentId()).getChildren().add(commentResDto);
-                // 댓글이 부모 댓글을 가지지 않으면 commentResDtoList에 직접 추가
-            else commentResDtoList.add(commentResDto);
-        });
-
-        // 변환된 CommentResDto 객체들을 반환
-        return commentResDtoList;
+        return new PageImpl<>(commentResDtoList, pageable, total);
     }
 
     @Override
