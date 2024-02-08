@@ -1,5 +1,6 @@
 package com.example.copro.comment.api;
 
+import com.example.copro.board.util.PageableUtil;
 import com.example.copro.comment.api.dto.request.CommentSaveReqDto;
 import com.example.copro.comment.api.dto.request.CommentUpdateReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -82,7 +85,6 @@ public class CommentController {
                 , "댓글 삭제 완료");
     }
 
-
     @Operation(summary = "상세 페이지 댓글 조회", description = "상세 페이지의 댓글을 조회 합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공"),
@@ -90,10 +92,12 @@ public class CommentController {
     })
     @GetMapping("/{boardId}/comments")
     public RspTemplate<Page<CommentResDto>> getCommentsByBoard(@PathVariable(name = "boardId") Long boardId,
-                                                               @RequestParam(value = "page", defaultValue = "0") int page,
-                                                               @RequestParam(value = "size", defaultValue = "10") int size
+                                                                   @RequestParam(value = "page", defaultValue = "1") int page,
+                                                                   @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, page, size);
+        Pageable pageable = PageableUtil.of(page, size);
+        Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, pageable);
+        //Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, page, size);
         return new RspTemplate<>(HttpStatus.OK, "상세 페이지 댓글 조회 성공", commentsByBoard);
     }
 
