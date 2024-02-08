@@ -101,12 +101,12 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/nickname")
-    public RspTemplate<Void> duplicateNickName(@RequestParam(name = "nickname") String nickName) {
+    public RspTemplate<Boolean> duplicateNickName(@RequestParam(name = "nickname") String nickName) {
         try {
             memberService.validateDuplicateNickName(nickName);
-            return new RspTemplate<>(HttpStatus.OK, "사용 가능한 닉네임입니다.");
+            return new RspTemplate<>(HttpStatus.OK, "사용 가능한 닉네임입니다.", true);
         } catch (ExistsNickNameException e) {
-            return new RspTemplate<>(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, e.getMessage(), false);
         }
     }
 
