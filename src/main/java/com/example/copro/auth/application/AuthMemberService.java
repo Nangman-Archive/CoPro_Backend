@@ -7,8 +7,10 @@ import com.example.copro.member.domain.Role;
 import com.example.copro.member.domain.SocialType;
 import com.example.copro.member.domain.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthMemberService {
     private final MemberRepository memberRepository;
 
@@ -16,6 +18,7 @@ public class AuthMemberService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     // 유저가 존재하지 않으면 디비에 저장 후 MemberLoginResDto.email 반환
     public MemberLoginResDto saveUserInfo(UserInfo userInfo, String socialType) {
         if (!memberRepository.existsByEmail(userInfo.email())) {
