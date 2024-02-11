@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final ObjectMapper objectMapper;
@@ -17,6 +19,7 @@ public class AuthService {
     }
 
     // decode한 payload로 사용자 정보 찾기
+    @Transactional
     public UserInfo getUserInfo(String idToken) {
         String decodePayload = getDecodePayload(idToken);
 

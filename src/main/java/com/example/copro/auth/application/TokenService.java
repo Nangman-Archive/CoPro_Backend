@@ -6,8 +6,10 @@ import com.example.copro.global.jwt.api.dto.TokenDto;
 import com.example.copro.global.jwt.domain.Token;
 import com.example.copro.global.jwt.domain.repository.TokenRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class TokenService {
 
     private final TokenProvider tokenProvider;
@@ -18,6 +20,7 @@ public class TokenService {
         this.tokenRepository = tokenRepository;
     }
 
+    @Transactional
     public TokenDto getToken(MemberLoginResDto memberLoginResDto) {
         // member email로 엑세스 토큰, 리프레시 토큰 발급.
         TokenDto tokenDto = tokenProvider.createToken(memberLoginResDto.findMember().getEmail());
