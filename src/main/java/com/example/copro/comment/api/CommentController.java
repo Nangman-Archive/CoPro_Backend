@@ -43,14 +43,17 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/{boardId}")
-    public RspTemplate<CommentResDto> insert(@PathVariable(name = "boardId") Long boardId,
-                                             @Valid @RequestBody CommentSaveReqDto commentSaveReqDto,
-                                             @AuthenticationPrincipal Member member) {
+    public RspTemplate<Page<CommentResDto>> insert(@PathVariable(name = "boardId") Long boardId,
+                                                   @Valid @RequestBody CommentSaveReqDto commentSaveReqDto,
+                                                   @AuthenticationPrincipal Member member,
+                                                   @RequestParam(value = "page", defaultValue = "1") int page,
+                                                   @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        CommentResDto commentResDto = commentService.insert(boardId, commentSaveReqDto, member);
+        Pageable pageable = PageableUtil.of(page, size);
+        Page<CommentResDto> comments = commentService.insertAndGetComments(boardId, commentSaveReqDto, member, pageable);
         return new RspTemplate<>(HttpStatus.OK
-                , "댓글 작성 완료"
-                , commentResDto
+                , "댓글 작성 후 조회 완료"
+                , comments
         );
     }
 
