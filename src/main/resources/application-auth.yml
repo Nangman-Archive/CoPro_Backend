@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: prod # prod
+
+jwt:
+  secret: ${jwt.secret}
+
+token:
+  expire:
+    time:
+      access : ${token.expire.time.access}
+      refresh : ${token.expire.time.refresh}
+
+oauth:
+  google:
+    client-id: ${oauth.google.client-id}
+    client-secret: ${oauth.google.client-secret}
