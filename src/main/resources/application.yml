@@ -30,8 +30,6 @@ logging:
     org.hibernate.sql: debug
     org.hibernate.type: trace
 
-FIREBASE_KEY: ${FIREBASE_KEY}
-
 myapp:
   api-url: ${myapp.api-url}
 
