@@ -58,7 +58,7 @@ public class AuthController {
         return new ResponseEntity<>(getToken, HttpStatus.OK);
     }
 
-    @GetMapping("/access")
+    @PostMapping("/access")
     public RspTemplate<TokenDto> createAccessToken(@RequestBody RefreshTokenReqDto refreshTokenReqDto) {
         // 리프레시 토큰이 이미 디비에 존재한다,  리프레시 토큰이 만료되지 않았다. -> 리프레시 토큰 살아있으므로 엑세스 토큰만 받아서 반환.
         if (tokenRepository.existsByRefreshToken(refreshTokenReqDto.refreshToken()) && tokenProvider.validateToken(refreshTokenReqDto.refreshToken())) {
