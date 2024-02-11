@@ -6,7 +6,6 @@ import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.exception.InvalidGitHubUrlException;
 import com.example.copro.member.exception.InvalidMemberException;
 import com.example.copro.member.exception.InvalidNickNameAddressException;
-import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -64,6 +63,9 @@ public class Member implements UserDetails {
 
     @Schema(description = "사진 url", example = "url")
     private String picture;
+
+    @Enumerated(value = EnumType.STRING)
+    private SocialType socialType;
 
     @Schema(description = "닉네임", example = "웅이")
     private String nickName;
@@ -125,23 +127,16 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture, boolean firstLogin, int career, int viewType) {
+    private Member(String memberName, Role role, String email, String name, String picture, SocialType socialType, boolean firstLogin, int career, int viewType) {
         this.memberName = memberName;
         this.role = role;
         this.email = email;
         this.name = name;
         this.picture = picture;
+        this.socialType = socialType;
         this.career = career;
         this.viewType = viewType;
         this.firstLogin = firstLogin;
-    }
-
-    public void update(FirebaseToken token) {
-        this.memberName = token.getUid();
-        this.email = token.getEmail();
-        this.name = token.getName();
-        this.picture = token.getPicture();
-        this.firstLogin = false;
     }
 
     public void profileUpdate(MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
