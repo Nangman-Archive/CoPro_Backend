@@ -39,6 +39,14 @@ public class CommentService {
         return CommentResDto.from(savedComment);
     }
 
+    @Transactional
+    public Page<CommentResDto> insertAndGetComments(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member, Pageable pageable) {
+
+        CommentResDto savedComment = insert(boardId, commentSaveReqDto, member);
+
+        return getCommentsByBoard(boardId, pageable);
+    }
+
     private Comment getParentComment(CommentSaveReqDto commentSaveReqDto) {
         if (commentSaveReqDto.parentId() != null && commentSaveReqDto.parentId() != -1L) {
             return commentRepository.findById(commentSaveReqDto.parentId())
