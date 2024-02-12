@@ -1,4 +1,4 @@
-package com.example.copro.auth.application;
+package com.example.copro.global.oauth.application;
 
 import com.example.copro.auth.api.dto.response.UserInfo;
 import com.example.copro.auth.exception.NotJsonProcessingException;
@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class AuthService {
+public class GoogleAuthService {
 
     private static final String JWT_DELIMITER = "\\.";
 
     private final ObjectMapper objectMapper;
 
-    public AuthService(ObjectMapper objectMapper) {
+    public GoogleAuthService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
