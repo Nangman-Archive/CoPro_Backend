@@ -48,9 +48,6 @@ public class Member implements UserDetails {
     @Schema(description = "최초 로그인 구분", example = "true, false")
     private boolean firstLogin;
 
-    @Schema(description = "UID 번호", example = "firebase UID 번호")
-    private String memberName;
-
     @Enumerated(EnumType.STRING)
     @Schema(description = "권한", example = "ROLE_USER")
     private Role role;
@@ -65,6 +62,7 @@ public class Member implements UserDetails {
     private String picture;
 
     @Enumerated(value = EnumType.STRING)
+    @Schema(description = "소셜로그인 타입", example = "GOOGLE, GITHUB, APPLE")
     private SocialType socialType;
 
     @Schema(description = "닉네임", example = "웅이")
@@ -102,6 +100,11 @@ public class Member implements UserDetails {
     }
 
     @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -121,14 +124,8 @@ public class Member implements UserDetails {
         return true;
     }
 
-    @Override
-    public String getUsername() {
-        return memberName;
-    }
-
     @Builder
-    private Member(String memberName, Role role, String email, String name, String picture, SocialType socialType, boolean firstLogin, int career, int viewType) {
-        this.memberName = memberName;
+    private Member(Role role, String email, String name, String picture, SocialType socialType, boolean firstLogin, int career, int viewType) {
         this.role = role;
         this.email = email;
         this.name = name;
