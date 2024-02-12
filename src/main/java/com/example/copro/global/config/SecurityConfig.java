@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(antMatcher("/login/oauth2/code/google")).permitAll()
                         .requestMatchers(antMatcher("/api/google/token")).permitAll()
+                        .requestMatchers(antMatcher("/api/github/token")).permitAll()
                         .requestMatchers(antMatcher("/api/token/access")).permitAll()
                         .anyRequest().authenticated()
                 )
