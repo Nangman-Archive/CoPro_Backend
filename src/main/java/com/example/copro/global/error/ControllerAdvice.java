@@ -2,6 +2,7 @@ package com.example.copro.global.error;
 
 import com.example.copro.global.error.dto.ErrorResponse;
 import com.example.copro.global.error.exception.AccessDeniedGroupException;
+import com.example.copro.global.error.exception.AuthGroupException;
 import com.example.copro.global.error.exception.InvalidGroupException;
 import com.example.copro.global.error.exception.NotFoundGroupException;
 import java.util.Objects;
@@ -20,6 +21,14 @@ public class ControllerAdvice {
     // custom error
     @ExceptionHandler({InvalidGroupException.class})
     public ResponseEntity<ErrorResponse> handleInvalidData(RuntimeException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        log.error(e.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({AuthGroupException.class})
+    public ResponseEntity<ErrorResponse> handleAuthDate(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         log.error(e.getMessage());
 
