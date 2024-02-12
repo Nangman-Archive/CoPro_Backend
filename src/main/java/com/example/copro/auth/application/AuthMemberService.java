@@ -19,14 +19,13 @@ public class AuthMemberService {
     }
 
     @Transactional
-    // 유저가 존재하지 않으면 디비에 저장 후 MemberLoginResDto.email 반환
-    public MemberLoginResDto saveUserInfo(UserInfo userInfo, String socialType) {
+    public MemberLoginResDto saveUserInfo(UserInfo userInfo, SocialType provider) {
         if (!memberRepository.existsByEmail(userInfo.email())) {
             memberRepository.save(Member.builder()
                     .email(userInfo.email())
                     .name(userInfo.name())
                     .picture(userInfo.picture())
-                    .socialType(SocialType.GOOGLE)
+                    .socialType(provider)
                     .role(Role.ROLE_USER)
                     .build());
         }

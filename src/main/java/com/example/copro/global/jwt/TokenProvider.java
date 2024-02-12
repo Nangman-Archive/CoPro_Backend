@@ -35,7 +35,6 @@ public class TokenProvider {
     @Value("${token.expire.time.refresh}")
     private String refreshTokenExpireTime;
 
-
     @Value("${jwt.secret}")
     private String secret;
     private Key key;
@@ -65,7 +64,7 @@ public class TokenProvider {
         } catch (SignatureException exception) {
             log.error("JWT signature validation fails");
         } catch (ExpiredJwtException exception) {
-            log.error("JWT expired"); // 만료 에러
+            log.error("JWT expired");
         } catch (IllegalArgumentException exception) {
             log.error("JWT is null or empty or only whitespace");
         } catch (Exception exception) {
@@ -75,8 +74,7 @@ public class TokenProvider {
         return false;
     }
 
-    // 엑세스, 리프레시토큰 생성
-    public TokenDto createToken(String email) {
+    public TokenDto generateToken(String email) {
         String accessToken = generateAccessToken(email);
         String refreshToken = generateRefreshToken();
 
@@ -86,8 +84,7 @@ public class TokenProvider {
                 .build();
     }
 
-    // 만료된 엑세스토큰을 리프레시토큰으로 다시 재발급
-    public TokenDto createAccessTokenByRefreshToken(String email, String refreshToken) {
+    public TokenDto generateAccessTokenByRefreshToken(String email, String refreshToken) {
         String accessToken = generateAccessToken(email);
 
         return TokenDto.builder()
@@ -96,20 +93,18 @@ public class TokenProvider {
                 .build();
     }
 
-    // 엑세스 토큰 생성
     public String generateAccessToken(String email) {
         Date date = new Date();
         Date accessExpiryDate = new Date(date.getTime() + Long.parseLong(accessTokenExpireTime));
 
         return Jwts.builder()
                 .setSubject(email)
-                .setIssuedAt(date) // 발급 날짜
-                .setExpiration(accessExpiryDate) // 만료 시간 설정
+                .setIssuedAt(date)
+                .setExpiration(accessExpiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    // 리프레시 토큰 생성
     public String generateRefreshToken() {
         Date date = new Date();
         Date refreshExpiryDate = new Date(date.getTime() + Long.parseLong(refreshTokenExpireTime));
@@ -120,7 +115,6 @@ public class TokenProvider {
                 .compact();
     }
 
-    // token을 받아서 토큰에 담긴 유저의 정보(Email)가 데이터베이스의 유저와 같은지 확인
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)

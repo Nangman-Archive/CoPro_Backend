@@ -29,15 +29,16 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(antMatcher("/login/oauth2/code/google")).permitAll()
-                        .requestMatchers(antMatcher("/google/id-token")).permitAll()
-                        .requestMatchers(antMatcher("/google/code")).permitAll()
-                        .requestMatchers(antMatcher("/access")).permitAll()
+                        .requestMatchers(antMatcher("/api/google/token")).permitAll()
+                        .requestMatchers(antMatcher("/api/github/token")).permitAll()
+                        .requestMatchers(antMatcher("/api/token/access")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
