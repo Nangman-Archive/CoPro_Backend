@@ -1,6 +1,8 @@
 package com.example.copro.global.oauth.application;
 
 import com.example.copro.auth.api.dto.response.UserInfo;
+import com.example.copro.auth.application.AuthService;
+import com.example.copro.member.domain.SocialType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional(readOnly = true)
-public class GitHubAuthService {
+public class GitHubAuthService implements AuthService {
 
     @Value(value = "${oauth.github.client-id}")
     private String clientId;
@@ -30,7 +32,13 @@ public class GitHubAuthService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Override
+    public String getProvider() {
+        return String.valueOf(SocialType.GITHUB).toLowerCase();
+    }
+
     @Transactional
+    @Override
     public UserInfo getUserInfo(String code) {
         String accessToken = extractGithubAccessToken(code);
         UserInfo userInfo = requestGithubUserInfo(accessToken);

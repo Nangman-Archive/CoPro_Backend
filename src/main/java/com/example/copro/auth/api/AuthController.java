@@ -5,10 +5,10 @@ import com.example.copro.auth.api.dto.request.TokenReqDto;
 import com.example.copro.auth.api.dto.response.MemberLoginResDto;
 import com.example.copro.auth.api.dto.response.UserInfo;
 import com.example.copro.auth.application.AuthMemberService;
+import com.example.copro.auth.application.AuthService;
+import com.example.copro.auth.application.AuthServiceFactory;
 import com.example.copro.auth.application.TokenService;
 import com.example.copro.global.jwt.api.dto.TokenDto;
-import com.example.copro.global.oauth.application.GitHubAuthService;
-import com.example.copro.global.oauth.application.GoogleAuthService;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.domain.SocialType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthController {
-    private final GoogleAuthService googleAuthService;
-    private final GitHubAuthService gitHubAuthService;
+    private final AuthServiceFactory authServiceFactory;
     private final AuthMemberService memberService;
     private final TokenService tokenService;
 
@@ -42,22 +43,17 @@ public class AuthController {
             @Parameter(name = "provider", description = "소셜 타입(google, github, apple)", in = ParameterIn.PATH)
             @PathVariable(name = "provider") String provider,
             @RequestBody TokenReqDto tokenReqDto) {
-        MemberLoginResDto getMemberDto = null;
 
-        if (provider.equals("google")) {
-            UserInfo userInfo = googleAuthService.getUserInfo(tokenReqDto.authCode());
-            getMemberDto = memberService.saveUserInfo(userInfo, SocialType.GOOGLE);
-        } else if (provider.equals("github")) {
-            UserInfo userInfo = gitHubAuthService.getUserInfo(tokenReqDto.authCode());
-            getMemberDto = memberService.saveUserInfo(userInfo, SocialType.GITHUB);
-        }
+        AuthService authService = authServiceFactory.getAuthService(provider);
+        UserInfo userInfo = authService.getUserInfo(tokenReqDto.authCode());
 
+        MemberLoginResDto getMemberDto = memberService.saveUserInfo(userInfo, SocialType.valueOf(provider.toUpperCase()));
         TokenDto getToken = tokenService.getToken(getMemberDto);
 
         return new RspTemplate<>(HttpStatus.OK, "토큰 발급", getToken);
     }
 
-    @Operation(summary = "액세스 토큰 재발급", description = "르프레쉬 토큰으로 액세스 토큰을 발급합니다.")
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레쉬 토큰으로 액세스 토큰을 발급합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "토큰 발급 성공")
     })
