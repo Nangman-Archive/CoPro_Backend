@@ -1,5 +1,7 @@
 package com.example.copro.auth.application;
 
+import static com.example.copro.image.api.dto.response.DefaultImage.DEFAULT_IMAGE;
+
 import com.example.copro.auth.api.dto.response.MemberLoginResDto;
 import com.example.copro.auth.api.dto.response.UserInfo;
 import com.example.copro.member.domain.Member;
@@ -21,13 +23,17 @@ public class AuthMemberService {
     @Transactional
     public MemberLoginResDto saveUserInfo(UserInfo userInfo, SocialType provider) {
         if (!memberRepository.existsByEmail(userInfo.email())) {
-            memberRepository.save(Member.builder()
-                    .email(userInfo.email())
-                    .name(userInfo.name())
-                    .picture(userInfo.picture())
-                    .socialType(provider)
-                    .role(Role.ROLE_USER)
-                    .build());
+            String userPicture = (userInfo.picture() != null) ? userInfo.picture() : DEFAULT_IMAGE.imageUrl;
+
+            memberRepository.save(
+                    Member.builder()
+                            .email(userInfo.email())
+                            .name(userInfo.name())
+                            .picture(userPicture)
+                            .socialType(provider)
+                            .role(Role.ROLE_USER)
+                            .build()
+            );
         }
 
         Member member = memberRepository.findByEmail(userInfo.email()).orElseThrow();

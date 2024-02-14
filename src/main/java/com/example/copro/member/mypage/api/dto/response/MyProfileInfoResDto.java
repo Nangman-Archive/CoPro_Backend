@@ -5,7 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record MyProfileInfoResDto(
-        String name,
         String picture,
         String occupation,
         String language,
@@ -17,7 +16,6 @@ public record MyProfileInfoResDto(
 ) {
     public static MyProfileInfoResDto myProfileInfoOf(Member member, int likeMembersCount) {
         return MyProfileInfoResDto.builder()
-                .name(member.getName())
                 .picture(member.getPicture())
                 .occupation(member.getOccupation())
                 .language(member.getLanguage())
