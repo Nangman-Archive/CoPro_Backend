@@ -13,19 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class GoogleAuthService implements AuthService {
+public class AppleAuthService implements AuthService {
 
     private static final String JWT_DELIMITER = "\\.";
 
     private final ObjectMapper objectMapper;
 
-    public GoogleAuthService(ObjectMapper objectMapper) {
+    public AppleAuthService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
     public String getProvider() {
-        return String.valueOf(SocialType.GOOGLE).toLowerCase();
+        return String.valueOf(SocialType.APPLE).toLowerCase();
     }
 
     @Transactional

@@ -1,6 +1,10 @@
 package com.example.copro.global.oauth.application;
 
 import com.example.copro.auth.api.dto.response.UserInfo;
+import com.example.copro.auth.application.AuthService;
+import com.example.copro.global.oauth.exception.OAuthException;
+import com.example.copro.member.domain.SocialType;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,11 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional(readOnly = true)
-public class GitHubAuthService {
+public class GitHubAuthService implements AuthService {
 
     @Value(value = "${oauth.github.client-id}")
     private String clientId;
@@ -30,26 +35,40 @@ public class GitHubAuthService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Override
+    public String getProvider() {
+        return String.valueOf(SocialType.GITHUB).toLowerCase();
+    }
+
     @Transactional
+    @Override
     public UserInfo getUserInfo(String code) {
         String accessToken = extractGithubAccessToken(code);
-        UserInfo userInfo = requestGithubUserInfo(accessToken);
-
-        return userInfo;
+        return requestGithubUserInfo(accessToken);
     }
 
     private String extractGithubAccessToken(String code) {
         HttpEntity<MultiValueMap<String, String>> requestEntity = createGithubAccessTokenEntity(code);
 
-        ResponseEntity<String> responseTokenEntity = restTemplate.exchange(
-                getGithubAccessTokenUrl,
-                HttpMethod.POST,
-                requestEntity,
-                String.class);
+        try {
+            ResponseEntity<String> responseTokenEntity = restTemplate.exchange(
+                    getGithubAccessTokenUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class);
 
-        String[] tokenParts = responseTokenEntity.getBody().split("&");
-        String[] accessTokenParts = tokenParts[0].split("=");
-        return accessTokenParts[1];
+            try {
+                String[] tokenParts = Objects.requireNonNull(responseTokenEntity.getBody()).split("&");
+                String[] accessTokenParts = tokenParts[0].split("=");
+                return accessTokenParts[1];
+            } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                throw new OAuthException("액세스 토큰 추출에 실패했습니다.");
+            }
+
+        } catch (RestClientException e) {
+            throw new OAuthException();
+        }
+
     }
 
     private HttpEntity<MultiValueMap<String, String>> createGithubAccessTokenEntity(String code) {
@@ -66,13 +85,17 @@ public class GitHubAuthService {
     private UserInfo requestGithubUserInfo(String accessToken) {
         HttpEntity<MultiValueMap<String, String>> requestEntity = createRequestEntityWithAccessToken(accessToken);
 
-        ResponseEntity<UserInfo> responseUserInfoEntity = restTemplate.exchange(
-                getGithubUserInfoUrl,
-                HttpMethod.GET,
-                requestEntity,
-                UserInfo.class);
+        try {
+            ResponseEntity<UserInfo> responseUserInfoEntity = restTemplate.exchange(
+                    getGithubUserInfoUrl,
+                    HttpMethod.GET,
+                    requestEntity,
+                    UserInfo.class);
 
-        return responseUserInfoEntity.getBody();
+            return responseUserInfoEntity.getBody();
+        } catch (RestClientException e) {
+            throw new OAuthException();
+        }
     }
 
     private HttpEntity<MultiValueMap<String, String>> createRequestEntityWithAccessToken(String accessToken) {
