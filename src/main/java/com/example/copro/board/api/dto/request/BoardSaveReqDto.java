@@ -16,8 +16,6 @@ public record BoardSaveReqDto(
         Category category,
         @NotBlank
         String contents,
-        @NotBlank
-        String summary,
         @NotNull
         Part part,
         @NotNull
