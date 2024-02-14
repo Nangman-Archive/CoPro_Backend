@@ -2,7 +2,7 @@ package com.example.copro.global.oauth.application;
 
 import com.example.copro.auth.api.dto.response.UserInfo;
 import com.example.copro.auth.application.AuthService;
-import com.example.copro.auth.exception.NotJsonProcessingException;
+import com.example.copro.global.oauth.exception.OAuthException;
 import com.example.copro.member.domain.SocialType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,7 @@ public class GoogleAuthService implements AuthService {
         try {
             return objectMapper.readValue(decodePayload, UserInfo.class);
         } catch (JsonProcessingException e) {
-            throw new NotJsonProcessingException();
+            throw new OAuthException("id 토큰을 읽을 수 없습니다.");
         }
     }
 
