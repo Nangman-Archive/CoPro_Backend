@@ -1,7 +1,7 @@
 package com.example.copro.image.api.dto.response;
 
 public enum DefaultImage {
-   DEFAULT_IMAGE("https://d35sohbc9et6k7.cloudfront.net/35324cfc-e04a-4559-beab-f41a9c23d759_KakaoTalk_20231030_161509818.jpg");
+   DEFAULT_IMAGE("https://d35sohbc9et6k7.cloudfront.net/4b95af21-e099-4964-9c46-647663b26201_KakaoTalk_20230526_234242506.jpg");
 
     public final String imageUrl;
 
