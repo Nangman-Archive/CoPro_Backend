@@ -10,6 +10,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.Role;
 import com.example.copro.member.domain.SocialType;
 import com.example.copro.member.domain.repository.MemberRepository;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +25,29 @@ public class AuthMemberService {
 
     @Transactional
     public MemberLoginResDto saveUserInfo(UserInfo userInfo, SocialType provider) {
-        validateEmail(userInfo.email());
+        validateNotFoundEmail(userInfo.email());
 
+        Member member = getExistingMemberOrCreateNew(userInfo, provider);
+
+        validateSocialType(member, provider);
+
+        return MemberLoginResDto.from(member);
+    }
+
+    private void validateNotFoundEmail(String email) {
+        if (email == null) {
+            throw new NotFoundGithubEmailException();
+        }
+    }
+
+    private Member getExistingMemberOrCreateNew(UserInfo userInfo, SocialType provider) {
+        return memberRepository.findByEmail(userInfo.email()).orElseGet(() -> createMember(userInfo, provider));
+    }
+
+    private Member createMember(UserInfo userInfo, SocialType provider) {
         String userPicture = getUserPicture(userInfo.picture());
 
-        Member member = memberRepository.save(
+        return memberRepository.save(
                 Member.builder()
                         .email(userInfo.email())
                         .name(userInfo.name())
@@ -37,22 +56,16 @@ public class AuthMemberService {
                         .role(Role.ROLE_USER)
                         .build()
         );
-
-        return MemberLoginResDto.from(member);
-    }
-
-    private void validateEmail(String email) {
-        if (email == null) {
-            throw new NotFoundGithubEmailException();
-        }
-
-        if (memberRepository.existsByEmail(email)) {
-            throw new ExistsMemberEmailException();
-        }
     }
 
     private String getUserPicture(String picture) {
-        return (picture != null) ? picture : DEFAULT_IMAGE.imageUrl;
+        return Optional.ofNullable(picture).orElse(DEFAULT_IMAGE.imageUrl);
+    }
+
+    private void validateSocialType(Member member, SocialType provider) {
+        if (!provider.equals(member.getSocialType())) {
+            throw new ExistsMemberEmailException();
+        }
     }
 
 }
