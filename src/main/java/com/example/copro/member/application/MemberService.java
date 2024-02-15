@@ -60,12 +60,25 @@ public class MemberService {
     // 프로필 수정
     @Transactional
     public MemberResDto profileUpdate(Member member, MemberProfileUpdateReqDto memberProfileUpdateReqDto) {
-        validateDuplicateNickName(memberProfileUpdateReqDto.nickName());
-
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
+
+        validateDuplicateMyNickName(memberProfileUpdateReqDto.nickName(), getMember);
         getMember.profileUpdate(memberProfileUpdateReqDto);
 
         return MemberResDto.from(member);
+    }
+
+    private void validateDuplicateMyNickName(String nickName, Member member) {
+        if (memberRepository.existsByNickName(nickName) && member.getNickName() != null && !member.getNickName().equals(nickName)) {
+            throw new ExistsNickNameException();
+        }
+    }
+
+    // nickName 중복검사
+    public void validateDuplicateNickName(String nickName) {
+        if (memberRepository.existsByNickName(nickName)) {
+            throw new ExistsNickNameException();
+        }
     }
 
     // gitHubUrl 수정
@@ -75,13 +88,6 @@ public class MemberService {
         getMember.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
 
         return MemberResDto.from(member);
-    }
-
-    // nickName 중복검사
-    public void validateDuplicateNickName(String nickName) {
-        if (memberRepository.existsByNickName(nickName)) {
-            throw new ExistsNickNameException();
-        }
     }
 
     // 유저 좋아요
