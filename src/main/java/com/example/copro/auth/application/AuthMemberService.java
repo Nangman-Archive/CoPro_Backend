@@ -4,6 +4,8 @@ import static com.example.copro.image.api.dto.response.DefaultImage.DEFAULT_IMAG
 
 import com.example.copro.auth.api.dto.response.MemberLoginResDto;
 import com.example.copro.auth.api.dto.response.UserInfo;
+import com.example.copro.auth.exception.ExistsMemberEmailException;
+import com.example.copro.auth.exception.NotFoundGithubEmailException;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.Role;
 import com.example.copro.member.domain.SocialType;
@@ -22,23 +24,35 @@ public class AuthMemberService {
 
     @Transactional
     public MemberLoginResDto saveUserInfo(UserInfo userInfo, SocialType provider) {
-        if (!memberRepository.existsByEmail(userInfo.email())) {
-            String userPicture = (userInfo.picture() != null) ? userInfo.picture() : DEFAULT_IMAGE.imageUrl;
+        validateEmail(userInfo.email());
 
-            memberRepository.save(
-                    Member.builder()
-                            .email(userInfo.email())
-                            .name(userInfo.name())
-                            .picture(userPicture)
-                            .socialType(provider)
-                            .role(Role.ROLE_USER)
-                            .build()
-            );
-        }
+        String userPicture = getUserPicture(userInfo.picture());
 
-        Member member = memberRepository.findByEmail(userInfo.email()).orElseThrow();
+        Member member = memberRepository.save(
+                Member.builder()
+                        .email(userInfo.email())
+                        .name(userInfo.name())
+                        .picture(userPicture)
+                        .socialType(provider)
+                        .role(Role.ROLE_USER)
+                        .build()
+        );
 
         return MemberLoginResDto.from(member);
+    }
+
+    private void validateEmail(String email) {
+        if (email == null) {
+            throw new NotFoundGithubEmailException();
+        }
+
+        if (memberRepository.existsByEmail(email)) {
+            throw new ExistsMemberEmailException();
+        }
+    }
+
+    private String getUserPicture(String picture) {
+        return (picture != null) ? picture : DEFAULT_IMAGE.imageUrl;
     }
 
 }
