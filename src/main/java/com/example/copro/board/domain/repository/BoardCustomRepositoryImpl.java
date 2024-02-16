@@ -75,6 +75,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .leftJoin(comment).on(comment.board.boardId.eq(board.boardId))
                 .where(board.title.contains(query))
                 .groupBy(board.boardId)
+                .orderBy(board.createAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch()
