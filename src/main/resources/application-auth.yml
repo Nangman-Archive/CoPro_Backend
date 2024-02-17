@@ -12,9 +12,6 @@ token:
       refresh : ${token.expire.time.refresh}
 
 oauth:
-  google:
-    client-id: ${oauth.google.client-id}
-    client-secret: ${oauth.google.client-secret}
   github:
     client-id: ${oauth.github.client-id}
     client-secret: ${oauth.github.client-secret}
