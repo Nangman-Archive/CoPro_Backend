@@ -32,21 +32,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        permitAllForOAuthEndpoints(http);
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(antMatcher("/login/oauth2/code/google")).permitAll()
-                        .requestMatchers(antMatcher("/api/google/token")).permitAll()
-                        .requestMatchers(antMatcher("/api/github/token")).permitAll()
-                        .requestMatchers(antMatcher("/api/apple/token")).permitAll()
-                        .requestMatchers(antMatcher("/api/token/access")).permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handle -> handle.authenticationEntryPoint(new CustomAuthenticationFailureHandler()))
                 .build();
+    }
+
+    private void permitAllForOAuthEndpoints(HttpSecurity http) throws Exception {
+        String[] permittedUrls = {
+                "/login/oauth2/code/google",
+                "/api/google/token",
+                "/api/github/token",
+                "/api/apple/token",
+                "/api/token/access"
+        };
+
+        for (String url : permittedUrls) {
+            http.authorizeHttpRequests(authorize -> authorize.requestMatchers(antMatcher(url)).permitAll());
+        }
     }
 
     @Bean
