@@ -20,7 +20,7 @@ public record BoardSaveReqDto(
         Part part,
         @NotNull
         Tag tag,
-        @NotEmpty
+
         List<Long> imageId
 ) {
 }
