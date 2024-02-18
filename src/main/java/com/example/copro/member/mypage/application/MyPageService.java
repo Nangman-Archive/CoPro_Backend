@@ -44,11 +44,15 @@ public class MyPageService {
     public Page<MemberLikeResDto> memberLikeList(Member member, int page, int size) {
         Page<MemberLike> memberLikes = memberLikeRepository.findByMember(member, PageRequest.of(page, size));
 
-        return memberLikes.map(this::mapToMemberLike);
+        return memberLikes.map(memberLike -> mapToMemberLike(member, memberLike));
     }
 
-    private MemberLikeResDto mapToMemberLike(MemberLike memberLike) {
-        return MemberLikeResDto.from(memberLike);
+    // 좋아요 여부와, 좋아요 횟수
+    private MemberLikeResDto mapToMemberLike(Member member, MemberLike memberLike) {
+        boolean isLike = memberLikeRepository.existsByMemberAndLikedMember(member, memberLike.getLikedMember());
+        int likeMembersCount = memberLikeRepository.countByLikedMember(memberLike.getLikedMember());
+
+        return MemberLikeResDto.of(memberLike, isLike, likeMembersCount);
     }
 
     // 내 관심 게시물 목록

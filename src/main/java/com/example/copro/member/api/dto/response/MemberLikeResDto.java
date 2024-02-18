@@ -12,9 +12,11 @@ public record MemberLikeResDto(
         String occupation,
         String language,
         int career,
-        String gitHubUrl
+        String gitHubUrl,
+        boolean isLike,
+        int likeMembersCount
 ) {
-    public static MemberLikeResDto from(MemberLike memberLike) {
+    public static MemberLikeResDto of(MemberLike memberLike, boolean isLike, int likeMembersCount) {
         return MemberLikeResDto.builder()
                 .memberLikeId(memberLike.getLikedMember().getMemberId())
                 .name(memberLike.getLikedMember().getName())
@@ -24,6 +26,8 @@ public record MemberLikeResDto(
                 .language(memberLike.getLikedMember().getLanguage())
                 .career(memberLike.getLikedMember().getCareer())
                 .gitHubUrl(memberLike.getLikedMember().getGitHubUrl())
+                .isLike(isLike)
+                .likeMembersCount(likeMembersCount)
                 .build();
     }
 }
