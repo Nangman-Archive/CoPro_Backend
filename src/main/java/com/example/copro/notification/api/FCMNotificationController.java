@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,8 @@ public class FCMNotificationController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/fcm-token")
-    public RspTemplate<String> getFCMToken(@AuthenticationPrincipal Member member, @RequestBody FCMTokenReqDto fcmTokenReqDto) {
+    public RspTemplate<String> getFCMToken(@AuthenticationPrincipal Member member,
+                                           @Valid @RequestBody FCMTokenReqDto fcmTokenReqDto) {
         fcmNotificationService.fcmTokenUpdate(member, fcmTokenReqDto);
         return new RspTemplate<>(HttpStatus.OK, "FCM토큰을 저장합니다.");
     }
@@ -44,7 +46,8 @@ public class FCMNotificationController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/chatting/notification")
-    public String sendNotificationByToken(@AuthenticationPrincipal Member member, @RequestBody FCMNotificationReqDto fcmNotificationReqDto) {
+    public String sendNotificationByToken(@AuthenticationPrincipal Member member,
+                                          @Valid @RequestBody FCMNotificationReqDto fcmNotificationReqDto) {
         return fcmNotificationService.sendChattingNotification(fcmNotificationReqDto);
     }
 
