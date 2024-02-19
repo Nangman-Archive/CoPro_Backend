@@ -163,6 +163,10 @@ public class Member implements UserDetails {
         this.gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl().trim();
     }
 
+    public void firstLongUpdate() {
+        this.firstLogin = false;
+    }
+
     private void validateGitHubUrl(String gitHubUrl) {
         boolean isValid = gitHubUrl.matches("https://github\\.com/[A-Za-z0-9\\-_]+");
         if (!isValid) {

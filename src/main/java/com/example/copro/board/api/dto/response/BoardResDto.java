@@ -2,9 +2,7 @@ package com.example.copro.board.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.Category;
-import com.example.copro.board.domain.Part;
 import com.example.copro.board.domain.Tag;
-import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.image.domain.Image;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +16,7 @@ public record BoardResDto(
         LocalDateTime createAt,
         Category category,
         String contents,
-        Part part,
+        String part,
         Tag tag,
         int count,
         int heart,
