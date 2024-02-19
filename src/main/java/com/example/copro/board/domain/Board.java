@@ -51,10 +51,8 @@ public class Board extends BaseTimeEntity {
     @Schema(description = "게시글 내용", example = "내용")
     private String contents;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
     @Schema(description = "모집 역할(양식)", example = "프론트엔드, 백엔드, 모바일, AI")
-    private Part part ;
+    private String part ;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
@@ -94,7 +92,7 @@ public class Board extends BaseTimeEntity {
     }
 
     @Builder
-    private Board(String title, Category category, String contents, Part part, Tag tag, int count, int heart,
+    private Board(String title, Category category, String contents, String part, Tag tag, int count, int heart,
                   List<Image> images, Member member) {
         this.title = title;
         this.category = category;

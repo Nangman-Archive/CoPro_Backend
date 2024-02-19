@@ -46,6 +46,7 @@ public class MemberController {
     @GetMapping("/success")
     public RspTemplate<Boolean> isFirstLogin(@AuthenticationPrincipal Member member) {
         if (member.isFirstLogin()) {
+            memberService.firstLogin(member);
             return new RspTemplate<>(HttpStatus.OK, "최초 로그인입니다.", true);
         } else {
             return new RspTemplate<>(HttpStatus.OK, "최초 로그인이 아닙니다.", false);
