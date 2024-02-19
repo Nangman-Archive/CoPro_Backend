@@ -49,7 +49,7 @@ public class SecurityConfig {
                 "/api/google/token",
                 "/api/github/token",
                 "/api/apple/token",
-                "/api/token/access"
+                "/api/token/access",
         };
 
         for (String url : permittedUrls) {
