@@ -29,6 +29,12 @@ public class MemberService {
         this.memberLikeRepository = memberLikeRepository;
     }
 
+    @Transactional
+    public void firstLogin(Member member) {
+        Member getMember = memberRepository.findByEmail(member.getEmail()).orElseThrow(MemberNotFoundException::new);
+        getMember.firstLongUpdate();
+    }
+
     // nickname으로 member채팅프로필 불러오기
     public MemberChattingProfileResDto memberChattingProProfileInfo(String nickName) {
         Member member = memberRepository.findByNickName(nickName).orElseThrow(MemberNotFoundException::new);
