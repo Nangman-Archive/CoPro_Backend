@@ -60,3 +60,5 @@ cloud:
       auto: false
 
 cloudfront-domain-name: ${cloudfront-domain-name}
+
+FIREBASE_KEY: ${FIREBASE_KEY}

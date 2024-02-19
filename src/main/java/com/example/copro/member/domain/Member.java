@@ -83,6 +83,9 @@ public class Member implements UserDetails {
     @Schema(description = "뷰 타입", example = "0 or 1")
     private int viewType;
 
+    @Schema(description = "FCM토큰")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
 
@@ -165,6 +168,10 @@ public class Member implements UserDetails {
 
     public void firstLongUpdate() {
         this.firstLogin = false;
+    }
+
+    public void fcmTokenUpdate(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     private void validateGitHubUrl(String gitHubUrl) {
