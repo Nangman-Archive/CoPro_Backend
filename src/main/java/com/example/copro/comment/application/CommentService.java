@@ -8,13 +8,12 @@ import com.example.copro.comment.api.dto.request.CommentSaveReqDto;
 import com.example.copro.comment.api.dto.request.CommentUpdateReqDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
-import com.example.copro.comment.domain.repository.CommentCustomRepository;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.member.domain.Member;
+import com.example.copro.notification.application.FCMNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,24 +25,23 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
-
+    private final FCMNotificationService fcmNotificationService;
 
     @Transactional
-    public CommentResDto insert(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member) {
+    public void insert(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
 
         Comment parentComment = getParentComment(commentSaveReqDto);
         Comment comment = builderComment(commentSaveReqDto, member, board, parentComment);
 
-        Comment savedComment = commentRepository.save(comment);
-        return CommentResDto.from(savedComment);
+        commentRepository.save(comment);
+
+        fcmNotificationService.sendCommentNotification(board, member);
     }
 
     @Transactional
     public Page<CommentResDto> insertAndGetComments(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member, Pageable pageable) {
-
-        CommentResDto savedComment = insert(boardId, commentSaveReqDto, member);
-
+        insert(boardId, commentSaveReqDto, member);
         return getCommentsByBoard(boardId, pageable);
     }
 
