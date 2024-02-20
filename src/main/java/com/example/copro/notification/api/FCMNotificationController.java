@@ -46,7 +46,8 @@ public class FCMNotificationController {
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
     @PostMapping("/chatting/notification")
-    public RspTemplate<String> sendNotificationByToken(@RequestBody FCMNotificationReqDto fcmNotificationReqDto) {
+    public RspTemplate<String> sendNotificationByToken(@AuthenticationPrincipal Member member,
+                                                       @Valid @RequestBody FCMNotificationReqDto fcmNotificationReqDto) {
         String successMessage = fcmNotificationService.sendChattingNotification(fcmNotificationReqDto);
         return new RspTemplate<>(HttpStatus.OK, "채팅 알림을 보냅니다.", successMessage);
     }
