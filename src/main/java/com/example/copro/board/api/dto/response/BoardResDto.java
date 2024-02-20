@@ -23,6 +23,8 @@ public record BoardResDto(
         List<String> imageUrl,
         String nickName,
         String occupation,
+        String email,
+        String picture,
         boolean isHeart,
         boolean isScrap,
         int commentCount
@@ -64,6 +66,8 @@ public record BoardResDto(
                 .count(board.getCount())
                 .nickName(board.getMember().getNickName())
                 .occupation(board.getMember().getOccupation())
+                .email(board.getMember().getEmail())
+                .picture(board.getMember().getPicture())
                 .heart(board.getHeart())
                 .imageUrl(imageUrl)
                 .isHeart(isHeart)
