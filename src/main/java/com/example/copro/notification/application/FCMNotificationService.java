@@ -65,7 +65,7 @@ public class FCMNotificationService {
     private FCMNotificationReqDto createNotification(String targetEmail, String nickName, String actionMessage) {
         return FCMNotificationReqDto.builder()
                 .targetMemberEmail(targetEmail)
-                .title("Copro")
+                .title("CoPro")
                 .body(nickName + actionMessage)
                 .build();
     }
