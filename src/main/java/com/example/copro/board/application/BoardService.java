@@ -173,8 +173,6 @@ public class BoardService {
 
         addScrapMember.addScrapBoard(board);
         memberRepository.save(addScrapMember);
-
-        fcmNotificationService.sendScrapBoardNotification(board, addScrapMember);
     }
 
     private void validateScrapNotExists(Member addScrapMember, Board board) {

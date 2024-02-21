@@ -18,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class FCMNotificationService {
     private final FirebaseMessaging firebaseMessaging;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
-    public FCMNotificationService(FirebaseMessaging firebaseMessaging, MemberRepository memberRepository) {
+    public FCMNotificationService(FirebaseMessaging firebaseMessaging, MemberRepository memberRepository, NotificationService notificationService) {
         this.firebaseMessaging = firebaseMessaging;
         this.memberRepository = memberRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -34,12 +36,7 @@ public class FCMNotificationService {
         String message = "님이 당신의 프로필을 좋아합니다.";
         FCMNotificationReqDto notificationReqDto = createNotification(likeMember.getEmail(), member.getNickName(), message);
 
-        sendNotification(notificationReqDto);
-    }
-
-    public void sendScrapBoardNotification(Board board, Member member) {
-        String message = "님이 회원님의 게시물을 관심목록에 추가했습니다.";
-        FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
+        notificationService.notificationLikeSave(likeMember, member, message);
 
         sendNotification(notificationReqDto);
     }
@@ -48,12 +45,16 @@ public class FCMNotificationService {
         String message = "님이 회원님의 게시물을 좋아합니다.";
         FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
 
+        notificationService.notificationBoardSave(board, member, message);
+
         sendNotification(notificationReqDto);
     }
 
     public void sendCommentNotification(Board board, Member member) {
         String message = "님이 회원님의 게시물에 댓글을 남겼습니다.";
         FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
+
+        notificationService.notificationBoardSave(board, member, message);
 
         sendNotification(notificationReqDto);
     }
