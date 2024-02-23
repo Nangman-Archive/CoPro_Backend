@@ -60,7 +60,7 @@ public class MemberController {
     })
     @GetMapping("/chatting/profile/{nickName}")
     public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(@PathVariable(name = "nickName") String nickName) {
-        MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProProfileInfo(nickName);
+        MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProfileInfo(nickName);
         return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
     }
 

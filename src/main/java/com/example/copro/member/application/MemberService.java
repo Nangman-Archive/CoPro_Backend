@@ -39,7 +39,7 @@ public class MemberService {
     }
 
     // nickname으로 member채팅프로필 불러오기
-    public MemberChattingProfileResDto memberChattingProProfileInfo(String nickName) {
+    public MemberChattingProfileResDto memberChattingProfileInfo(String nickName) {
         Member member = memberRepository.findByNickName(nickName).orElseThrow(MemberNotFoundException::new);
 
         return MemberChattingProfileResDto.from(member);
