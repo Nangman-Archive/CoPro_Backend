@@ -3,11 +3,8 @@ package com.example.copro.image.api.dto.response;
 
 import com.example.copro.board.domain.Board;
 import com.example.copro.image.domain.Image;
-import lombok.Builder;
-
 import java.util.List;
-
-import static com.example.copro.image.api.dto.response.DefaultImage.*;
+import lombok.Builder;
 
 @Builder
 public record ImageBoardResDto(
@@ -17,7 +14,7 @@ public record ImageBoardResDto(
         List<Image> images = board.getImages();
         if(images.isEmpty()){
             return ImageBoardResDto.builder()
-                    .imageUrl(DEFAULT_IMAGE.imageUrl)
+                    .imageUrl(null)
                     .build();
         }
 
