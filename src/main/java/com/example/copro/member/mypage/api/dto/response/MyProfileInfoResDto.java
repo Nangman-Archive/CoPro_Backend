@@ -9,6 +9,7 @@ public record MyProfileInfoResDto(
         String occupation,
         String language,
         int career,
+        String email,
         String gitHubUrl,
         String nickName,
         int viewType,
@@ -20,6 +21,7 @@ public record MyProfileInfoResDto(
                 .occupation(member.getOccupation())
                 .language(member.getLanguage())
                 .career(member.getCareer())
+                .email(member.getEmail())
                 .gitHubUrl(member.getGitHubUrl())
                 .nickName(member.getNickName())
                 .viewType(member.getViewType())
