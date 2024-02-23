@@ -18,8 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,16 +25,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member implements UserDetails {
+public class Member {
 
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣]*$");
+    private static final Pattern GITHUB_URL_PATTERN = Pattern.compile("https://github\\.com/[A-Za-z0-9\\-_]+");
     private static final int MAX_NICKNAME_LENGTH = 8;
 
     @Id
@@ -89,41 +85,6 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberLike> memberLikes = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
     @Builder
     private Member(Role role, String email, String name, String picture, SocialType socialType, boolean firstLogin, int career, int viewType) {
         this.role = role;
@@ -163,15 +124,16 @@ public class Member implements UserDetails {
         this.gitHubUrl = memberGitHubUrlUpdateReqDto.gitHubUrl().trim();
     }
 
-    public void firstLongUpdate() {
-        this.firstLogin = false;
-    }
-
     private void validateGitHubUrl(String gitHubUrl) {
-        boolean isValid = gitHubUrl.matches("https://github\\.com/[A-Za-z0-9\\-_]+");
-        if (!isValid) {
+        Matcher matcher = GITHUB_URL_PATTERN.matcher(gitHubUrl);
+
+        if (!matcher.matches()) {
             throw new InvalidGitHubUrlException();
         }
+    }
+
+    public void firstLongUpdate() {
+        this.firstLogin = false;
     }
 
     public void viewTypeUpdate(int viewType) {
@@ -211,4 +173,5 @@ public class Member implements UserDetails {
                 .findFirst()
                 .orElse(null);
     }
+
 }
