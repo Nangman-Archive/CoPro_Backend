@@ -12,6 +12,7 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
+import com.example.copro.notification.application.FCMNotificationService;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final FCMNotificationService fcmNotificationService;
 
-    public MemberService(MemberRepository memberRepository, MemberLikeRepository memberLikeRepository) {
+    public MemberService(MemberRepository memberRepository, MemberLikeRepository memberLikeRepository, FCMNotificationService fcmNotificationService) {
         this.memberRepository = memberRepository;
         this.memberLikeRepository = memberLikeRepository;
+        this.fcmNotificationService = fcmNotificationService;
     }
 
     @Transactional
@@ -100,13 +103,14 @@ public class MemberService {
     @Transactional
     public void addMemberLike(Member member, MemberLikeReqDto memberLikeReqDto) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
-        Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId())
-                .orElseThrow(MemberNotFoundException::new);
+        Member likeMember = memberRepository.findById(memberLikeReqDto.likeMemberId()).orElseThrow(MemberNotFoundException::new);
 
         validateExistsLikeMember(getMember, likeMember);
 
         getMember.addMemberLike(likeMember);
         memberRepository.save(getMember);
+
+        fcmNotificationService.sendLikeMemberNotification(getMember, likeMember);
     }
 
     // member 관심 목록 중복검사

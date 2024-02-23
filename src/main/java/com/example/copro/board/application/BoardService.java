@@ -12,8 +12,14 @@ import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
-import com.example.copro.board.exception.*;
-import com.example.copro.comment.api.dto.response.CommentResDto;
+import com.example.copro.board.exception.AlreadyHeartException;
+import com.example.copro.board.exception.AlreadyScrapException;
+import com.example.copro.board.exception.BoardNotFoundException;
+import com.example.copro.board.exception.HeartNotFoundException;
+import com.example.copro.board.exception.ImageCountExceededException;
+import com.example.copro.board.exception.MappedImageException;
+import com.example.copro.board.exception.NotBoardOwnerException;
+import com.example.copro.board.exception.ScrapNotFoundException;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
@@ -21,6 +27,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
+import com.example.copro.notification.application.FCMNotificationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +45,7 @@ public class BoardService {
     private final MemberHeartBoardRepository memberHeartBoardRepository;
     private final ImageRepository imageRepository;
     private final CommentRepository commentRepository;
+    private final FCMNotificationService fcmNotificationService;
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
@@ -201,6 +209,9 @@ public class BoardService {
 
         board.updateHeartCount();
         memberHeartBoardRepository.save(memberHeartBoard);
+
+        fcmNotificationService.sendHeartBoardNotification(board, member);
+
         return HeartSaveResDto.of(board);
     }
 

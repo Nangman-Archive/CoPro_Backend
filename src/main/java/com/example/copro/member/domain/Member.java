@@ -79,6 +79,9 @@ public class Member {
     @Schema(description = "뷰 타입", example = "0 or 1")
     private int viewType;
 
+    @Schema(description = "FCM토큰")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
 
@@ -138,6 +141,10 @@ public class Member {
 
     public void viewTypeUpdate(int viewType) {
         this.viewType = viewType;
+    }
+  
+    public void fcmTokenUpdate(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public void addMemberLike(Member likeMember) {
