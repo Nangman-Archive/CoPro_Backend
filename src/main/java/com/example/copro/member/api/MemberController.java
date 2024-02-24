@@ -4,7 +4,6 @@ import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
-import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
 import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.application.MemberService;
@@ -58,9 +57,10 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "채팅 프로필 불러오기 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @GetMapping("/chatting/profile/{nickName}")
-    public RspTemplate<MemberChattingProfileResDto> memberChattingProfileInfo(@PathVariable(name = "nickName") String nickName) {
-        MemberChattingProfileResDto memberChattingProfileResDto = memberService.memberChattingProfileInfo(nickName);
+    @GetMapping("/chatting/profile/{email}")
+    public RspTemplate<MemberResDto> memberChattingProfileInfo(@AuthenticationPrincipal Member member,
+                                                                              @PathVariable(name = "email") String targetEmail) {
+        MemberResDto memberChattingProfileResDto = memberService.memberChattingProfileInfo(member, targetEmail);
         return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
     }
 

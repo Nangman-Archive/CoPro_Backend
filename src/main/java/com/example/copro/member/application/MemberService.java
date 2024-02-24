@@ -3,7 +3,6 @@ package com.example.copro.member.application;
 import com.example.copro.member.api.dto.request.MemberGitHubUrlUpdateReqDto;
 import com.example.copro.member.api.dto.request.MemberLikeReqDto;
 import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
-import com.example.copro.member.api.dto.response.MemberChattingProfileResDto;
 import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.domain.Member;
@@ -39,10 +38,10 @@ public class MemberService {
     }
 
     // nickname으로 member채팅프로필 불러오기
-    public MemberChattingProfileResDto memberChattingProfileInfo(String nickName) {
-        Member member = memberRepository.findByNickName(nickName).orElseThrow(MemberNotFoundException::new);
+    public MemberResDto memberChattingProfileInfo(Member member, String targetEmail) {
+        Member targetMember = memberRepository.findByEmail(targetEmail).orElseThrow(MemberNotFoundException::new);
 
-        return MemberChattingProfileResDto.from(member);
+        return getMemberResDto(member, targetMember);
     }
 
     // 전체 멤버 정보리스트
