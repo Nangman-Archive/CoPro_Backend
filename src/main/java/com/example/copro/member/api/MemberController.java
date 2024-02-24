@@ -59,7 +59,7 @@ public class MemberController {
     })
     @GetMapping("/chatting/profile/{email}")
     public RspTemplate<MemberResDto> memberChattingProfileInfo(@AuthenticationPrincipal Member member,
-                                                                              @PathVariable(name = "email") String targetEmail) {
+                                                               @PathVariable(name = "email") String targetEmail) {
         MemberResDto memberChattingProfileResDto = memberService.memberChattingProfileInfo(member, targetEmail);
         return new RspTemplate<>(HttpStatus.OK, "멤버 채팅 프로필 정보 조회", memberChattingProfileResDto);
     }
