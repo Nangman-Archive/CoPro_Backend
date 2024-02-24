@@ -22,7 +22,12 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public static final QNotification notification = new QNotification("notification");
 
+    public final com.example.copro.board.domain.QBaseTimeEntity _super = new com.example.copro.board.domain.QBaseTimeEntity(this);
+
     public final NumberPath<Long> boardId = createNumber("boardId", Long.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
 
     public final com.example.copro.member.domain.QMember member;
 

@@ -42,21 +42,26 @@ public class FCMNotificationService {
     }
 
     public void sendHeartBoardNotification(Board board, Member member) {
-        String message = "님이 회원님의 게시물을 좋아합니다.";
-        FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
+        if (!board.getMember().getMemberId().equals(member.getMemberId())) {
+            String message = "님이 회원님의 게시물을 좋아합니다.";
+            FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
 
-        notificationService.notificationBoardSave(board, member, message);
+            notificationService.notificationBoardSave(board, member, message);
 
-        sendNotification(notificationReqDto);
+            sendNotification(notificationReqDto);
+        }
     }
 
     public void sendCommentNotification(Board board, Member member) {
-        String message = "님이 회원님의 게시물에 댓글을 남겼습니다.";
-        FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
+        if (!board.getMember().getMemberId().equals(member.getMemberId())) {
+            String message = "님이 회원님의 게시물에 댓글을 남겼습니다.";
+            FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(),
+                    member.getNickName(), message);
 
-        notificationService.notificationBoardSave(board, member, message);
+            notificationService.notificationBoardSave(board, member, message);
 
-        sendNotification(notificationReqDto);
+            sendNotification(notificationReqDto);
+        }
     }
 
     public String sendChattingNotification(FCMNotificationReqDto reqDto) {
