@@ -29,6 +29,8 @@ import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.application.FCMNotificationService;
 import java.util.List;
+
+import com.example.copro.notification.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +48,8 @@ public class BoardService {
     private final ImageRepository imageRepository;
     private final CommentRepository commentRepository;
     private final FCMNotificationService fcmNotificationService;
+
+    private final NotificationRepository notificationRepository;
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
@@ -133,6 +137,9 @@ public class BoardService {
                 .orElseThrow(() -> new BoardNotFoundException(boardId));
 
         checkBoardOwnership(board, member);
+
+        commentRepository.deleteByBoardBoardId(boardId);
+        notificationRepository.deleteByBoardId(boardId);
 
         boardRepository.delete(board);
     }
