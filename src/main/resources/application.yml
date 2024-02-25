@@ -8,7 +8,7 @@ spring:
     password: ${spring.datasource.password}
     driver-class-name: ${spring.datasource.driver-class-name}
     hikari:
-      maximum-pool-size: 200
+      maximum-pool-size: 50
 
 
   jpa:
