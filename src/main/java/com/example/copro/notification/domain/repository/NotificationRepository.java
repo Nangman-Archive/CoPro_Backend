@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Page<Notification> findByMember(Member member, Pageable pageable);
+
+    void deleteByBoardId(Long boardId);
 }
