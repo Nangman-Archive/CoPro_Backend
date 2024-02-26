@@ -26,7 +26,7 @@ public class Comment extends BaseTimeEntity {
     @Schema(description = "댓글 id", example = "1")
     private Long commentId;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Schema(description = "댓글 내용", example = "댓글입니다")
     private String content;
 
