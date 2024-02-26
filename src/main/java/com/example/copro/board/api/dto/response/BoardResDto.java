@@ -20,6 +20,7 @@ public record BoardResDto(
         Tag tag,
         int count,
         int heart,
+        List<Long> imageId,
         List<String> imageUrl,
         String nickName,
         String occupation,
@@ -30,6 +31,10 @@ public record BoardResDto(
         int commentCount
 ) {
     public static BoardResDto of(Board board) {
+        List<Long> imageId = board.getImages().stream()
+                .map(Image::getId)
+                .toList();
+
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -46,11 +51,16 @@ public record BoardResDto(
                 .nickName(board.getMember().getNickName())
                 .occupation(board.getMember().getOccupation())
                 .heart(board.getHeart())
+                .imageId(imageId)
                 .imageUrl(imageUrl)
                 .build();
     }
 
     public static BoardResDto from(Board board, boolean isHeart, boolean isScrap, int commentCount) {
+        List<Long> imageId = board.getImages().stream()
+                .map(Image::getId)
+                .toList();
+
         List<String> imageUrl = board.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());
@@ -69,6 +79,7 @@ public record BoardResDto(
                 .email(board.getMember().getEmail())
                 .picture(board.getMember().getPicture())
                 .heart(board.getHeart())
+                .imageId(imageId)
                 .imageUrl(imageUrl)
                 .isHeart(isHeart)
                 .isScrap(isScrap)
