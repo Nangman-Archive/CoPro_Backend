@@ -6,10 +6,12 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.api.dto.request.FCMNotificationReqDto;
 import com.example.copro.notification.api.dto.request.FCMTokenReqDto;
+import com.google.common.collect.ImmutableMap;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +36,9 @@ public class FCMNotificationService {
 
     public void sendLikeMemberNotification(Member member, Member likeMember) {
         String message = "님이 당신의 프로필을 좋아합니다.";
-        FCMNotificationReqDto notificationReqDto = createNotification(likeMember.getEmail(), member.getNickName(), message);
+        Map<String, String> data = ImmutableMap.of("likeMemberEmail", likeMember.getEmail());
+
+        FCMNotificationReqDto notificationReqDto = createNotification(likeMember.getEmail(), member.getNickName(), message, data);
 
         notificationService.notificationLikeSave(likeMember, member, message);
 
@@ -42,9 +46,20 @@ public class FCMNotificationService {
     }
 
     public void sendHeartBoardNotification(Board board, Member member) {
+        String message = "님이 회원님의 게시물을 좋아합니다.";
+        sendBoardNotification(board, member, message);
+    }
+
+    public void sendCommentBoardNotification(Board board, Member member) {
+        String message = "님이 회원님의 게시물에 댓글을 남겼습니다.";
+        sendBoardNotification(board, member, message);
+    }
+
+    private void sendBoardNotification(Board board, Member member, String message) {
         if (!board.getMember().getMemberId().equals(member.getMemberId())) {
-            String message = "님이 회원님의 게시물을 좋아합니다.";
-            FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message);
+            Map<String, String> data = ImmutableMap.of("boardId", String.valueOf(board.getBoardId()));
+
+            FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message, data);
 
             notificationService.notificationBoardSave(board, member, message);
 
@@ -52,32 +67,22 @@ public class FCMNotificationService {
         }
     }
 
-    public void sendCommentNotification(Board board, Member member) {
-        if (!board.getMember().getMemberId().equals(member.getMemberId())) {
-            String message = "님이 회원님의 게시물에 댓글을 남겼습니다.";
-            FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(),
-                    member.getNickName(), message);
-
-            notificationService.notificationBoardSave(board, member, message);
-
-            sendNotification(notificationReqDto);
-        }
+    private FCMNotificationReqDto createNotification(String targetEmail, String nickName, String actionMessage, Map<String, String> data) {
+        return FCMNotificationReqDto.builder()
+                .targetMemberEmail(targetEmail)
+                .title("CoPro")
+                .body(nickName + actionMessage)
+                .data(data)
+                .build();
     }
 
     public String sendChattingNotification(FCMNotificationReqDto reqDto) {
         return sendNotification(reqDto);
     }
 
-    private FCMNotificationReqDto createNotification(String targetEmail, String nickName, String actionMessage) {
-        return FCMNotificationReqDto.builder()
-                .targetMemberEmail(targetEmail)
-                .title("CoPro")
-                .body(nickName + actionMessage)
-                .build();
-    }
-
     private String sendNotification(FCMNotificationReqDto reqDto) {
-        Member targetMember = memberRepository.findByEmail(reqDto.targetMemberEmail()).orElseThrow(MemberNotFoundException::new);
+        Member targetMember = memberRepository.findByEmail(reqDto.targetMemberEmail())
+                .orElseThrow(MemberNotFoundException::new);
 
         if (targetMember.getFcmToken() != null) {
             Notification notification = Notification.builder()
@@ -88,6 +93,7 @@ public class FCMNotificationService {
             Message message = Message.builder()
                     .setToken(targetMember.getFcmToken())
                     .setNotification(notification)
+                    .putAllData(reqDto.data())
                     .build();
 
             try {
