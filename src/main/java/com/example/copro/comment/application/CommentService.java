@@ -36,7 +36,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        fcmNotificationService.sendCommentNotification(board, member);
+        fcmNotificationService.sendCommentBoardNotification(board, member);
     }
 
     @Transactional
