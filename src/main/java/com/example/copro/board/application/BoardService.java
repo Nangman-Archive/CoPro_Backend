@@ -70,11 +70,17 @@ public class BoardService {
         Board board = builderBoard(boardSaveReqDto, member, images);
 
         // 이미지의 총 개수를 체크하는 로직
-        checkTotalImageCount(board, images);
+        checkNewImageCount(images);
 
         Board saveBoard = boardRepository.save(board);
 
         return BoardResDto.of(saveBoard);
+    }
+
+    private void checkNewImageCount(List<Image> newImages) {
+        if (newImages.size() > 5) {
+            throw new ImageCountExceededException();
+        }
     }
 
     private Board builderBoard(BoardSaveReqDto boardSaveReqDto, Member member, List<Image> images) {
@@ -121,14 +127,10 @@ public class BoardService {
     }
 
     private void checkTotalImageCount(Board board, List<Image> newImages) {
-        int totalImageCount = countMappedImages(board) + newImages.size();
+        int totalImageCount = board.getImages().size() + newImages.size();
         if (totalImageCount > 5) {
             throw new ImageCountExceededException();
         }
-    }
-
-    private int countMappedImages(Board board) {
-        return board.getImages().size();
     }
 
     @Transactional
