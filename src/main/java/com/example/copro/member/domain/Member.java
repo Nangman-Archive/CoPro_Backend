@@ -116,7 +116,7 @@ public class Member {
             throw new InvalidNickNameAddressException();
         }
 
-        if (nickname.isEmpty() || nickname.length() >= MAX_NICKNAME_LENGTH) {
+        if (nickname.isEmpty() || nickname.length() > MAX_NICKNAME_LENGTH) {
             throw new InvalidMemberException(String.format("닉네임은 1자 이상 %d자 이하여야 합니다.", MAX_NICKNAME_LENGTH));
         }
     }
