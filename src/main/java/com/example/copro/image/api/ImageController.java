@@ -1,8 +1,10 @@
 package com.example.copro.image.api;
 
+import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.application.BoardService;
 import com.example.copro.board.domain.Board;
 import com.example.copro.global.template.RspTemplate;
+import com.example.copro.image.api.dto.request.ImageReqDto;
 import com.example.copro.image.api.dto.response.ImageResDto;
 import com.example.copro.image.application.ImageService;
 import com.example.copro.image.domain.Image;
@@ -38,14 +40,14 @@ public class ImageController {
 
     @Operation(summary = "이미지 삭제", description = "이미지 삭제 합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "삭제 성공"),
+            @ApiResponse(responseCode = "200", description = "삭제 성공", content = @Content(schema = @Schema(implementation = ImageReqDto.class))),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @DeleteMapping("/images/{imageId}")///boards/{boardId}
-    public RspTemplate<Void> deleteImage(@RequestParam(required = false) Long boardId, @PathVariable Long imageId) {
+    @PostMapping("/images/delete")///boards/{boardId}
+    public RspTemplate<Void> deleteImage(@RequestParam(required = false) Long boardId, @RequestBody ImageReqDto imageReqDto) {
 
         // 게시글과 이미지의 연관 관계 제거 및 이미지 삭제
-        imageService.delete(boardId, imageId);
+        imageService.delete(boardId, imageReqDto.imageIds());
 
         return new RspTemplate<>(HttpStatus.OK, "이미지 삭제 완료");
     }
