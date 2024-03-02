@@ -77,18 +77,20 @@ public class ImageService {
     }
 
     @Transactional
-    public void delete(Long boardId, Long imageId) {
-        Image findImage = findById(imageId);
+    public void delete(Long boardId, List<Long> imageIds) {
+        for (Long imageId : imageIds) {
+            Image findImage = findById(imageId);
 
-        if (boardId != null) {
-            Board board = boardRepository.findById(boardId)
-                    .orElseThrow(() -> new BoardNotFoundException(boardId));
-            // 게시물과 이미지 사이의 연관 관계 제거
-            board.getImages().removeIf(image -> image.getId().equals(imageId));
+            if (boardId != null) {
+                Board board = boardRepository.findById(boardId)
+                        .orElseThrow(() -> new BoardNotFoundException(boardId));
+                // 게시물과 이미지 사이의 연관 관계 제거
+                board.getImages().removeIf(image -> image.getId().equals(imageId));
+            }
+
+            amazonS3.deleteObject(bucket, findImage.getConvertImageName()); // S3에서 이미지 삭제
+            imageRepository.delete(findImage);
         }
-
-        amazonS3.deleteObject(bucket, findImage.getConvertImageName()); // S3에서 이미지 삭제
-        imageRepository.delete(findImage);
     }
 
     public void uploadToBucket(String fileName, InputStream inputStream, long size, String contentType) {
