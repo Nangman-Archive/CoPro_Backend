@@ -37,21 +37,6 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @Operation(summary = "로그인 성공(최초 로그인 구별)", description = "로그인 시에 불러올 api")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
-    })
-    @GetMapping("/success")
-    public RspTemplate<Boolean> isFirstLogin(@AuthenticationPrincipal Member member) {
-        if (member.isFirstLogin()) {
-            memberService.firstLogin(member);
-            return new RspTemplate<>(HttpStatus.OK, "최초 로그인입니다.", true);
-        } else {
-            return new RspTemplate<>(HttpStatus.OK, "최초 로그인이 아닙니다.", false);
-        }
-    }
-
     @Operation(summary = "채팅 프로필 정보", description = "채팅뷰 멤버 프로필을 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "채팅 프로필 불러오기 성공"),

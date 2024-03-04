@@ -31,12 +31,6 @@ public class MemberService {
         this.fcmNotificationService = fcmNotificationService;
     }
 
-    @Transactional
-    public void firstLogin(Member member) {
-        Member getMember = memberRepository.findByEmail(member.getEmail()).orElseThrow(MemberNotFoundException::new);
-        getMember.firstLongUpdate();
-    }
-
     // nickname으로 member채팅프로필 불러오기
     public MemberResDto memberChattingProfileInfo(Member member, String targetEmail) {
         Member targetMember = memberRepository.findByEmail(targetEmail).orElseThrow(MemberNotFoundException::new);
@@ -94,6 +88,7 @@ public class MemberService {
     public MemberResDto gitHubUrlUpdate(Member member, MemberGitHubUrlUpdateReqDto memberGitHubUrlUpdateReqDto) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         getMember.gitHubUrlUpdate(memberGitHubUrlUpdateReqDto);
+        getMember.firstLongUpdate();
 
         return MemberResDto.from(member);
     }
