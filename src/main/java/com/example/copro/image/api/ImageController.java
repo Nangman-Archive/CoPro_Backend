@@ -1,8 +1,6 @@
 package com.example.copro.image.api;
 
-import com.example.copro.board.api.dto.response.HeartSaveResDto;
 import com.example.copro.board.application.BoardService;
-import com.example.copro.board.domain.Board;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.image.api.dto.request.ImageReqDto;
 import com.example.copro.image.api.dto.response.ImageResDto;
@@ -23,11 +21,9 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class ImageController {
     private final ImageService imageService;
-    private final BoardService boardService;
 
-    public ImageController(ImageService imageService, BoardService boardService) {
+    public ImageController(ImageService imageService) {
         this.imageService = imageService;
-        this.boardService = boardService;
     }
 
 //    @PostMapping(value = "/images", consumes = "multipart/form-data")
@@ -36,7 +32,6 @@ public class ImageController {
 //
 //        return new RspTemplate<>(HttpStatus.OK, "업로드 완료",upload);
 //    }
-
 
     @Operation(summary = "이미지 삭제", description = "이미지 삭제 합니다")
     @ApiResponses(value = {
