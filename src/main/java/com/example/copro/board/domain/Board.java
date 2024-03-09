@@ -1,5 +1,6 @@
 package com.example.copro.board.domain;
 
+import com.example.copro.admin.api.dto.request.NoticeSaveReqDto;
 import com.example.copro.board.api.dto.request.BoardSaveReqDto;
 import com.example.copro.image.domain.Image;
 import com.example.copro.member.domain.Member;
@@ -112,6 +113,11 @@ public class Board extends BaseTimeEntity {
         this.contents = boardSaveReqDto.contents();
         this.tag = boardSaveReqDto.tag();
         this.images.addAll(images);
+    }
+
+    public void noticeUpdate(NoticeSaveReqDto noticeSaveReqDto) {
+        this.title = noticeSaveReqDto.title();
+        this.contents = noticeSaveReqDto.contents();
     }
 
     public void updateViewCount() {
