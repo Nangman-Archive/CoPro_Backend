@@ -10,8 +10,6 @@ spring:
     hikari:
       maximum-pool-size: 50
 
-
-
   jpa:
     hibernate:
       ddl-auto: update
