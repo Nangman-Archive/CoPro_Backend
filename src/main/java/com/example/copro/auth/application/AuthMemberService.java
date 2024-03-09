@@ -60,7 +60,13 @@ public class AuthMemberService {
     }
 
     private String getUserPicture(String picture) {
-        return Optional.ofNullable(picture).orElse(DEFAULT_IMAGE.imageUrl);
+        return Optional.ofNullable(picture)
+                .map(this::convertToHighRes)
+                .orElse(DEFAULT_IMAGE.imageUrl);
+    }
+
+    private String convertToHighRes(String url){
+        return url.replace("s96-c", "s2048-c");
     }
 
     private void validateSocialType(Member member, SocialType provider) {
