@@ -10,8 +10,6 @@ spring:
     hikari:
       maximum-pool-size: 50
 
-
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -64,5 +62,8 @@ cloud:
       auto: false
 
 cloudfront-domain-name: ${cloudfront-domain-name}
+
+admin:
+  email: ${admin.email}
 
 FIREBASE_KEY: ${FIREBASE_KEY}
