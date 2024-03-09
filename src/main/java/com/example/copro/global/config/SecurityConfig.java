@@ -33,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         permitAllForOAuthEndpoints(http);
+        configureAdminAuthority(http);
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
@@ -55,6 +56,10 @@ public class SecurityConfig {
         for (String url : permittedUrls) {
             http.authorizeHttpRequests(authorize -> authorize.requestMatchers(antMatcher(url)).permitAll());
         }
+    }
+
+    private void configureAdminAuthority(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/admin/**").hasRole("ADMIN"));
     }
 
     @Bean
