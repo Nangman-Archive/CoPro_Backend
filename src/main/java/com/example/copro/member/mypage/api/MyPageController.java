@@ -1,6 +1,5 @@
 package com.example.copro.member.mypage.api;
 
-import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
@@ -8,6 +7,7 @@ import com.example.copro.member.domain.Member;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
+import com.example.copro.member.mypage.api.dto.response.MyWriteBoardResDto;
 import com.example.copro.member.mypage.application.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -80,10 +80,10 @@ public class MyPageController {
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
     @GetMapping("/board/write")
-    public RspTemplate<BoardListRspDto> myWriteBoard(@AuthenticationPrincipal Member member,
-                                                     @RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
-        BoardListRspDto boardListRspDto = myPageService.boardWriteList(member, page, size);
+    public RspTemplate<Page<MyWriteBoardResDto>> myWriteBoard(@AuthenticationPrincipal Member member,
+                                                              @RequestParam(value = "page", defaultValue = "0") int page,
+                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<MyWriteBoardResDto> boardListRspDto = myPageService.boardWriteList(member, page, size);
         return new RspTemplate<>(HttpStatus.OK, "내가 작성한 게시물 목록", boardListRspDto);
     }
 
