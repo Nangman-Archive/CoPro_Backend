@@ -8,6 +8,7 @@ import lombok.Builder;
 @Builder
 public record MyScrapBoardsResDto(
         Long boardId,
+        String category,
         String title,
         String nickName,
         LocalDateTime createAt,
@@ -21,6 +22,7 @@ public record MyScrapBoardsResDto(
 
         return MyScrapBoardsResDto.builder()
                 .boardId(myBoard.getBoard().getBoardId())
+                .category(String.valueOf(myBoard.getBoard().getCategory()))
                 .title(myBoard.getBoard().getTitle())
                 .nickName(myBoard.getBoard().getMember().getNickName())
                 .createAt(myBoard.getBoard().getCreateAt())
