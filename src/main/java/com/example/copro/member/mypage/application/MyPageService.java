@@ -1,6 +1,5 @@
 package com.example.copro.member.mypage.application;
 
-import com.example.copro.board.api.dto.response.BoardListRspDto;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.comment.api.dto.response.CommentResDto;
@@ -16,6 +15,7 @@ import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
+import com.example.copro.member.mypage.api.dto.response.MyWriteBoardResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,10 +69,16 @@ public class MyPageService {
     }
 
     // 작성한 게시물 목록
-    public BoardListRspDto boardWriteList(Member member, int page, int size) {
+    public Page<MyWriteBoardResDto> boardWriteList(Member member, int page, int size) {
         Page<Board> boards = boardRepository.findByMember(member, PageRequest.of(page, size));
 
-        return BoardListRspDto.from(boards);
+        return boards.map(this::getMyWriteBoardResDto);
+    }
+
+    private MyWriteBoardResDto getMyWriteBoardResDto(Board board) {
+        int commentCount = commentRepository.countByBoardBoardId(board.getBoardId());
+
+        return MyWriteBoardResDto.of(board, commentCount);
     }
 
     // 작성 댓글
