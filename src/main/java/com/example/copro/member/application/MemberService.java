@@ -12,13 +12,9 @@ import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.application.FCMNotificationService;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,29 +44,12 @@ public class MemberService {
 
     // 전체 멤버 정보리스트
     public MemberInfoResDto memberInfoList(Member member, String occupation, String language, int career, int page, int size) {
-        List<Member> memberList = getFilteredMemberList(occupation, language, career, member);
-        Page<Member> members = getPagedMembers(page, size, memberList);
-
-        return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
-    }
-
-    private List<Member> getFilteredMemberList(String occupation, String language, int career, Member member) {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        List<Member> memberList = memberRepository.findAll(MemberSpecs.spec(o, l, career, member));
-        memberList = memberList.stream().filter(m -> !m.getEmail().equals(adminEmail)).collect(Collectors.toList());
-        Collections.shuffle(memberList);
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, career, member), PageRequest.of(page, size));
 
-        return memberList;
-    }
-
-    private Page<Member> getPagedMembers(int page, int size, List<Member> memberList) {
-        int start = page * size;
-        int end = Math.min(start + size, memberList.size());
-        List<Member> pagedMembers = memberList.subList(start, end);
-
-        return new PageImpl<>(pagedMembers, PageRequest.of(page, size), memberList.size());
+        return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
     }
 
     private MemberResDto getMemberResDto(Member member, Member currentMember) {
