@@ -36,6 +36,10 @@ public class CommentService {
 
         commentRepository.save(comment);
 
+        if (parentComment != null) {
+            fcmNotificationService.sendParentCommentBoardNotification(parentComment, member);
+        }
+
         fcmNotificationService.sendCommentBoardNotification(board, member);
     }
 
