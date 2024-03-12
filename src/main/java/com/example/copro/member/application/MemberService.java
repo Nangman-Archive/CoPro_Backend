@@ -13,7 +13,6 @@ import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.application.FCMNotificationService;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class MemberService {
-    @Value("${admin.email}")
-    private String adminEmail;
-
     private final MemberRepository memberRepository;
     private final MemberLikeRepository memberLikeRepository;
     private final FCMNotificationService fcmNotificationService;

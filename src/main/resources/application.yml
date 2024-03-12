@@ -8,7 +8,7 @@ spring:
     password: ${spring.datasource.password}
     driver-class-name: ${spring.datasource.driver-class-name}
     hikari:
-      maximum-pool-size: 50
+      maximum-pool-size: 30
 
   jpa:
     hibernate:
@@ -62,8 +62,5 @@ cloud:
       auto: false
 
 cloudfront-domain-name: ${cloudfront-domain-name}
-
-admin:
-  email: ${admin.email}
 
 FIREBASE_KEY: ${FIREBASE_KEY}
