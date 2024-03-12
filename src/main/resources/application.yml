@@ -27,7 +27,7 @@ spring:
 logging:
   slack:
     webhook-uri: ${logging.slack.webhook-uri}
-  config: ${logging.config}
+  config: classpath:logback.xml
   level:
     org.hibernate.sql: debug
     org.hibernate.type: trace
