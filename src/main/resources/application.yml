@@ -1,15 +1,6 @@
+# 공통
+
 spring:
-  profiles:
-    active: prod # prod
-
-  datasource:
-    url: ${spring.datasource.url}
-    username: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-    driver-class-name: ${spring.datasource.driver-class-name}
-    hikari:
-      maximum-pool-size: 50
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,17 +14,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 60MB
-
-logging:
-  slack:
-    webhook-uri: ${logging.slack.webhook-uri}
-  config: ${logging.config}
-  level:
-    org.hibernate.sql: debug
-    org.hibernate.type: trace
-
-myapp:
-  api-url: ${myapp.api-url}
 
 springdoc:
   packages-to-scan: com.example
@@ -63,7 +43,54 @@ cloud:
 
 cloudfront-domain-name: ${cloudfront-domain-name}
 
-admin:
-  email: ${admin.email}
-
 FIREBASE_KEY: ${FIREBASE_KEY}
+
+---
+
+spring:
+  profiles:
+    active: prod
+
+  datasource:
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    driver-class-name: ${spring.datasource.driver-class-name}
+    hikari:
+      maximum-pool-size: 30
+
+logging:
+  slack:
+    webhook-uri: ${logging.slack.webhook-uri}
+  config: ${logging.config}
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
+myapp:
+  api-url: ${myapp.api-url}
+
+---
+
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    driver-class-name: ${spring.datasource.driver-class-name}
+    hikari:
+      maximum-pool-size: 30
+
+logging:
+  slack:
+    webhook-uri: ${logging.slack.webhook-uri}
+  config: ${logging.config}
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
+myapp:
+  api-url: ${myapp.api-url}
