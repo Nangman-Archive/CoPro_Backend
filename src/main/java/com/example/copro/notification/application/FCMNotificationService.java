@@ -1,6 +1,7 @@
 package com.example.copro.notification.application;
 
 import com.example.copro.board.domain.Board;
+import com.example.copro.comment.domain.Comment;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
@@ -62,6 +63,23 @@ public class FCMNotificationService {
             FCMNotificationReqDto notificationReqDto = createNotification(board.getMember().getEmail(), member.getNickName(), message, data);
 
             notificationService.notificationBoardSave(board, member, message);
+
+            sendNotification(notificationReqDto);
+        }
+    }
+
+    public void sendParentCommentBoardNotification(Comment parentComment, Member member) {
+        String message = "님이 회원님의 댓글에 답글을 남겼습니다.";
+        sendParentCommentNotification(parentComment, member, message);
+    }
+
+    private void sendParentCommentNotification(Comment parentComment, Member member, String message) {
+        if (!parentComment.getWriter().getMemberId().equals(member.getMemberId())) {
+            Map<String, String> data = ImmutableMap.of("boardId", String.valueOf(parentComment.getBoard().getBoardId()));
+
+            FCMNotificationReqDto notificationReqDto = createNotification(parentComment.getWriter().getEmail(), member.getNickName(), message, data);
+
+            notificationService.notificationBoardSave(parentComment.getBoard(), member, message);
 
             sendNotification(notificationReqDto);
         }
