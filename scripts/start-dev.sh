@@ -16,7 +16,7 @@ cp $PROJECT_ROOT/build/libs/*.jar /home/ubuntu/test
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
 cd /home/ubuntu/test
-nohup java -jar $JAR_FILE > $APP_LOG 2> $ERROR_LOG < /dev/null &
+nohup java -jar -Dspring.profiles.active=dev $JAR_FILE > $APP_LOG 2> $ERROR_LOG < /dev/null &
 
 CURRENT_PID=$(lsof -ti tcp:9091)
 echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
