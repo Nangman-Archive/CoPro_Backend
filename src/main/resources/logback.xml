@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <springProperty scope="context" name="server.port" source="server.port"/>
     <springProperty name="SLACK_WEBHOOK_URL" source="logging.slack.webhook-uri"/>
-
     <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
         <webhookUri>${SLACK_WEBHOOK_URL}</webhookUri>
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -22,19 +20,6 @@
         </encoder>
     </appender>
 
-    <!-- 파일 애펜더 추가: 서버 포트 번호별 로그 파일 생성 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/application-${server.port}.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/archived/application-${server.port}-%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>1GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level [%thread] %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="SLACK"/>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -45,6 +30,5 @@
     <root level="INFO">
         <appender-ref ref="ASYNC_SLACK"/>
         <appender-ref ref="Console"/>
-        <appender-ref ref="FILE"/> <!-- 파일 애펜더 참조 추가 -->
     </root>
 </configuration>
