@@ -12,10 +12,12 @@ import com.example.copro.member.domain.MemberScrapBoard;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
+import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
 import com.example.copro.member.mypage.api.dto.response.MyWriteBoardResDto;
+import com.example.copro.member.mypage.api.dto.response.WithdrawalResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,7 +97,18 @@ public class MyPageService {
     // 뷰 타입 변경
     @Transactional
     public void updateViewType(Member member, UpdateViewTypeReqDto updateViewTypeReqDto) {
-        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow();
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         getMember.viewTypeUpdate(updateViewTypeReqDto.viewType());
     }
+
+    // 회원 탈퇴
+    @Transactional
+    public WithdrawalResDto memberWithdrawal(Member member) {
+        WithdrawalResDto responseEmail = WithdrawalResDto.from(member);
+        Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
+
+        getMember.withdrawal();
+        return responseEmail;
+    }
+
 }
