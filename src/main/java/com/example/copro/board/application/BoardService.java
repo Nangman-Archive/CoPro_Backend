@@ -28,9 +28,9 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.application.FCMNotificationService;
-import java.util.List;
-
 import com.example.copro.notification.domain.repository.NotificationRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -219,7 +219,9 @@ public class BoardService {
         board.updateHeartCount();
         memberHeartBoardRepository.save(memberHeartBoard);
 
-        fcmNotificationService.sendHeartBoardNotification(board, member);
+        Optional.ofNullable(memberHeartBoard.getMember())
+                .map(Member::getFcmToken)
+                .ifPresent(token -> fcmNotificationService.sendHeartBoardNotification(board, member));
 
         return HeartSaveResDto.of(board);
     }

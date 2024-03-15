@@ -33,6 +33,7 @@ public class Member {
 
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣]*$");
     private static final Pattern GITHUB_URL_PATTERN = Pattern.compile("https://github\\.com/[A-Za-z0-9\\-]+");
+    private static final String NOT_KNOWN = "(알수 없음)";
     private static final int MAX_NICKNAME_LENGTH = 8;
 
     @Id
@@ -81,6 +82,9 @@ public class Member {
 
     @Schema(description = "FCM토큰")
     private String fcmToken;
+
+    @Schema(description = "탈퇴 유무")
+    private boolean isDelete;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
@@ -145,6 +149,13 @@ public class Member {
   
     public void fcmTokenUpdate(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public void withdrawal() {
+        this.isDelete = true;
+        this.email = null;
+        this.fcmToken = null;
+        this.nickName = NOT_KNOWN;
     }
 
     public void addMemberLike(Member likeMember) {

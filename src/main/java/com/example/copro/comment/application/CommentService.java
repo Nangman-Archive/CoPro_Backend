@@ -12,6 +12,7 @@ import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.comment.exception.CommentNotFoundException;
 import com.example.copro.member.domain.Member;
 import com.example.copro.notification.application.FCMNotificationService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,11 +37,14 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        if (parentComment != null) {
-            fcmNotificationService.sendParentCommentBoardNotification(parentComment, member);
-        }
+        Optional.ofNullable(parentComment)
+                .map(Comment::getWriter)
+                .map(Member::getFcmToken)
+                .ifPresent(token -> fcmNotificationService.sendParentCommentBoardNotification(parentComment, member));
 
-        fcmNotificationService.sendCommentBoardNotification(board, member);
+        Optional.ofNullable(board.getMember())
+                .map(Member::getFcmToken)
+                .ifPresent(token -> fcmNotificationService.sendCommentBoardNotification(board, member));
     }
 
     @Transactional

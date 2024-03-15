@@ -30,6 +30,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath gitHubUrl = createString("gitHubUrl");
 
+    public final BooleanPath isDelete = createBoolean("isDelete");
+
     public final StringPath language = createString("language");
 
     public final NumberPath<Long> memberId = createNumber("memberId", Long.class);
