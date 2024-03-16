@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
+    @Value("${myapp.local-url}")
+    private String localUrl;
+
     @Value("${myapp.api-url}")
     private String prodUrl;
 
@@ -44,7 +47,7 @@ public class SwaggerConfig {
 
         Server localServer = new Server();
         localServer.description("Development Server")
-                .url("http://localhost:8091");
+                .url(localUrl);
 
         return new OpenAPI()
                 .addSecurityItem(securityRequirement)
