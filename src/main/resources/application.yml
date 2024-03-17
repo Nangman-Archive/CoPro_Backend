@@ -68,6 +68,7 @@ logging:
 
 myapp:
   api-url: ${myapp.api-url}
+  local-url: ${myapp.local-url}
 
 admin:
   email: ${admin.email}
@@ -96,3 +97,4 @@ logging:
 
 myapp:
   api-url: ${myapp.api-url}
+  local-url: ${myapp.local-url}
