@@ -192,4 +192,8 @@ public class Member {
                 .orElse(null);
     }
 
+    public void updateImage(String picture) {
+        this.picture = picture;
+    }
+
 }

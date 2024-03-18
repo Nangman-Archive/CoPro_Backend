@@ -10,4 +10,5 @@ public class ImageNotFoundException extends NotFoundGroupException {
     public ImageNotFoundException(Long imageId){
         this("해당하는 이미지가 없습니다. ID: " + imageId);
     }
+
 }

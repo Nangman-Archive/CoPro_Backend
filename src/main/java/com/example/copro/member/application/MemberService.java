@@ -129,4 +129,17 @@ public class MemberService {
         getMember.cancelMemberLike(likeMember);
         memberRepository.save(getMember);
     }
+
+    @Transactional
+    public void updateProfileImage(Long memberId, String imageUrl) {
+        // 멤버를 찾아옵니다.
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("멤버를 찾을 수 없습니다."));
+
+        // 멤버의 프로필 이미지 URL을 업데이트합니다.
+        member.updateImage(imageUrl);
+
+        // 변경사항을 저장합니다.
+        memberRepository.save(member);
+    }
 }
