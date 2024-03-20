@@ -151,9 +151,10 @@ public class Member {
         this.fcmToken = fcmToken;
     }
 
-    public void withdrawal() {
+    public void deleteAccount() {
         this.isDelete = true;
         this.email = null;
+        this.occupation = null;
         this.fcmToken = null;
         this.nickName = NOT_KNOWN;
     }
