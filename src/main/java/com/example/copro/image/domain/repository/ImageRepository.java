@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
@@ -14,4 +15,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     List<Image> findAllByIdIn(List<Long> ids);
 
     boolean existsById(Long id);
+
+    Optional<Image> findImageByConvertImageName(String convertImageName);
 }

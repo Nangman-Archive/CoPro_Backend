@@ -7,10 +7,12 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.copro.board.domain.Board;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.exception.BoardNotFoundException;
+import com.example.copro.image.api.dto.request.ImageUrlReqDto;
 import com.example.copro.image.api.dto.response.ImageResDto;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.image.exception.ImageNotFoundException;
+import com.example.copro.image.exception.ImageUrlNotFoundException;
 import com.example.copro.image.exception.UploadFailureImageException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,21 +44,36 @@ public class ImageService {
     }
 
     @Transactional
-    public ImageResDto upload(MultipartFile multipartFile) {
+    public ImageResDto upload(String folderName, MultipartFile multipartFile) {
         validateImage(multipartFile.getContentType()); // 이미지 파일인지 확인
 
  //       containingImageDelete(multipartFile); // 동일한 이름의 이미지가 있으면 삭제
         String fileName = createFileName(multipartFile.getOriginalFilename()); // 파일명 생성
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            uploadToBucket(fileName, inputStream, multipartFile.getSize(), multipartFile.getContentType()); // S3 버킷에 업로드
+            uploadToBucket(folderName, fileName, inputStream, multipartFile.getSize(), multipartFile.getContentType()); // S3 버킷에 업로드
 
-            Image image = createImageEntity(fileName); // Image 엔티티 생성
+            Image image = createImageEntity(folderName, fileName); // Image 엔티티 생성
             imageRepository.save(image); // DB에 저장
 
             return ImageResDto.from(image); // 결과 반환
         } catch (IOException e) {
             throw new UploadFailureImageException(fileName); // 에러 발생 시 예외 던짐
+        }
+    }
+
+    @Transactional
+    public void deleteImageByUrl(ImageUrlReqDto imageUrlReqDto) {
+        if(imageUrlReqDto.imageUrl().contains(CLOUD_FRONT_DOMAIN_NAME)){
+            int startIndex = imageUrlReqDto.imageUrl().indexOf(CLOUD_FRONT_DOMAIN_NAME) + CLOUD_FRONT_DOMAIN_NAME.length();
+            String imageName = imageUrlReqDto.imageUrl().substring(startIndex + 1).replaceAll("\\r|\\n|\\n\r|\\r\n","");
+
+            Image image = imageRepository.findImageByConvertImageName(imageName)
+                    .orElseThrow(() -> new ImageUrlNotFoundException(imageName));
+
+            amazonS3.deleteObject(bucket, imageName);
+
+            imageRepository.delete(image);
         }
     }
 
@@ -93,23 +110,25 @@ public class ImageService {
         }
     }
 
-    public void uploadToBucket(String fileName, InputStream inputStream, long size, String contentType) {
+    public void uploadToBucket(String folderName, String fileName, InputStream inputStream, long size, String contentType) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(size); // 메타데이터 설정
         objectMetadata.setContentType(contentType);
 
+        String fullPath = folderName + "/" + fileName;
+
         PutObjectRequest putObjectRequest =
-                new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                new PutObjectRequest(bucket, fullPath, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead); // S3에 업로드할 요청 객체 생성
 
         amazonS3.putObject(putObjectRequest); // S3에 업로드
     }
 
-    public Image createImageEntity(String fileName) {
-        String path = "/" + fileName; // S3에서의 경로
+    public Image createImageEntity(String folderName, String fileName) {
+        String path = "/" + folderName + "/" + fileName; // S3에서의 경로
         return Image.builder()
                 .imageUrl(CLOUD_FRONT_DOMAIN_NAME + path) // 이미지 URL 설정
-                .convertImageName(fileName.substring(fileName.lastIndexOf("/") + 1)) // 파일명 설정
+                .convertImageName(folderName + "/" + fileName.substring(fileName.lastIndexOf("/") + 1)) // 파일명 설정
                 .build(); // Image 객체 생성
     }
 
@@ -124,7 +143,7 @@ public class ImageService {
     }
 
     @Transactional // 여러장 업로드
-    public List<ImageResDto> uploadMultiple(MultipartFile[] files) {
+    public List<ImageResDto> uploadMultiple(String folderName, MultipartFile[] files) {
         List<ImageResDto> responseList = new ArrayList<>();
 
         for (MultipartFile file : files) {
@@ -134,9 +153,9 @@ public class ImageService {
             String fileName = createFileName(file.getOriginalFilename()); // 파일명 생성
 
             try (InputStream inputStream = file.getInputStream()) {
-                uploadToBucket(fileName, inputStream, file.getSize(), file.getContentType()); // S3 버킷에 업로드
+                uploadToBucket(folderName, fileName, inputStream, file.getSize(), file.getContentType()); // S3 버킷에 업로드
 
-                Image image = createImageEntity(fileName); // Image 엔티티 생성, board 필드는 null로 설정
+                Image image = createImageEntity(folderName, fileName); // Image 엔티티 생성, board 필드는 null로 설정
                 imageRepository.save(image); // DB에 저장
 
                 responseList.add(ImageResDto.from(image)); // 결과를 list에 추가
