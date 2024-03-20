@@ -5,10 +5,10 @@ import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
+import com.example.copro.member.mypage.api.dto.response.DeleteAccountResDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
 import com.example.copro.member.mypage.api.dto.response.MyWriteBoardResDto;
-import com.example.copro.member.mypage.api.dto.response.WithdrawalResDto;
 import com.example.copro.member.mypage.application.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -118,11 +118,11 @@ public class MyPageController {
             @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
             @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
     })
-    @PostMapping("/withdrawal")
-    public RspTemplate<WithdrawalResDto> memberWithdrawal(@AuthenticationPrincipal Member member) {
-        WithdrawalResDto withdrawalResDto = myPageService.memberWithdrawal(member);
+    @PostMapping("/delete-account")
+    public RspTemplate<DeleteAccountResDto> memberDeleteAccount(@AuthenticationPrincipal Member member) {
+        DeleteAccountResDto deleteAccountResDto = myPageService.memberDeleteAccount(member);
 
-        return new RspTemplate<>(HttpStatus.OK, "회원 탈퇴", withdrawalResDto);
+        return new RspTemplate<>(HttpStatus.OK, "회원 탈퇴", deleteAccountResDto);
     }
 
 }

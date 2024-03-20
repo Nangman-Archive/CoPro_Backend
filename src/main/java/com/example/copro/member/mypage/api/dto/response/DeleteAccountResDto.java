@@ -4,11 +4,11 @@ import com.example.copro.member.domain.Member;
 import lombok.Builder;
 
 @Builder
-public record WithdrawalResDto(
+public record DeleteAccountResDto(
         String email
 ) {
-    public static WithdrawalResDto from(Member member) {
-        return WithdrawalResDto.builder()
+    public static DeleteAccountResDto from(Member member) {
+        return DeleteAccountResDto.builder()
                 .email(member.getEmail())
                 .build();
     }

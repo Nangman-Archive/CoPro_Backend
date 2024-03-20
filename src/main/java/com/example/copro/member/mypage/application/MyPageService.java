@@ -14,10 +14,10 @@ import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
+import com.example.copro.member.mypage.api.dto.response.DeleteAccountResDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
 import com.example.copro.member.mypage.api.dto.response.MyWriteBoardResDto;
-import com.example.copro.member.mypage.api.dto.response.WithdrawalResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -103,11 +103,11 @@ public class MyPageService {
 
     // 회원 탈퇴
     @Transactional
-    public WithdrawalResDto memberWithdrawal(Member member) {
-        WithdrawalResDto responseEmail = WithdrawalResDto.from(member);
+    public DeleteAccountResDto memberDeleteAccount(Member member) {
+        DeleteAccountResDto responseEmail = DeleteAccountResDto.from(member);
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
 
-        getMember.withdrawal();
+        getMember.deleteAccount();
         return responseEmail;
     }
 
