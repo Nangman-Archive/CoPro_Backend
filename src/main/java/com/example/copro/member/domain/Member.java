@@ -33,7 +33,7 @@ public class Member {
 
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣]*$");
     private static final Pattern GITHUB_URL_PATTERN = Pattern.compile("https://github\\.com/[A-Za-z0-9\\-]+");
-    private static final String NOT_KNOWN = "(알수 없음)";
+    private static final String NOT_KNOWN = "(알수없음)";
     private static final int MAX_NICKNAME_LENGTH = 8;
 
     @Id
