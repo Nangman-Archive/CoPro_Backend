@@ -19,7 +19,7 @@ public record MemberLikeResDto(
     public static MemberLikeResDto of(MemberLike memberLike, boolean isLike, int likeMembersCount) {
         return MemberLikeResDto.builder()
                 .memberLikeId(memberLike.getLikedMember().getMemberId())
-                .name(memberLike.getLikedMember().getName())
+                .name(memberLike.getLikedMember().getNickName())
                 .email(memberLike.getLikedMember().getEmail())
                 .picture(memberLike.getLikedMember().getPicture())
                 .occupation(memberLike.getLikedMember().getOccupation())
