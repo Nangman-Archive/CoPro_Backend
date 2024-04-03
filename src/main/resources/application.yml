@@ -49,6 +49,10 @@ FIREBASE_KEY: ${FIREBASE_KEY}
 spring:
   profiles:
     active: prod
+  data:
+    redis:
+      host: ${spring.data.redis.host}
+      port: ${spring.data.redis.port}
 
   datasource:
     url: ${spring.datasource.url}
@@ -78,6 +82,10 @@ admin:
 spring:
   profiles:
     active: dev
+  data:
+    redis:
+      host: ${spring.data.redis.host}
+      port: ${spring.data.redis.port}
 
   datasource:
     url: ${spring.datasource.url}

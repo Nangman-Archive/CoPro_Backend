@@ -21,6 +21,7 @@ import com.example.copro.board.exception.MappedImageException;
 import com.example.copro.board.exception.NotBoardOwnerException;
 import com.example.copro.board.exception.ScrapNotFoundException;
 import com.example.copro.comment.domain.repository.CommentRepository;
+import com.example.copro.global.redis.application.RedisService;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.member.domain.Member;
@@ -50,6 +51,8 @@ public class BoardService {
     private final FCMNotificationService fcmNotificationService;
 
     private final NotificationRepository notificationRepository;
+
+    private final RedisService redisService;
 
     public BoardListRspDto findAll(String category, Pageable pageable) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
@@ -163,7 +166,13 @@ public class BoardService {
     public BoardResDto getBoard(Member member, Long boardId) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
-        board.updateViewCount();
+
+        if (!board.getMember().getMemberId().equals(getMember.getMemberId())) {
+            boolean isFirstView = redisService.checkAndAddViewByMember(getMember.getMemberId(), boardId);
+            if (isFirstView) {
+                board.updateViewCount();
+            }
+        }
 
         boolean isHeart = memberHeartBoardRepository.existsByMemberAndBoard(getMember, board);
         boolean isScrap = memberScrapBoardRepository.existsByMemberAndBoard(getMember, board);
