@@ -6,14 +6,17 @@ import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
 import com.example.copro.comment.domain.repository.CommentRepository;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
+import com.example.copro.member.domain.BlockedMemberMapping;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.domain.MemberLike;
 import com.example.copro.member.domain.MemberScrapBoard;
+import com.example.copro.member.domain.repository.BlockedMemberMappingRepository;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
+import com.example.copro.member.mypage.api.dto.response.BlockedMemberResDto;
 import com.example.copro.member.mypage.api.dto.response.DeleteAccountResDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
@@ -33,6 +36,7 @@ public class MyPageService {
     private final MemberScrapBoardRepository memberScrapBoardRepository;
     private final MemberLikeRepository memberLikeRepository;
     private final CommentRepository commentRepository;
+    private final BlockedMemberMappingRepository blockedMemberMappingRepository;
 
     // 본인 프로필 정보
     public MyProfileInfoResDto myProfileInfo(Member member) {
@@ -55,6 +59,21 @@ public class MyPageService {
         int likeMembersCount = memberLikeRepository.countByLikedMember(memberLike.getLikedMember());
 
         return MemberLikeResDto.of(memberLike, isLike, likeMembersCount);
+    }
+
+    // 내 차단 사용자 목록
+    public Page<BlockedMemberResDto> blockedMemberList(Member member, int page, int size) {
+        Page<BlockedMemberMapping> blockedMembers = blockedMemberMappingRepository
+                .findByMember(member, PageRequest.of(page, size));
+
+        return blockedMembers.map(blockedMemberMapping -> mapToBlockedMember(member, blockedMemberMapping));
+    }
+
+    private BlockedMemberResDto mapToBlockedMember(Member member, BlockedMemberMapping blockedMemberMapping) {
+        boolean isBlocked = blockedMemberMappingRepository
+                .existsByMemberAndBlockedMember(member, blockedMemberMapping.getBlockedMember());
+
+        return BlockedMemberResDto.of(blockedMemberMapping, isBlocked);
     }
 
     // 내 관심 게시물 목록
