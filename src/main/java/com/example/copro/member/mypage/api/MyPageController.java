@@ -5,6 +5,7 @@ import com.example.copro.global.template.RspTemplate;
 import com.example.copro.member.api.dto.response.MemberLikeResDto;
 import com.example.copro.member.domain.Member;
 import com.example.copro.member.mypage.api.dto.request.UpdateViewTypeReqDto;
+import com.example.copro.member.mypage.api.dto.response.BlockedMemberResDto;
 import com.example.copro.member.mypage.api.dto.response.DeleteAccountResDto;
 import com.example.copro.member.mypage.api.dto.response.MyProfileInfoResDto;
 import com.example.copro.member.mypage.api.dto.response.MyScrapBoardsResDto;
@@ -60,6 +61,19 @@ public class MyPageController {
                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<MemberLikeResDto> memberLikeResDtos = myPageService.memberLikeList(member, page, size);
         return new RspTemplate<>(HttpStatus.OK, "내 관심 프로필 목록", memberLikeResDtos);
+    }
+
+    @Operation(summary = "내 차단 유저 목록 ", description = "본인이 차단한 유저의 목록을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "차단한 유저 불러오기 성공"),
+            @ApiResponse(responseCode = "401", description = "헤더 없음 or 토큰 불일치", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN")))
+    })
+    @GetMapping("/blocked")
+    public RspTemplate<Page<BlockedMemberResDto>> blockedMemberList(@AuthenticationPrincipal Member member,
+                                                                    @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                    @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<BlockedMemberResDto> blockedMemberResDtos = myPageService.blockedMemberList(member, page, size);
+        return new RspTemplate<>(HttpStatus.OK, "내 차단 유저 목록", blockedMemberResDtos);
     }
 
     @Operation(summary = "내 관심 게시물 목록", description = "내 관심 게시물 목록을 불러옵니다.")

@@ -20,6 +20,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
+    public final ListPath<BlockedMemberMapping, QBlockedMemberMapping> blockedMemberMappings = this.<BlockedMemberMapping, QBlockedMemberMapping>createList("blockedMemberMappings", BlockedMemberMapping.class, QBlockedMemberMapping.class, PathInits.DIRECT2);
+
     public final NumberPath<Integer> career = createNumber("career", Integer.class);
 
     public final StringPath email = createString("email");
