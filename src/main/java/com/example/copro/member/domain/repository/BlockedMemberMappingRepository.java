@@ -9,12 +9,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface BlockedMemberMappingRepository extends JpaRepository<BlockedMemberMapping, Long> {
     Page<BlockedMemberMapping> findByMember(Member member, Pageable pageable);
     boolean existsByMemberAndBlockedMember(Member member, Member blockedMember);
-
+  
     @Query("select bm.blockedMember.memberId "
             + "from BlockedMemberMapping bm "
             + "where bm.member = :member ")
     List<Long> findByBlockedMemberId(@Param("member") Member member);
+
 }

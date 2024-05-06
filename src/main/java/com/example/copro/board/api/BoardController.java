@@ -58,13 +58,14 @@ public class BoardController {
             @Parameter(name = "size", description = "게시물 page size", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "7") int size,
             @Parameter(name = "standard", description = "정렬 기준 ex)create_at, count", in = ParameterIn.QUERY)
-            @RequestParam(defaultValue = "create_at") String standard
+            @RequestParam(defaultValue = "create_at") String standard,
+            @AuthenticationPrincipal Member member
     ) {
         String sortProperty =
                 "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
         Pageable pageable = PageableUtil.of(page, size, Sort.by(Sort.Direction.DESC, sortProperty));
 
-        BoardListRspDto boardListRspDto = boardService.findAll(category, pageable);
+        BoardListRspDto boardListRspDto = boardService.findAll(category, pageable, member);
 
         return new RspTemplate<>(HttpStatus.OK
                 , page + "번 페이지 조회 완료"
@@ -128,12 +129,13 @@ public class BoardController {
             @Parameter(name = "size", description = "게시물 page size", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "7") int size,
             @Parameter(name = "standard", description = "정렬 기준 ex)create_at, count", in = ParameterIn.QUERY)
-            @RequestParam(defaultValue = "create_at") String standard) {
+            @RequestParam(defaultValue = "create_at") String standard,
+            @AuthenticationPrincipal Member member) {
         String sortProperty =
                 "createAt".equals(standard.trim()) || "count".equals(standard.trim()) ? standard : "createAt";
         Pageable pageable = PageableUtil.of(page, size, Sort.by(Sort.Direction.DESC, sortProperty));
 
-        BoardListRspDto boardListRspDto = boardService.findByTitleContaining(query, pageable);
+        BoardListRspDto boardListRspDto = boardService.findByTitleContaining(query, pageable, member);
 
         return new RspTemplate<>(HttpStatus.OK
                 , query + "조회 완료"
@@ -209,7 +211,7 @@ public class BoardController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @GetMapping("/most-increased-hearts")//인기 게시물
+    @GetMapping("/most-increased-hearts")
     public RspTemplate<BoardResDto> getMostIncreasedHeartsPost(@AuthenticationPrincipal Member member) {
         Long boardId = scheduledTasks.getMostIncreasedHeartsPostId();
         BoardResDto boardResDto = boardService.getBoard(member, boardId);
@@ -218,7 +220,5 @@ public class BoardController {
                 , boardResDto
         );
     }
-
-
 
 }

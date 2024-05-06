@@ -29,6 +29,7 @@ out/
 ### prod yml file ###
 src/**/application-prod.yml
 src/**/application-dev.yml
+src/**/application-local.yml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

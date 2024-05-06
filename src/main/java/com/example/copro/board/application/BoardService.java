@@ -12,18 +12,13 @@ import com.example.copro.board.domain.Category;
 import com.example.copro.board.domain.MemberHeartBoard;
 import com.example.copro.board.domain.repository.BoardRepository;
 import com.example.copro.board.domain.repository.MemberHeartBoardRepository;
-import com.example.copro.board.exception.AlreadyHeartException;
-import com.example.copro.board.exception.AlreadyScrapException;
-import com.example.copro.board.exception.BoardNotFoundException;
-import com.example.copro.board.exception.HeartNotFoundException;
-import com.example.copro.board.exception.ImageCountExceededException;
-import com.example.copro.board.exception.MappedImageException;
-import com.example.copro.board.exception.NotBoardOwnerException;
-import com.example.copro.board.exception.ScrapNotFoundException;
+import com.example.copro.board.exception.*;
 import com.example.copro.comment.domain.repository.CommentRepository;
+import com.example.copro.global.redis.application.RedisService;
 import com.example.copro.image.domain.Image;
 import com.example.copro.image.domain.repository.ImageRepository;
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.domain.repository.BlockedMemberMappingRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.domain.repository.MemberScrapBoardRepository;
 import com.example.copro.member.exception.MemberNotFoundException;
@@ -51,9 +46,13 @@ public class BoardService {
 
     private final NotificationRepository notificationRepository;
 
-    public BoardListRspDto findAll(String category, Pageable pageable) {
+    private final RedisService redisService;
+
+    private final BlockedMemberMappingRepository blockedMemberMappingRepository;
+
+    public BoardListRspDto findAll(String category, Pageable pageable, Member member) {
         //Page<Board> boards = boardRepository.findAllByCategory(Category.valueOf(category), pageable);
-        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(Category.valueOf(category), pageable);
+        Page<BoardDto> boards = boardRepository.findAllWithCommentCount(Category.valueOf(category), pageable, member);
 
         return BoardListRspDto.of(boards);
     }
@@ -153,8 +152,8 @@ public class BoardService {
         }
     }
 
-    public BoardListRspDto findByTitleContaining(String query, Pageable pageable) {
-        Page<BoardDto> boards = boardRepository.findByTitleContaining(query, pageable);
+    public BoardListRspDto findByTitleContaining(String query, Pageable pageable, Member member) {
+        Page<BoardDto> boards = boardRepository.findByTitleContaining(query, pageable, member);
         return BoardListRspDto.of(boards);
     }
 
@@ -163,7 +162,18 @@ public class BoardService {
     public BoardResDto getBoard(Member member, Long boardId) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException(boardId));
-        board.updateViewCount();
+
+        boolean isBlocked = blockedMemberMappingRepository.existsByMemberAndBlockedMember(getMember, board.getMember());
+        if (isBlocked) {
+            throw new BlockedMemberBoardException();
+        }
+
+        if (!board.getMember().getMemberId().equals(getMember.getMemberId())) {
+            boolean isFirstView = redisService.checkAndAddViewByMember(getMember.getMemberId(), boardId);
+            if (isFirstView) {
+                board.updateViewCount();
+            }
+        }
 
         boolean isHeart = memberHeartBoardRepository.existsByMemberAndBoard(getMember, board);
         boolean isScrap = memberScrapBoardRepository.existsByMemberAndBoard(getMember, board);

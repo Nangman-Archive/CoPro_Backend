@@ -50,7 +50,7 @@ public class CommentService {
     @Transactional
     public Page<CommentResDto> insertAndGetComments(Long boardId, CommentSaveReqDto commentSaveReqDto, Member member, Pageable pageable) {
         insert(boardId, commentSaveReqDto, member);
-        return getCommentsByBoard(boardId, pageable);
+        return getCommentsByBoard(boardId, pageable, member);
     }
 
     private Comment getParentComment(CommentSaveReqDto commentSaveReqDto) {
@@ -112,8 +112,8 @@ public class CommentService {
         }
     }
 
-    public Page<CommentResDto> getCommentsByBoard(Long boardId, Pageable pageable) {
-        return commentRepository.findByBoardBoardId(boardId, pageable); //PageRequest.of(page, size)
+    public Page<CommentResDto> getCommentsByBoard(Long boardId, Pageable pageable, Member member) {
+        return commentRepository.findByBoardBoardId(boardId, pageable, member); //PageRequest.of(page, size)
     }
 
 }
