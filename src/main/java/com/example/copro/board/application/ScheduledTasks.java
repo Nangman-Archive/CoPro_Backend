@@ -21,7 +21,7 @@ public class ScheduledTasks {
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    //@Scheduled(cron = "*/5 * * * * *") // 매 1초마다 실행
+    //@Scheduled(cron = "*/60 * * * * *") // 매 1초마다 실행
     public void findMostIncreasedHeartBoard() {
         List<Board> results = boardRepository.findWithMaxIncreaseInHeart();
         if (results.isEmpty()) {

@@ -5,6 +5,10 @@ import static com.example.copro.comment.domain.QComment.comment;
 
 import com.example.copro.comment.api.dto.response.CommentResDto;
 import com.example.copro.comment.domain.Comment;
+import com.example.copro.member.domain.Member;
+import com.example.copro.member.domain.QBlockedMemberMapping;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import java.util.ArrayList;
@@ -25,16 +29,20 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<CommentResDto> findByBoardBoardId(Long boardId, Pageable pageable) {
-        long total = queryFactory.selectFrom(comment)
-                .where(comment.board.boardId.eq(boardId), comment.parent.isNull())
-                .fetchCount();
+    public Page<CommentResDto> findByBoardBoardId(Long boardId, Pageable pageable, Member member) {
+        QBlockedMemberMapping blockedMemberMapping = QBlockedMemberMapping.blockedMemberMapping;
+
+        JPQLQuery<Long> blockedMembersSubQuery = JPAExpressions
+                .select(blockedMemberMapping.blockedMember.memberId)
+                .from(blockedMemberMapping)
+                .where(blockedMemberMapping.member.memberId.eq(member.getMemberId()));
 
         // QueryDSL을 사용해서 comment 테이블에서 데이터를 조회
         // 특정 게시판(boardId)의 댓글만 가져오며, 부모 댓글과 함께 가져옴
         // 댓글의 부모 ID를 오름차순으로 정렬하고, 같은 부모 ID를 가진 댓글 중에서는 생성 시간 기준으로 오름차순 정렬
         List<Comment> parentComments = queryFactory.selectFrom(comment)
-                .where(comment.board.boardId.eq(boardId), comment.parent.isNull())
+                .where(comment.board.boardId.eq(boardId), comment.parent.isNull(),
+                        comment.writer.memberId.notIn(blockedMembersSubQuery))
                 .orderBy(comment.createAt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -47,7 +55,8 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
             commentResDtoList.add(parentCommentResDto);
 
             List<Comment> childComments = queryFactory.selectFrom(comment)
-                    .where(comment.parent.eq(parentComment))
+                    .where(comment.parent.eq(parentComment),
+                            comment.writer.memberId.notIn(blockedMembersSubQuery))
                     .orderBy(comment.createAt.asc())
                     .fetch();
 
@@ -56,6 +65,11 @@ public class CommentRepositoryImpl implements CommentCustomRepository{
                 parentCommentResDto.getChildren().add(childCommentResDto);
             }
         }
+
+        long total = queryFactory.selectFrom(comment)
+                .where(comment.board.boardId.eq(boardId), comment.parent.isNull(),
+                        comment.writer.memberId.notIn(blockedMembersSubQuery))
+                .fetchCount();
 
         return new PageImpl<>(commentResDtoList, pageable, total);
     }

@@ -96,10 +96,11 @@ public class CommentController {
     @GetMapping("/{boardId}/comments")
     public RspTemplate<Page<CommentResDto>> getCommentsByBoard(@PathVariable(name = "boardId") Long boardId,
                                                                    @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                   @RequestParam(value = "size", defaultValue = "10") int size
+                                                                   @RequestParam(value = "size", defaultValue = "10") int size,
+                                                               @AuthenticationPrincipal Member member
     ) {
         Pageable pageable = PageableUtil.of(page, size);
-        Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, pageable);
+        Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, pageable, member);
         //Page<CommentResDto> commentsByBoard = commentService.getCommentsByBoard(boardId, page, size);
         return new RspTemplate<>(HttpStatus.OK, "상세 페이지 댓글 조회 성공", commentsByBoard);
     }
