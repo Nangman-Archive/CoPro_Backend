@@ -1,9 +1,9 @@
 package com.example.copro.member.api.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record BlockedMemberReqDto(
-        @NotNull
-        Long blockedMemberId
+        @NotBlank
+        String blockedMemberNickName
 ) {
 }

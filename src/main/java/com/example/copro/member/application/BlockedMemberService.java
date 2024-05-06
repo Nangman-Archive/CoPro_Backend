@@ -24,7 +24,7 @@ public class BlockedMemberService {
     @Transactional
     public void addBlockedMember(Member member, BlockedMemberReqDto blockedMemberReqDto) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
-        Member blockedMember = memberRepository.findById(blockedMemberReqDto.blockedMemberId()).orElseThrow(MemberNotFoundException::new);
+        Member blockedMember = memberRepository.findByNickName(blockedMemberReqDto.blockedMemberNickName()).orElseThrow(MemberNotFoundException::new);
 
         validateExistsBlockedMember(getMember, blockedMember);
 
@@ -41,7 +41,7 @@ public class BlockedMemberService {
     @Transactional
     public void cancelBlockedMember(Member member, BlockedMemberReqDto blockedMemberReqDto) {
         Member getMember = memberRepository.findById(member.getMemberId()).orElseThrow(MemberNotFoundException::new);
-        Member blockedMember = memberRepository.findById(blockedMemberReqDto.blockedMemberId()).orElseThrow(MemberNotFoundException::new);
+        Member blockedMember = memberRepository.findByNickName(blockedMemberReqDto.blockedMemberNickName()).orElseThrow(MemberNotFoundException::new);
 
         getMember.cancelBlockedMember(blockedMember);
         memberRepository.save(getMember);
