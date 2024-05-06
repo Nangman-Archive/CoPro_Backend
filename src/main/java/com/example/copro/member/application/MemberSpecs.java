@@ -2,6 +2,7 @@ package com.example.copro.member.application;
 
 import com.example.copro.member.domain.Member;
 import jakarta.persistence.criteria.Predicate;
+import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 public class MemberSpecs {
@@ -44,7 +45,11 @@ public class MemberSpecs {
         return (root, query, criteriaBuilder) -> criteriaBuilder.notEqual(root.get("email"), adminEmail);
     }
 
-    public static Specification<Member> spec(String occupation, String language, int career, String adminEmail, Member member) {
+    public static Specification<Member> noBlockedMember(List<Long> blockedMemberIds) {
+        return (root, query, cb) -> blockedMemberIds.isEmpty() ? null : cb.not(root.get("id").in(blockedMemberIds));
+    }
+
+    public static Specification<Member> spec(String occupation, String language, int career, String adminEmail, Member member, List<Long> blockedMemberIds) {
         return Specification
                 .where(MemberSpecs.hasOccupation(occupation))
                 .and(MemberSpecs.hasLanguage(language))
@@ -52,7 +57,8 @@ public class MemberSpecs {
                 .and(MemberSpecs.notCurrentMember(member))
                 .and(MemberSpecs.isNotDeleted())
                 .and(MemberSpecs.isNicknameNotNull())
-                .and(MemberSpecs.excludeAdminEmail(adminEmail));
+                .and(MemberSpecs.excludeAdminEmail(adminEmail))
+                .and(MemberSpecs.noBlockedMember(blockedMemberIds));
     }
 }
 

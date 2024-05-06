@@ -6,13 +6,16 @@ import com.example.copro.member.api.dto.request.MemberProfileUpdateReqDto;
 import com.example.copro.member.api.dto.response.MemberInfoResDto;
 import com.example.copro.member.api.dto.response.MemberResDto;
 import com.example.copro.member.domain.Member;
+import com.example.copro.member.domain.repository.BlockedMemberMappingRepository;
 import com.example.copro.member.domain.repository.MemberLikeRepository;
 import com.example.copro.member.domain.repository.MemberRepository;
 import com.example.copro.member.exception.ExistsLikeMemberException;
 import com.example.copro.member.exception.ExistsNickNameException;
 import com.example.copro.member.exception.MemberNotFoundException;
 import com.example.copro.notification.application.FCMNotificationService;
+import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class MemberService {
 
     @Value("${admin.email}")
@@ -28,13 +32,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberLikeRepository memberLikeRepository;
+    private final BlockedMemberMappingRepository blockedMemberMappingRepository;
     private final FCMNotificationService fcmNotificationService;
-
-    public MemberService(MemberRepository memberRepository, MemberLikeRepository memberLikeRepository, FCMNotificationService fcmNotificationService) {
-        this.memberRepository = memberRepository;
-        this.memberLikeRepository = memberLikeRepository;
-        this.fcmNotificationService = fcmNotificationService;
-    }
 
     // nickname으로 member채팅프로필 불러오기
     public MemberResDto memberChattingProfileInfo(Member member, String targetEmail) {
@@ -48,7 +47,9 @@ public class MemberService {
         String o = Optional.ofNullable(occupation).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
         String l = Optional.ofNullable(language).map(String::trim).filter(s -> !s.isEmpty()).orElse(null);
 
-        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, career, adminEmail, member), PageRequest.of(page, size));
+        List<Long> blockedMemberIds = blockedMemberMappingRepository.findByBlockedMemberId(member);
+
+        Page<Member> members = memberRepository.findAll(MemberSpecs.spec(o, l, career, adminEmail, member, blockedMemberIds), PageRequest.of(page, size));
 
         return MemberInfoResDto.of(getViewType(member), members.map(currentMember -> getMemberResDto(member, currentMember)));
     }
