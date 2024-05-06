@@ -92,6 +92,9 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberLike> memberLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BlockedMemberMapping> blockedMemberMappings = new ArrayList<>();
+
     @Builder
     private Member(Role role, String email, String name, String picture, SocialType socialType, boolean firstLogin, int career, int viewType) {
         this.role = role;
@@ -189,6 +192,23 @@ public class Member {
     private MemberScrapBoard findScrapBoard(Board board) {
         return memberScrapBoards.stream()
                 .filter(memberScrapBoard -> memberScrapBoard.getBoard().equals(board))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void addBlockedMember(Member blockedMember) {
+        BlockedMemberMapping blockedMemberMapping = new BlockedMemberMapping(this, blockedMember);
+        this.blockedMemberMappings.add(blockedMemberMapping);
+    }
+
+    public void cancelBlockedMember(Member blockedMember) {
+        BlockedMemberMapping blockedMemberMapping = findBlockedMember(blockedMember);
+        this.blockedMemberMappings.remove(blockedMemberMapping);
+    }
+
+    private BlockedMemberMapping findBlockedMember(Member blockedMember) {
+        return blockedMemberMappings.stream()
+                .filter(blockedMemberMapping -> blockedMemberMapping.getBlockedMember().equals(blockedMember))
                 .findFirst()
                 .orElse(null);
     }

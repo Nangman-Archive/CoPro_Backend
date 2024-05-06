@@ -106,3 +106,33 @@ logging:
 myapp:
   api-url: ${myapp.api-url}
   local-url: ${myapp.local-url}
+
+---
+
+spring:
+  profiles:
+    active: local
+  data:
+    redis:
+      host: ${spring.data.redis.host}
+      port: ${spring.data.redis.port}
+
+  datasource:
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    driver-class-name: ${spring.datasource.driver-class-name}
+    hikari:
+      maximum-pool-size: 30
+
+logging:
+  slack:
+    webhook-uri: ${logging.slack.webhook-uri}
+  config: ${logging.config}
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
+myapp:
+  api-url: ${myapp.api-url}
+  local-url: ${myapp.local-url}
