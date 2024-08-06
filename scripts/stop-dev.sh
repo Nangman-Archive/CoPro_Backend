@@ -17,3 +17,5 @@ else
   echo "$TIME_NOW > 실행중인 애플리케이션 PID($CURRENT_PID) 종료." >> $DEPLOY_LOG
   kill -15 $CURRENT_PID
 fi
+
+sleep 2

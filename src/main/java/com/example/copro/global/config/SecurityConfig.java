@@ -43,6 +43,7 @@ public class SecurityConfig {
                 "/api/github/token",
                 "/api/apple/token",
                 "/api/token/access",
+                "/{env}-act-dashboard/prometheus",
         };
 
         for (String url : permittedUrls) {
