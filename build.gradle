@@ -49,7 +49,7 @@ dependencies {
 
     // Database
     runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.9'
 
     // logback
     implementation 'com.github.maricn:logback-slack-appender:1.4.0'
