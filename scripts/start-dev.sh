@@ -29,5 +29,5 @@ nohup java -javaagent:$PINPOINT_AGENT \
      -Dspring.profiles.active=dev \
      -jar $JAR_FILE > $APP_LOG 2> $ERROR_LOG < /dev/null &
 
-CURRENT_PID=$(lsof -ti tcp:9091)
+CURRENT_PID=$(lsof -ti tcp:11091)
 echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG

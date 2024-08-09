@@ -8,7 +8,7 @@ DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 TIME_NOW=$(date +%c)
 
 # 현재 구동 중인 애플리케이션의 PID 확인 (9091 포트 사용)
-CURRENT_PID=$(lsof -ti tcp:9091)
+CURRENT_PID=$(lsof -ti tcp:11091)
 
 # 프로세스가 실행 중인지 확인 후, 실행 중이면 종료
 if [ -z "$CURRENT_PID" ]; then
