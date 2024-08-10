@@ -84,7 +84,7 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<MemberScrapBoard> memberScrapBoards = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
     @Schema(description = "이미지, 없으면 0을 요청")
     private List<Image> images = new ArrayList<>(5);
 
