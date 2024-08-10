@@ -90,7 +90,7 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "업로드 성공"),
             @ApiResponse(responseCode = "401", description = "인증실패", content = @Content(schema = @Schema(example = "INVALID_HEADER or INVALID_TOKEN"))),
     })
-    @PostMapping("/images/board")
+    @PostMapping(value = "/images/board", consumes = "multipart/form-data")
     public RspTemplate<List<ImageResDto>> uploadMultiple(@RequestPart("files") MultipartFile[] files) {
         String folderName = "board";
         List<ImageResDto> upload = imageService.uploadMultiple(folderName, files);
