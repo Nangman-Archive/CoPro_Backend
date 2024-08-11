@@ -3,6 +3,7 @@ package com.example.copro.global.config;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.example.copro.global.error.exception.CustomAuthenticationFailureHandler;
+import com.example.copro.global.filter.MDCLoggingFilter;
 import com.example.copro.global.jwt.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
