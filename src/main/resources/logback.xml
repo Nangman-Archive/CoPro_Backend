@@ -6,7 +6,7 @@
     <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
         <webhookUri>${SLACK_WEBHOOK_URL}</webhookUri>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{HH:mm:ss} [%thread] [%-5level] %logger{36} - %msg%n```%ex{full}```</pattern>
+            <pattern>[%X{uuid:-startup}] %d{HH:mm:ss} [%thread] [%-5level] %logger{36} - %msg%n```%ex{full}```</pattern>
         </layout>
         <username>CoPro-logback</username>
         <avatarUrl>https://cdn-icons-png.flaticon.com/512/1383/1383395.png</avatarUrl>
@@ -15,7 +15,7 @@
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <Pattern>[%X{uuid:-startup}] %d{HH:mm:ss} [%thread] [%-5level] %logger{36} - %msg%n</Pattern>
             <charset>utf8</charset>
         </encoder>
     </appender>
